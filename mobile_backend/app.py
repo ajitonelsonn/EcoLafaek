@@ -24,6 +24,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+import numpy as np
 
 # Load environment variables
 load_dotenv(override=True)
@@ -99,6 +100,10 @@ DB_CONFIG = {
     'password': os.getenv('DB_PASSWORD', ''),
     'port': int(os.getenv('DB_PORT', '3306'))
 }
+
+# Amazon Titan Embed configuration
+TITAN_EMBED_MODEL = "amazon.titan-embed-image-v1"
+embedding_enabled = bool(BEDROCK_BEARER_TOKEN)  # Use same auth as Nova Pro
 
 # Get database connection
 def get_db_connection():
@@ -411,7 +416,7 @@ async def analyze_image_with_bedrock(image_url):
             response = requests.get(image_url)
             if response.status_code != 200:
                 logger.error(f"Failed to download image from {image_url}: {response.status_code}")
-                return None
+                return None, None
                 
             # Log image details
             content_type = response.headers.get('Content-Type', 'Unknown')
@@ -459,7 +464,7 @@ async def analyze_image_with_bedrock(image_url):
                     logger.info(f"Retrying... ({current_attempt}/{max_attempts})")
                     time.sleep(2)  # Add a short delay before retrying
                     continue
-                return None
+                return None, None
                 
             logger.info(f"Received response from Nova Pro API")
             
@@ -498,7 +503,7 @@ async def analyze_image_with_bedrock(image_url):
                 logger.info(f"Retrying due to exception... ({current_attempt}/{max_attempts})")
                 time.sleep(2)  # Add a short delay before retrying
                 continue
-            return None
+            return None, None
     
     # Get short description
     short_description = waste_check.get("short_description", "")
@@ -514,7 +519,7 @@ async def analyze_image_with_bedrock(image_url):
     # If the image doesn't contain waste, return minimal analysis
     if not waste_check.get("contains_waste", False):
         logger.info(f"Image determined not to contain waste: {waste_check.get('reasoning', 'No reason provided')}")
-        return {
+        non_waste_analysis = {
             "waste_type": "Not Garbage",
             "severity_score": 1,
             "priority_level": "low",
@@ -526,6 +531,7 @@ async def analyze_image_with_bedrock(image_url):
             "short_description": short_description or "Not garbage",
             "full_description": full_description
         }
+        return non_waste_analysis, image_data
     
     # If image contains waste, proceed with detailed analysis
     # Add retry mechanism for the detailed analysis as well
@@ -580,7 +586,7 @@ async def analyze_image_with_bedrock(image_url):
                     logger.info(f"Retrying detailed analysis... ({detailed_analysis_attempts}/{max_detailed_attempts})")
                     time.sleep(2)  # Add a short delay before retrying
                     continue
-                return None
+                return None, None
                 
             logger.info(f"Received detailed response from Nova Pro API")
             
@@ -649,7 +655,7 @@ async def analyze_image_with_bedrock(image_url):
         analysis_result["full_description"] = full_description
     
     logger.info(f"Nova Pro analysis complete: {analysis_result}")
-    return analysis_result
+    return analysis_result, image_data  # Return both analysis and image data for embeddings
 def extract_volume_number(volume_str):
     """Extract numeric value from volume string like '5 cubic meters' -> 5.0"""
     try:
@@ -729,7 +735,7 @@ async def process_report(report_id, background_tasks: BackgroundTasks):
         logger.info(f"Processing report {report_id} with image URL: {report['image_url']}")
         
         # Analyze image with Nova Pro
-        analysis_result = await analyze_image_with_bedrock(report['image_url'])
+        analysis_result, image_data = await analyze_image_with_bedrock(report['image_url'])
         
         if not analysis_result:
             cursor.execute(
@@ -777,14 +783,19 @@ async def process_report(report_id, background_tasks: BackgroundTasks):
                 connection.commit()
                 waste_type_id = cursor.lastrowid
             
+            # Generate embeddings for non-garbage images (pass image_data for Titan Image Embed)
+            image_embedding = create_image_content_embedding(analysis_result, image_data)
+            location_embedding = create_location_embedding(report['latitude'], report['longitude'])
+            
             # Insert analysis results for non-garbage
             cursor.execute(
                 """
                 INSERT INTO analysis_results (
                     report_id, analyzed_date, waste_type_id, confidence_score,
                     estimated_volume, severity_score, priority_level,
-                    analysis_notes, full_description, processed_by
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    analysis_notes, full_description, processed_by,
+                    image_embedding, location_embedding
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """,
                 (
                     report_id,
@@ -796,7 +807,9 @@ async def process_report(report_id, background_tasks: BackgroundTasks):
                     "low", # Lowest priority
                     "This image does not contain waste material.",
                     analysis_result.get("full_description", "This image does not contain waste material."),
-                    'Nova AI'
+                    'Nova AI',
+                    json.dumps(image_embedding) if image_embedding else None,
+                    json.dumps(location_embedding) if location_embedding else None
                 )
             )
             connection.commit()
@@ -872,14 +885,19 @@ async def process_report(report_id, background_tasks: BackgroundTasks):
             connection.commit()
             waste_type_id = cursor.lastrowid
         
+        # Generate embeddings for waste images (pass image_data for Titan Image Embed)
+        image_embedding = create_image_content_embedding(analysis_result, image_data)
+        location_embedding = create_location_embedding(report['latitude'], report['longitude'])
+        
         # Insert analysis results
         cursor.execute(
             """
             INSERT INTO analysis_results (
                 report_id, analyzed_date, waste_type_id, confidence_score,
                 estimated_volume, severity_score, priority_level,
-                analysis_notes, full_description, processed_by
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                analysis_notes, full_description, processed_by,
+                image_embedding, location_embedding
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 report_id,
@@ -891,7 +909,9 @@ async def process_report(report_id, background_tasks: BackgroundTasks):
                 analysis_result['priority_level'],
                 analysis_result.get('analysis_notes', ''),
                 analysis_result.get('full_description', 'No detailed description available.'),
-                'Nova AI'
+                'Nova AI',
+                json.dumps(image_embedding) if image_embedding else None,
+                json.dumps(location_embedding) if location_embedding else None
             )
         )
         connection.commit()
@@ -2767,11 +2787,402 @@ async def process_queue(background_tasks: BackgroundTasks, user_id: int = Depend
         logger.error(f"Error processing queue: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Vector search helper functions
+def invoke_titan_embed_text(text: str) -> Optional[List[float]]:
+    """Create embedding for text using Amazon Titan Embed Image (multimodal)"""
+    if not embedding_enabled or not text:
+        return None
+    
+    try:
+        # Prepare the request payload for Titan Embed Image v1 (text mode)
+        payload = {
+            "inputText": text,
+            "embeddingConfig": {
+                "outputEmbeddingLength": 1024
+            }
+        }
+        
+        headers = {
+            'Authorization': f'Bearer {BEDROCK_BEARER_TOKEN}',
+            'Content-Type': 'application/json'
+        }
+        
+        # Make request to Titan Embed Image model (supports text)
+        response = requests.post(
+            f"{BEDROCK_ENDPOINT}/model/amazon.titan-embed-image-v1/invoke",
+            headers=headers,
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            embedding = result.get('embedding', [])
+            return embedding if embedding else None
+        else:
+            logger.error(f"Titan embed text request failed: {response.status_code}")
+            logger.error(f"Response text: {response.text}")
+            return None
+            
+    except Exception as e:
+        logger.error(f"Error creating text embedding with Titan: {e}")
+        return None
+
+def invoke_titan_embed_image(image_data: str) -> Optional[List[float]]:
+    """Create embedding for image using Amazon Titan Embed Image"""
+    if not embedding_enabled or not image_data:
+        return None
+    
+    try:
+        # Prepare the request payload for Titan Image Embed
+        payload = {
+            "inputImage": image_data,  # base64 encoded image
+            "embeddingConfig": {
+                "outputEmbeddingLength": 1024  # Titan embed image dimensions
+            }
+        }
+        
+        headers = {
+            'Authorization': f'Bearer {BEDROCK_BEARER_TOKEN}',
+            'Content-Type': 'application/json'
+        }
+        
+        # Make request to Titan Embed Image model
+        response = requests.post(
+            f"{BEDROCK_ENDPOINT}/model/amazon.titan-embed-image-v1/invoke",
+            headers=headers,
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            embedding = result.get('embedding', [])
+            return embedding if embedding else None
+        else:
+            logger.error(f"Titan embed image request failed: {response.status_code}")
+            return None
+            
+    except Exception as e:
+        logger.error(f"Error creating image embedding with Titan: {e}")
+        return None
+
+def create_location_embedding(latitude: float, longitude: float) -> Optional[List[float]]:
+    """Create embedding for geographic location using Titan Text Embed"""
+    if not embedding_enabled:
+        return None
+    
+    try:
+        # Create a location description string
+        location_text = f"Geographic location at latitude {latitude:.6f} longitude {longitude:.6f}"
+        
+        # Add contextual information about Timor-Leste regions
+        region_context = ""
+        if -8.3 <= latitude <= -8.1 and 125.5 <= longitude <= 125.7:
+            region_context = " in Dili capital city urban area Timor-Leste"
+        elif -8.5 <= latitude <= -8.0 and 125.0 <= longitude <= 127.0:
+            region_context = " in northern Timor-Leste coastal region"
+        elif -9.0 <= latitude <= -8.5 and 125.0 <= longitude <= 127.0:
+            region_context = " in southern Timor-Leste mountainous region"
+        else:
+            region_context = " in Timor-Leste"
+        
+        location_text += region_context
+        
+        # Generate embedding using Titan Text Embed
+        return invoke_titan_embed_text(location_text)
+    except Exception as e:
+        logger.error(f"Error creating location embedding: {e}")
+        return None
+
+def create_image_content_embedding(analysis_result: dict, image_data: str = None) -> Optional[List[float]]:
+    """Create embedding from image using Titan Embed Image or text analysis"""
+    if not embedding_enabled or not analysis_result:
+        return None
+    
+    try:
+        # First try to create image embedding if we have image data
+        if image_data:
+            image_embedding = invoke_titan_embed_image(image_data)
+            if image_embedding:
+                return image_embedding
+        
+        # Fallback to text embedding from analysis results
+        content_parts = []
+        
+        if analysis_result.get('waste_type'):
+            content_parts.append(f"Waste type: {analysis_result['waste_type']}")
+        
+        if analysis_result.get('full_description'):
+            content_parts.append(f"Description: {analysis_result['full_description']}")
+        
+        if analysis_result.get('analysis_notes'):
+            content_parts.append(f"Analysis: {analysis_result['analysis_notes']}")
+        
+        if analysis_result.get('environmental_impact'):
+            content_parts.append(f"Environmental impact: {analysis_result['environmental_impact']}")
+        
+        if analysis_result.get('safety_concerns'):
+            content_parts.append(f"Safety concerns: {analysis_result['safety_concerns']}")
+        
+        # Combine all parts
+        content_text = " ".join(content_parts)
+        
+        if not content_text:
+            return None
+        
+        # Generate text embedding using Titan
+        return invoke_titan_embed_text(content_text)
+        
+    except Exception as e:
+        logger.error(f"Error creating image content embedding: {e}")
+        return None
+
+# Vector search endpoints
+@app.get("/api/search/similar-reports", response_model=dict)
+async def find_similar_reports(
+    report_id: int,
+    limit: int = 5,
+    user_id: int = Depends(get_user_from_token)
+):
+    """Find reports with similar waste types and characteristics"""
+    try:
+        connection = get_db_connection()
+        if not connection:
+            raise HTTPException(status_code=500, detail="Database connection failed")
+        
+        cursor = connection.cursor(dictionary=True)
+        
+        # Get the current report's image embedding
+        cursor.execute("""
+            SELECT image_embedding FROM analysis_results 
+            WHERE report_id = %s AND image_embedding IS NOT NULL
+        """, (report_id,))
+        
+        current_report = cursor.fetchone()
+        if not current_report or not current_report['image_embedding']:
+            cursor.close()
+            connection.close()
+            raise HTTPException(status_code=404, detail="Report not found or no embedding available")
+        
+        # Convert embedding back to list format for TiDB vector search
+        current_embedding = current_report['image_embedding']
+        
+        # Find similar reports using TiDB vector search
+        cursor.execute("""
+            SELECT 
+                r.report_id,
+                r.latitude,
+                r.longitude,
+                r.report_date,
+                r.description,
+                r.image_url,
+                a.waste_type,
+                a.severity_score,
+                a.priority_level,
+                a.analysis_notes,
+                VEC_COSINE_DISTANCE(a.image_embedding, %s) as similarity_score
+            FROM reports r 
+            JOIN analysis_results a ON r.report_id = a.report_id
+            WHERE a.image_embedding IS NOT NULL 
+            AND r.report_id != %s
+            ORDER BY similarity_score ASC
+            LIMIT %s
+        """, (current_embedding, report_id, limit))
+        
+        similar_reports = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        
+        return {
+            "status": "success",
+            "current_report_id": report_id,
+            "similar_reports": similar_reports,
+            "count": len(similar_reports)
+        }
+        
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error finding similar reports: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/search/nearby-patterns", response_model=dict)
+async def find_nearby_patterns(
+    latitude: float,
+    longitude: float,
+    radius_km: float = 2.0,
+    limit: int = 10,
+    user_id: int = Depends(get_user_from_token)
+):
+    """Find waste patterns in nearby locations using location embeddings"""
+    try:
+        connection = get_db_connection()
+        if not connection:
+            raise HTTPException(status_code=500, detail="Database connection failed")
+        
+        cursor = connection.cursor(dictionary=True)
+        
+        # Create location embedding for the search point
+        location_embedding = create_location_embedding(latitude, longitude)
+        if not location_embedding:
+            raise HTTPException(status_code=500, detail="Failed to create location embedding")
+        
+        # Find nearby reports using both geographic distance and location embedding similarity
+        cursor.execute("""
+            SELECT 
+                r.report_id,
+                r.latitude,
+                r.longitude,
+                r.report_date,
+                r.description,
+                r.image_url,
+                a.waste_type,
+                a.severity_score,
+                a.priority_level,
+                a.analysis_notes,
+                VEC_COSINE_DISTANCE(a.location_embedding, %s) as location_similarity,
+                (6371 * acos(cos(radians(%s)) * cos(radians(r.latitude)) * 
+                 cos(radians(r.longitude) - radians(%s)) + sin(radians(%s)) * 
+                 sin(radians(r.latitude)))) as distance_km
+            FROM reports r 
+            JOIN analysis_results a ON r.report_id = a.report_id
+            WHERE a.location_embedding IS NOT NULL
+            HAVING distance_km <= %s
+            ORDER BY location_similarity ASC, distance_km ASC
+            LIMIT %s
+        """, (location_embedding, latitude, longitude, latitude, radius_km, limit))
+        
+        nearby_reports = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        
+        return {
+            "status": "success",
+            "search_location": {"latitude": latitude, "longitude": longitude},
+            "radius_km": radius_km,
+            "nearby_reports": nearby_reports,
+            "count": len(nearby_reports)
+        }
+        
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error finding nearby patterns: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/search/semantic-search", response_model=dict)
+async def semantic_search_reports(
+    query: str,
+    limit: int = 10,
+    user_id: int = Depends(get_user_from_token)
+):
+    """Search reports using semantic similarity of descriptions"""
+    try:
+        connection = get_db_connection()
+        if not connection:
+            raise HTTPException(status_code=500, detail="Database connection failed")
+        
+        cursor = connection.cursor(dictionary=True)
+        
+        # Create embedding for the search query using Titan Text Embed
+        query_embedding = invoke_titan_embed_text(query)
+        if not query_embedding:
+            raise HTTPException(status_code=500, detail="Failed to create query embedding")
+        
+        # Search reports using image content embeddings (which include text descriptions)
+        cursor.execute("""
+            SELECT 
+                r.report_id,
+                r.latitude,
+                r.longitude,
+                r.report_date,
+                r.description,
+                r.image_url,
+                a.waste_type,
+                a.severity_score,
+                a.priority_level,
+                a.analysis_notes,
+                a.full_description,
+                VEC_COSINE_DISTANCE(a.image_embedding, %s) as semantic_similarity
+            FROM reports r 
+            JOIN analysis_results a ON r.report_id = a.report_id
+            WHERE a.image_embedding IS NOT NULL
+            ORDER BY semantic_similarity ASC
+            LIMIT %s
+        """, (query_embedding, limit))
+        
+        matching_reports = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        
+        return {
+            "status": "success",
+            "query": query,
+            "matching_reports": matching_reports,
+            "count": len(matching_reports)
+        }
+        
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error in semantic search: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/test/titan-embeddings", response_model=dict)
+async def test_titan_embeddings(
+    text: str = "plastic bottles scattered on ground",
+    image_url: str = None,
+    user_id: int = Depends(get_user_from_token)
+):
+    """Test Titan embedding functionality"""
+    try:
+        results = {}
+        
+        # Test text embedding
+        if text:
+            text_embedding = invoke_titan_embed_text(text)
+            results["text_embedding"] = {
+                "success": bool(text_embedding),
+                "dimensions": len(text_embedding) if text_embedding else 0,
+                "sample": text_embedding[:5] if text_embedding else None
+            }
+        
+        # Test image embedding if URL provided
+        if image_url:
+            try:
+                # Download image
+                response = requests.get(image_url)
+                if response.status_code == 200:
+                    image_data = base64.b64encode(response.content).decode('utf-8')
+                    image_embedding = invoke_titan_embed_image(image_data)
+                    results["image_embedding"] = {
+                        "success": bool(image_embedding),
+                        "dimensions": len(image_embedding) if image_embedding else 0,
+                        "sample": image_embedding[:5] if image_embedding else None
+                    }
+                else:
+                    results["image_embedding"] = {"error": f"Failed to download image: {response.status_code}"}
+            except Exception as e:
+                results["image_embedding"] = {"error": str(e)}
+        
+        return {
+            "status": "success",
+            "titan_embed_enabled": embedding_enabled,
+            "results": results
+        }
+        
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Test Titan embeddings error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/test/nova", response_model=dict)
 async def test_nova_api(image_url: str, user_id: int = Depends(get_user_from_token)):
     try:
         # Simple test endpoint to check if the Nova API integration is working
-        analysis_result = await analyze_image_with_bedrock(image_url)
+        analysis_result, _ = await analyze_image_with_bedrock(image_url)
         
         if not analysis_result:
             raise HTTPException(status_code=500, detail="Failed to analyze image")
