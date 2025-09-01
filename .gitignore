@@ -1,0 +1,11 @@
+mobile_backend/.env*
+mobile_backend/venv
+
+mobile_backend/__pycache__
+mobile_backend/config/__pycache__
+mobile_backend/models/__pycache__
+mobile_backend/routes/__pycache__
+mobile_backend/services/__pycache__
+mobile_backend/routes/__pycache__
+
+File
