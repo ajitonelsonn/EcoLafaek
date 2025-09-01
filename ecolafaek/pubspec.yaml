@@ -1,0 +1,83 @@
+name: EcoLafaek
+description: Guarding Timor's Beauty
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.0.5
+  http: ^1.1.0
+  shared_preferences: ^2.2.1
+  image_picker: ^1.0.4
+  camera: ^0.10.5+2
+  path_provider: ^2.1.1
+  path: ^1.8.3
+  geolocator: ^10.1.0
+  geocoding: ^2.1.0
+  flutter_map: ^6.0.1
+  latlong2: ^0.9.0
+  flutter_image_compress: ^2.0.3
+  intl: ^0.18.1
+  flutter_dotenv: ^5.1.0
+  dio: ^5.3.2
+  flutter_secure_storage: ^8.0.0
+  connectivity_plus: ^5.0.1
+  cached_network_image: ^3.2.3
+  flutter_offline: ^3.0.0
+  permission_handler: ^10.4.5
+  uuid: ^3.0.7
+  sqflite: ^2.3.0
+  google_fonts: ^5.1.0
+  animate_do: ^3.0.2
+  lottie: ^2.7.0
+  url_launcher: ^6.2.5
+  share_plus: ^7.2.2
+  fl_chart: ^0.64.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.2
+  build_runner: ^2.4.6
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/images/default-avatar.jpg
+    - assets/images/pattern.png
+    - assets/images/empty_reports.png
+    - assets/translations/
+    - assets/images/app_icon.png
+    - assets/images/app_icon_foreground.png
+    - .env
+    - assets/animations/
+    - assets/images/logo.png
+
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Poppins-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/app_icon_foreground.png"
