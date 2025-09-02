@@ -18,9 +18,7 @@ import 'screens/report_detail_screen.dart';
 import 'screens/otp_verification_screen.dart';
 import 'screens/change_password_screen.dart';
 import 'providers/stats_provider.dart';
-import 'providers/vector_search_provider.dart';
 import 'screens/stats_screen.dart';
-import 'screens/similar_reports_screen.dart';
 import 'services/api_service.dart';
 
 void main() async {
@@ -66,13 +64,6 @@ class MyApp extends StatelessWidget {
           update: (ctx, auth, previousStats) => 
               previousStats ?? StatsProvider(authProvider: auth),
         ),
-        ChangeNotifierProxyProvider<AuthProvider, VectorSearchProvider>(
-          create: (ctx) => VectorSearchProvider()..updateAuth(
-            Provider.of<AuthProvider>(ctx, listen: false),
-          ),
-          update: (ctx, auth, previousVectorSearch) => 
-              previousVectorSearch ?? VectorSearchProvider()..updateAuth(auth),
-        ),
       ],
       child: MaterialApp(
         title: 'EcoLafaek',
@@ -93,7 +84,6 @@ class MyApp extends StatelessWidget {
           ReportDetailScreen.routeName: (context) => ReportDetailScreen(
             reportId: ModalRoute.of(context)!.settings.arguments as int,),
           StatsScreen.routeName: (context) => const StatsScreen(),
-          SimilarReportsScreen.routeName: (context) => const SimilarReportsScreen(),
           // Add the OTP verification screen route - updated to match new constructor
           OtpVerificationScreen.routeName: (context) => OtpVerificationScreen(
             email: '',

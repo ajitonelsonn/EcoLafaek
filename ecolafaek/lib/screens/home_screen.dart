@@ -18,7 +18,6 @@ import 'report_detail_screen.dart';
 import '../utils/navigation_utils.dart';
 import 'stats_screen.dart';
 import 'login_screen.dart';
-import 'similar_reports_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -277,26 +276,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
               
               const Spacer(),
               
-              // AI Search button
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.psychology,
-                    color: Colors.white,
-                    size: 22,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(SimilarReportsScreen.routeName);
-                  },
-                  tooltip: 'AI Smart Search',
-                ),
-              ),
-              
-              const SizedBox(width: 12),
               
               CircleAvatar(
                 radius: 18,
