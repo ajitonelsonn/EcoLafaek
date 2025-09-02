@@ -2704,6 +2704,43 @@ async def get_dashboard_statistics(user_id: int = Depends(get_user_from_token)):
             if 'report_date' in report and report['report_date']:
                 report['report_date'] = report['report_date'].strftime('%Y-%m-%d %H:%M:%S')
         
+        # Get community statistics (user ranking and total contributors)
+        cursor.execute(
+            """
+            SELECT COUNT(DISTINCT user_id) as total_contributors
+            FROM reports
+            WHERE user_id IS NOT NULL
+            """)
+        
+        community_result = cursor.fetchone()
+        total_contributors = community_result['total_contributors'] if community_result else 0
+        
+        # Get user's ranking based on total reports
+        cursor.execute(
+            """
+            SELECT ranking 
+            FROM (
+                SELECT user_id, 
+                       COUNT(*) as report_count,
+                       RANK() OVER (ORDER BY COUNT(*) DESC) as ranking
+                FROM reports 
+                WHERE user_id IS NOT NULL
+                GROUP BY user_id
+            ) ranked_users 
+            WHERE user_id = %s
+            """,
+            (user_id,)
+        )
+        
+        ranking_result = cursor.fetchone()
+        user_rank = ranking_result['ranking'] if ranking_result else None
+        
+        # Create community stats object
+        community_stats = {
+            'total_contributors': total_contributors,
+            'user_rank': user_rank
+        }
+        
         cursor.close()
         connection.close()
         
@@ -2714,7 +2751,8 @@ async def get_dashboard_statistics(user_id: int = Depends(get_user_from_token)):
             "severity_distribution": severity_distribution,
             "priority_distribution": priority_distribution,
             "monthly_reports": monthly_reports,
-            "recent_reports": recent_reports
+            "recent_reports": recent_reports,
+            "community_stats": community_stats
         }
         
     except HTTPException as e:
