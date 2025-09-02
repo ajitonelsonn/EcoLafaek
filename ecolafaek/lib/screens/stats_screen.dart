@@ -1756,7 +1756,7 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
                   '$total Categories Identified',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
