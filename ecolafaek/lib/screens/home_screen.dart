@@ -18,6 +18,7 @@ import 'report_detail_screen.dart';
 import '../utils/navigation_utils.dart';
 import 'stats_screen.dart';
 import 'login_screen.dart';
+import 'similar_reports_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -209,16 +210,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
     
     return Container(
       decoration: BoxDecoration(
-        color: theme.primaryColor,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.primaryColor,
+            theme.primaryColor.withOpacity(0.8),
+          ],
+        ),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(30),
           bottomRight: Radius.circular(30),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: theme.primaryColor.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -269,6 +277,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
               
               const Spacer(),
               
+              // AI Search button
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.psychology,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(SimilarReportsScreen.routeName);
+                  },
+                  tooltip: 'AI Smart Search',
+                ),
+              ),
+              
+              const SizedBox(width: 12),
+              
               CircleAvatar(
                 radius: 18,
                 backgroundColor: Colors.white,
@@ -306,113 +335,185 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
   }
   
   Widget _buildMyReportsTab() {
-    return SafeArea(
-      child: Column(
-        children: [
-          if (!_isOnline)
-            FadeInDown(
-              duration: const Duration(milliseconds: 400),
-              child: Container(
-                color: Colors.red.shade700,
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                width: double.infinity,
-                child: const Row(
-                  children: [
-                    Icon(Icons.wifi_off, color: Colors.white, size: 18),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'No internet connection. You need to be online to submit reports.',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          
-          const SizedBox(height: 16),
-          const ReportTrackingWidget(),
-          const SizedBox(height: 16),
-          
-          Expanded(
-            child: Consumer<ReportProvider>(
-              builder: (ctx, reportProvider, _) {
-                final reports = reportProvider.reports;
-                final isLoading = reportProvider.isLoading;
-                final isLoadingMore = reportProvider.isLoadingMore;
-                final hasError = reportProvider.hasError;
-                
-                if (isLoading && reports.isEmpty) {
-                  return const Center(
+    return Consumer<ReportProvider>(
+      builder: (ctx, reportProvider, _) {
+        final reports = reportProvider.reports;
+        final isLoading = reportProvider.isLoading;
+        final isLoadingMore = reportProvider.isLoadingMore;
+        final hasError = reportProvider.hasError;
+        
+        // If loading and no reports, show loading indicator
+        if (isLoading && reports.isEmpty) {
+          return SafeArea(
+            child: Column(
+              children: [
+                if (!_isOnline) _buildOfflineBanner(),
+                const SizedBox(height: 16),
+                const ReportTrackingWidget(),
+                const Expanded(
+                  child: Center(
                     child: LoadingIndicator(message: 'Loading reports...'),
-                  );
-                }
-                
-                if (hasError && reports.isEmpty) {
-                  // Check if the error is related to token expiration
-                  final isTokenExpired = reportProvider.errorMessage.toLowerCase().contains('token') && 
-                                        (reportProvider.errorMessage.toLowerCase().contains('expired') || 
-                                         reportProvider.errorMessage.toLowerCase().contains('invalid'));
-                  
-                  return _buildAuthErrorWidget(
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        
+        // If error and no reports, show error widget
+        if (hasError && reports.isEmpty) {
+          final isTokenExpired = reportProvider.errorMessage.toLowerCase().contains('token') && 
+                                (reportProvider.errorMessage.toLowerCase().contains('expired') || 
+                                 reportProvider.errorMessage.toLowerCase().contains('invalid'));
+          
+          return SafeArea(
+            child: Column(
+              children: [
+                if (!_isOnline) _buildOfflineBanner(),
+                const SizedBox(height: 16),
+                const ReportTrackingWidget(),
+                Expanded(
+                  child: _buildAuthErrorWidget(
                     message: reportProvider.errorMessage,
                     onRetry: isTokenExpired ? null : _refreshReports,
                     isTokenExpired: isTokenExpired,
-                  );
-                }
-                
-                if (reports.isEmpty) {
-                  return _buildEmptyReportsView();
-                }
-                
-                final sortedReports = List<Report>.from(reports);
-                sortedReports.sort((a, b) => b.reportDate.compareTo(a.reportDate));
-                
-                return RefreshIndicator(
-                  onRefresh: _refreshReports,
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: sortedReports.length + (isLoadingMore ? 1 : 0),
-                    itemBuilder: (ctx, index) {
-                      if (index == sortedReports.length) {
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16.0),
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      }
-                      
-                      final report = sortedReports[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: ReportCard(
-                          report: report,
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                              ReportDetailScreen.routeName,
-                              arguments: report.id,
-                            ).then((_) {
-                              _refreshReports();
-                            });
-                          },
-                          onDeleted: () {
-                            _refreshReports();
-                          },
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        
+        // If no reports, show empty state
+        if (reports.isEmpty) {
+          return SafeArea(
+            child: Column(
+              children: [
+                if (!_isOnline) _buildOfflineBanner(),
+                const SizedBox(height: 16),
+                const ReportTrackingWidget(),
+                Expanded(child: _buildEmptyReportsView()),
+              ],
+            ),
+          );
+        }
+        
+        // Show reports in a scrollable view
+        final sortedReports = List<Report>.from(reports);
+        sortedReports.sort((a, b) => b.reportDate.compareTo(a.reportDate));
+        
+        return RefreshIndicator(
+          onRefresh: _refreshReports,
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              // Fixed header content
+              SliverToBoxAdapter(
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      if (!_isOnline) _buildOfflineBanner(),
+                      const SizedBox(height: 16),
+                      const ReportTrackingWidget(),
+                      const SizedBox(height: 16),
+                      // Reports section header
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Your Reports',
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              '${sortedReports.length} reports',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  ),
+                ),
+              ),
+              
+              // Scrollable reports list
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (ctx, index) {
+                    if (index == sortedReports.length) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Center(
+                          child: CircularProgressIndicator(),
                         ),
                       );
-                    },
-                  ),
-                );
-              },
-            ),
+                    }
+                    
+                    final report = sortedReports[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0, left: 16, right: 16),
+                      child: ReportCard(
+                        report: report,
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                            ReportDetailScreen.routeName,
+                            arguments: report.id,
+                          ).then((_) {
+                            _refreshReports();
+                          });
+                        },
+                        onDeleted: () {
+                          _refreshReports();
+                        },
+                      ),
+                    );
+                  },
+                  childCount: sortedReports.length + (isLoadingMore ? 1 : 0),
+                ),
+              ),
+              
+              // Bottom padding for floating action button
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 60),
+              ),
+            ],
           ),
-        ],
+        );
+      },
+    );
+  }
+  
+  Widget _buildOfflineBanner() {
+    return FadeInDown(
+      duration: const Duration(milliseconds: 400),
+      child: Container(
+        color: Colors.red.shade700,
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        width: double.infinity,
+        child: const Row(
+          children: [
+            Icon(Icons.wifi_off, color: Colors.white, size: 18),
+            SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'No internet connection. You need to be online to submit reports.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -529,60 +630,157 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
   Widget _buildEmptyReportsView() {
     final theme = Theme.of(context);
     
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/empty_reports.png',
-              width: 200,
-              height: 200,
-            ),
-            
-            const SizedBox(height: 24),
-            
-            Text(
-              'No Reports Yet',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: theme.primaryColor,
+    return FadeInUp(
+      duration: const Duration(milliseconds: 800),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Animated illustration container
+              Container(
+                width: 220,
+                height: 220,
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.center,
+                    radius: 0.8,
+                    colors: [
+                      theme.primaryColor.withOpacity(0.1),
+                      Colors.transparent,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(110),
+                ),
+                child: Center(
+                  child: Image.asset(
+                    'assets/images/empty_reports.png',
+                    width: 180,
+                    height: 180,
+                  ),
+                ),
               ),
-            ),
-            
-            const SizedBox(height: 16),
-            
-            Text(
-              'Start reporting waste issues in your area to help keep Timor-Leste clean and beautiful.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[700],
-              ),
-            ),
-            
-            const SizedBox(height: 32),
-            
-            ElevatedButton.icon(
-              onPressed: _isOnline ? _navigateToReportScreen : null,
-              icon: const Icon(Icons.add_a_photo_rounded),
-              label: const Text(
-                'Create Your First Report',
+              
+              const SizedBox(height: 24),
+              
+              Text(
+                'Start Your Journey',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
+                  color: theme.primaryColor,
                 ),
               ),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+              
+              const SizedBox(height: 8),
+              
+              Text(
+                'Make a Difference',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[600],
                 ),
               ),
-            ),
-          ],
+              
+              const SizedBox(height: 16),
+              
+              Container(
+                padding: const EdgeInsets.all(20),
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  'Help keep Timor-Leste clean and beautiful by reporting waste issues in your community. Every report makes a difference!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[700],
+                    height: 1.5,
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 32),
+              
+              Container(
+                width: double.infinity,
+                height: 56,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      theme.primaryColor,
+                      theme.primaryColor.withOpacity(0.8),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: theme.primaryColor.withOpacity(0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ElevatedButton.icon(
+                  onPressed: _isOnline ? _navigateToReportScreen : null,
+                  icon: const Icon(Icons.add_a_photo_rounded),
+                  label: const Text(
+                    'Create Your First Report',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
+              ),
+              
+              if (!_isOnline) ...[
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.red.shade200,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.wifi_off, color: Colors.red.shade600, size: 16),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Internet connection required',
+                        style: TextStyle(
+                          color: Colors.red.shade600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
@@ -643,4 +841,5 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
       ),
     );
   }
+  
 }

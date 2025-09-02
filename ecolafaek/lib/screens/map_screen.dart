@@ -46,6 +46,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin, Au
   // Track initialization to prevent repeated calls
   bool _isInitialized = false;
   
+  // Toggle to show/hide report markers
+  bool _showReports = true;
+  
   @override
   bool get wantKeepAlive => true; // Keep state alive when switching tabs
   
@@ -256,117 +259,243 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin, Au
     _showReportBottomSheet(report);
   }
   
-  // Show report details in bottom sheet
+  // Show modern report details in bottom sheet
   void _showReportBottomSheet(Report report) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Report status
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: _getStatusColor(report.status).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: _getStatusColor(report.status)),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => FadeInUp(
+        duration: const Duration(milliseconds: 300),
+        child: Container(
+          margin: const EdgeInsets.only(top: 50),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Drag handle
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    _getStatusIcon(report.status),
-                    size: 14,
-                    color: _getStatusColor(report.status),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    report.status,
-                    style: TextStyle(
-                      color: _getStatusColor(report.status),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
+              
+              // Content
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header with status
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: _getStatusColor(report.status).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Icon(
+                            _getStatusIcon(report.status),
+                            color: _getStatusColor(report.status),
+                            size: 24,
+                          ),
+                        ),
+                        
+                        const SizedBox(width: 16),
+                        
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Waste Report',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[800],
+                                ),
+                              ),
+                              
+                              const SizedBox(height: 4),
+                              
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: _getStatusColor(report.status).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: _getStatusColor(report.status).withOpacity(0.3),
+                                  ),
+                                ),
+                                child: Text(
+                                  report.status.toUpperCase(),
+                                  style: TextStyle(
+                                    color: _getStatusColor(report.status),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        // Close button
+                        IconButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          icon: Icon(Icons.close, color: Colors.grey[600]),
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.grey[100],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // Report description
-            Text(
-              'Description',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Colors.grey[800],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              report.description,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[700],
-              ),
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // Location
-            if (report.locationName != null)
-              Row(
-                children: [
-                  Icon(Icons.location_on, color: Colors.grey[600], size: 16),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      report.locationName!,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Description card
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.grey[200]!),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.description, color: Colors.grey[600], size: 18),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Description',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: Colors.grey[800],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            report.description,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.grey[700],
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
-              ),
-            
-            const SizedBox(height: 24),
-            
-            // View details button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop(); // Close bottom sheet
-                  Navigator.of(context).pushNamed(
-                    ReportDetailScreen.routeName,
-                    arguments: report.id,
-                  ).then((_) {
-                    _refreshReports(); // Refresh reports after viewing details
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                    
+                    // Location card
+                    if (report.locationName != null) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.blue[50],
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.blue[200]!),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.location_on, color: Colors.blue[600], size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Location',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12,
+                                      color: Colors.blue[800],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    report.locationName!,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.blue[700],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Action buttons
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () => Navigator.of(ctx).pop(),
+                            icon: const Icon(Icons.close, size: 18),
+                            label: const Text('Close'),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                        
+                        const SizedBox(width: 12),
+                        
+                        Expanded(
+                          flex: 2,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.of(ctx).pop();
+                              Navigator.of(context).pushNamed(
+                                ReportDetailScreen.routeName,
+                                arguments: report.id,
+                              ).then((_) => _refreshReports());
+                            },
+                            icon: const Icon(Icons.visibility, size: 18),
+                            label: const Text('View Details'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                child: const Text(
-                  'View Full Details',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -406,6 +535,48 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin, Au
       default:
         return Icons.help_outline;
     }
+  }
+
+  // Build modern action button
+  Widget _buildModernActionButton({
+    required IconData icon,
+    required VoidCallback? onPressed,
+    required String tooltip,
+    required Color color,
+    bool isLoading = false,
+    bool compact = false,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            width: compact ? 40 : 48,
+            height: compact ? 40 : 48,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: onPressed == null ? Colors.grey[100] : Colors.transparent,
+            ),
+            child: isLoading
+                ? Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(color),
+                    ),
+                  )
+                : Icon(
+                    icon,
+                    color: onPressed == null ? Colors.grey[400] : color,
+                    size: compact ? 20 : 24,
+                  ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -454,9 +625,10 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin, Au
                 userAgentPackageName: 'com.example.eco_lafaek',
               ),
               
-              // Report markers
-              MarkerLayer(
-                markers: _reports.map((report) {
+              // Report markers (only show if _showReports is true)
+              if (_showReports)
+                MarkerLayer(
+                  markers: _reports.map((report) {
                   final isSelected = _selectedReport?.id == report.id;
                   final statusColor = _getStatusColor(report.status);
                   
@@ -517,7 +689,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin, Au
                     ),
                   );
                 }).toList(),
-              ),
+                ),
               
               // Current location marker
               if (_currentLat != null && _currentLng != null)
@@ -600,103 +772,182 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin, Au
               ),
             ),
           
-          // Action buttons (right)
+          // Modern action buttons panel (right)
           Positioned(
-            top: 16,
+            top: widget.isInTabView ? 16 : 80,
             right: 16,
             child: FadeInRight(
               duration: const Duration(milliseconds: 400),
-              child: Column(
-                children: [
-                  // My location button
-                  FloatingActionButton(
-                    heroTag: 'btn_my_location',
-                    mini: true,
-                    onPressed: _isLocationGranted
-                        ? _getCurrentLocation
-                        : _requestLocationPermission,
-                    backgroundColor: Colors.white,
-                    foregroundColor: primaryColor,
-                    elevation: 3,
-                    child: Icon(
-                      _isLocationGranted
-                          ? Icons.my_location
-                          : Icons.location_disabled,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
                     ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    children: [
+                      // Refresh button
+                      _buildModernActionButton(
+                        icon: Icons.refresh,
+                        onPressed: _refreshReports,
+                        tooltip: 'Refresh map data',
+                        color: primaryColor,
+                        isLoading: _isLoading,
+                      ),
+                      
+                      const SizedBox(height: 8),
+                      
+                      // My location button
+                      _buildModernActionButton(
+                        icon: _isLocationGranted ? Icons.my_location : Icons.location_disabled,
+                        onPressed: _isLocationGranted ? _getCurrentLocation : _requestLocationPermission,
+                        tooltip: _isLocationGranted ? 'Go to my location' : 'Enable location',
+                        color: _isLocationGranted ? primaryColor : Colors.orange,
+                      ),
+                      
+                      const SizedBox(height: 8),
+                      
+                      // Fit all markers button
+                      _buildModernActionButton(
+                        icon: Icons.fit_screen,
+                        onPressed: _reports.isNotEmpty ? _zoomToFitAllMarkers : null,
+                        tooltip: 'Fit all markers',
+                        color: _reports.isNotEmpty ? primaryColor : Colors.grey[400]!,
+                      ),
+                      
+                      const SizedBox(height: 8),
+                      
+                      // Toggle reports visibility
+                      _buildModernActionButton(
+                        icon: _showReports ? Icons.visibility : Icons.visibility_off,
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          setState(() {
+                            _showReports = !_showReports;
+                            _selectedReport = null; // Clear selection when toggling
+                          });
+                        },
+                        tooltip: _showReports ? 'Hide reports' : 'Show reports',
+                        color: _showReports ? primaryColor : Colors.grey[600]!,
+                      ),
+                      
+                      const SizedBox(height: 8),
+                      
+                      // Zoom controls container
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          children: [
+                            _buildModernActionButton(
+                              icon: Icons.add,
+                              onPressed: () {
+                                _mapController.move(
+                                  _mapController.camera.center,
+                                  _mapController.camera.zoom + 1,
+                                );
+                              },
+                              tooltip: 'Zoom in',
+                              color: Colors.grey[700]!,
+                              compact: true,
+                            ),
+                            
+                            Container(
+                              height: 1,
+                              color: Colors.grey[300],
+                              margin: const EdgeInsets.symmetric(horizontal: 8),
+                            ),
+                            
+                            _buildModernActionButton(
+                              icon: Icons.remove,
+                              onPressed: () {
+                                _mapController.move(
+                                  _mapController.camera.center,
+                                  _mapController.camera.zoom - 1,
+                                );
+                              },
+                              tooltip: 'Zoom out',
+                              color: Colors.grey[700]!,
+                              compact: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  
-                  // Zoom in button
-                  FloatingActionButton(
-                    heroTag: 'btn_zoom_in',
-                    mini: true,
-                    onPressed: () {
-                      _mapController.move(
-                        _mapController.camera.center,
-                        _mapController.camera.zoom + 1,
-                      );
-                    },
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.grey[700],
-                    elevation: 3,
-                    child: const Icon(Icons.add),
-                  ),
-                  const SizedBox(height: 12),
-                  
-                  // Zoom out button
-                  FloatingActionButton(
-                    heroTag: 'btn_zoom_out',
-                    mini: true,
-                    onPressed: () {
-                      _mapController.move(
-                        _mapController.camera.center,
-                        _mapController.camera.zoom - 1,
-                      );
-                    },
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.grey[700],
-                    elevation: 3,
-                    child: const Icon(Icons.remove),
-                  ),
-                  const SizedBox(height: 12),
-                  
-                  // Fit all markers button
-                  FloatingActionButton(
-                    heroTag: 'btn_fit_bounds',
-                    mini: true,
-                    onPressed: _reports.isNotEmpty ? _zoomToFitAllMarkers : null,
-                    backgroundColor: Colors.white,
-                    foregroundColor: _reports.isNotEmpty ? primaryColor : Colors.grey[400],
-                    elevation: 3,
-                    child: const Icon(Icons.fit_screen),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
           
-          // Toggle list view button (bottom right)
+          // Modern toggle list view button (bottom right)
           Positioned(
             right: 16,
-            bottom: 16,
+            bottom: widget.isInTabView ? 100 : 16,
             child: FadeInUp(
               duration: const Duration(milliseconds: 400),
-              child: FloatingActionButton(
-                heroTag: 'btn_toggle_view',
-                onPressed: () {
-                  setState(() {
-                    _isShowingList = !_isShowingList;
-                  });
-                  
-                  // Dismiss selected report when toggling view
-                  setState(() {
-                    _selectedReport = null;
-                  });
-                },
-                backgroundColor: primaryColor,
-                foregroundColor: Colors.white,
-                elevation: 4,
-                child: Icon(_isShowingList ? Icons.map : Icons.list),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [primaryColor, primaryColor.withOpacity(0.8)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: primaryColor.withOpacity(0.3),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      setState(() {
+                        _isShowingList = !_isShowingList;
+                        _selectedReport = null;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      width: 56,
+                      height: 56,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            _isShowingList ? Icons.map_outlined : Icons.view_list_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _showReports ? _reports.length.toString() : '0',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(_showReports ? 1.0 : 0.7),
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

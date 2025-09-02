@@ -34,16 +34,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isSaving = false;
   String? _errorMessage;
   
-  // Stats
-  int _totalReports = 0;
-  int _resolvedReports = 0;
-  int _pendingReports = 0;
 
   @override
   void initState() {
     super.initState();
     _initializeForm();
-    _loadReportStats();
   }
   
   @override
@@ -60,22 +55,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
   
-  // Load report statistics
-  Future<void> _loadReportStats() async {
-    try {
-      final reportProvider = Provider.of<ReportProvider>(context, listen: false);
-      
-      // Use the report provider to get statistics
-      _totalReports = reportProvider.totalReportsCount;
-      _resolvedReports = reportProvider.countReportsByStatus('resolved');
-      _pendingReports = reportProvider.countReportsByStatus('submitted') + 
-                       reportProvider.countReportsByStatus('analyzing');
-      
-      setState(() {});
-    } catch (e) {
-      print('Error loading report stats: $e');
-    }
-  }
   
   // Toggle edit mode
   void _toggleEditMode() {
@@ -323,18 +302,6 @@ Download EcoLafaek today! [App Link Coming Soon]
                                         fontSize: 14,
                                       ),
                                     ),
-                                  ],
-                                ),
-                                
-                                const SizedBox(height: 16),
-                                
-                                // Statistics row
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    _buildStatCard('Total\nReports', _totalReports.toString(), Icons.report, Colors.blue),
-                                    _buildStatCard('Resolved\nReports', _resolvedReports.toString(), Icons.check_circle, Colors.green),
-                                    _buildStatCard('Pending\nReports', _pendingReports.toString(), Icons.hourglass_empty, Colors.orange),
                                   ],
                                 ),
                                 
@@ -671,41 +638,6 @@ Download EcoLafaek today! [App Link Coming Soon]
     );
   }
   
-  // Helper for statistics cards
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-              height: 1.2,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
   
   // Helper for info rows
   Widget _buildInfoRow({

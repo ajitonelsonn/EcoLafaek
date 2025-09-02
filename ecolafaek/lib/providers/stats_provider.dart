@@ -179,9 +179,10 @@ class StatsProvider with ChangeNotifier {
           resolvedReports: _parseInt(userStats['resolved_reports']),
           inProgressReports: _parseInt(userStats['pending_reports']),
           reportsThisMonth: reportsThisMonth,
-          userRank: 1, // Just set a default rank if available
+          userRank: data['community_stats'] != null ? 
+                    _parseInt(data['community_stats']['user_rank']) : null,
           totalUsers: data['community_stats'] != null ? 
-                    _parseInt(data['community_stats']['total_contributors']) : 10,
+                    _parseInt(data['community_stats']['total_contributors']) : 1,
         );
         
         // Process status breakdown

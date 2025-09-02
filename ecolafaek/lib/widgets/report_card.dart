@@ -12,12 +12,20 @@ class ReportCard extends StatelessWidget {
   final Report report;
   final VoidCallback? onTap;
   final VoidCallback? onDeleted;
+  final bool showSimilarityBadge;
+  final bool showDistance;
+  final double? distance;
+  final double? similarityScore;
   
   const ReportCard({
     Key? key,
     required this.report,
     this.onTap,
     this.onDeleted,
+    this.showSimilarityBadge = false,
+    this.showDistance = false,
+    this.distance,
+    this.similarityScore,
   }) : super(key: key);
 
   @override

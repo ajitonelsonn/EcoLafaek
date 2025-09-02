@@ -37,6 +37,31 @@ class ApiService {
     
     return headers;
   }
+  
+  // Sanitize error messages to prevent exposing sensitive information
+  String _sanitizeErrorMessage(String error) {
+    // Remove IP addresses, ports, and URLs
+    String sanitized = error.replaceAll(RegExp(r'\b(?:\d{1,3}\.){3}\d{1,3}\b'), '[server]');
+    sanitized = sanitized.replaceAll(RegExp(r':\d+'), '');
+    sanitized = sanitized.replaceAll(RegExp(r'http[s]?://[^\s]+'), '[server]');
+    sanitized = sanitized.replaceAll(RegExp(r'uri=[^\s,]+'), 'uri=[server]');
+    
+    // Replace technical exceptions with user-friendly messages
+    if (sanitized.toLowerCase().contains('clientexception')) {
+      return 'Unable to connect to server. Please check your internet connection.';
+    }
+    if (sanitized.toLowerCase().contains('socketexception')) {
+      return 'Network connection error. Please try again later.';
+    }
+    if (sanitized.toLowerCase().contains('timeoutexception')) {
+      return 'Request timed out. Please try again.';
+    }
+    if (sanitized.toLowerCase().contains('formatexception')) {
+      return 'Invalid server response. Please try again later.';
+    }
+    
+    return sanitized;
+  }
 
   // Parse HTTP response and handle token expiration
   Map<String, dynamic> _parseResponse(http.Response response) {
@@ -82,7 +107,7 @@ class ApiService {
       print("Error parsing response: $e");
       return {
         'success': false,
-        'message': 'Failed to parse response: ${e.toString()}',
+        'message': 'Failed to parse response: ${_sanitizeErrorMessage(e.toString())}',
         'statusCode': response.statusCode,
       };
     }
@@ -113,7 +138,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to register: ${e.toString()}',
+        'message': 'Failed to register: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -137,7 +162,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to login: ${e.toString()}',
+        'message': 'Failed to login: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -162,7 +187,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to change password: ${e.toString()}',
+        'message': 'Failed to change password: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -184,7 +209,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to get user profile: ${e.toString()}',
+        'message': 'Failed to get user profile: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -220,7 +245,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to update profile: ${e.toString()}',
+        'message': 'Failed to update profile: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -243,7 +268,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to get user reports: ${e.toString()}',
+        'message': 'Failed to get user reports: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -272,7 +297,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to get reports: ${e.toString()}',
+        'message': 'Failed to get reports: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -296,7 +321,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to get nearby reports: ${e.toString()}',
+        'message': 'Failed to get nearby reports: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -323,7 +348,7 @@ class ApiService {
       print("Error in getReport: ${e.toString()}");
       return {
         'success': false,
-        'message': 'Failed to get report: ${e.toString()}',
+        'message': 'Failed to get report: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -366,7 +391,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to submit report: ${e.toString()}',
+        'message': 'Failed to submit report: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -387,7 +412,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to get waste types: ${e.toString()}',
+        'message': 'Failed to get waste types: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -423,7 +448,7 @@ class ApiService {
         results.add({
           'local_id': reportData['local_id'],
           'success': false,
-          'message': e.toString()
+          'message': _sanitizeErrorMessage(e.toString())
         });
       }
     }
@@ -540,7 +565,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to delete report: ${e.toString()}',
+        'message': 'Failed to delete report: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -559,7 +584,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to get dashboard statistics: ${e.toString()}',
+        'message': 'Unable to load statistics. ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -590,7 +615,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to get hotspots: ${e.toString()}',
+        'message': 'Failed to get hotspots: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -612,7 +637,7 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to get hotspot reports: ${e.toString()}',
+        'message': 'Failed to get hotspot reports: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }
@@ -632,7 +657,130 @@ class ApiService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to test Sonar API: ${e.toString()}',
+        'message': 'Failed to test Sonar API: ${_sanitizeErrorMessage(e.toString())}',
+      };
+    }
+  }
+
+  // Vector Search APIs
+
+  // Semantic search for reports using natural language queries
+  Future<Map<String, dynamic>> semanticSearchReports({
+    required String query,
+    required String token,
+    int limit = 10,
+  }) async {
+    try {
+      final encodedQuery = Uri.encodeComponent(query);
+      final response = await http.get(
+        Uri.parse('$apiBaseUrl/api/vector-search/semantic?query=$encodedQuery&limit=$limit'),
+        headers: _getHeaders(token: token),
+      );
+      
+      return _parseResponse(response);
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Failed to perform semantic search: ${_sanitizeErrorMessage(e.toString())}',
+      };
+    }
+  }
+
+  // Find similar reports based on a specific report
+  Future<Map<String, dynamic>> findSimilarReports({
+    required int reportId,
+    required String token,
+    int limit = 5,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$apiBaseUrl/api/vector-search/similar/$reportId?limit=$limit'),
+        headers: _getHeaders(token: token),
+      );
+      
+      return _parseResponse(response);
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Failed to find similar reports: ${_sanitizeErrorMessage(e.toString())}',
+      };
+    }
+  }
+
+  // Discover location-based waste patterns
+  Future<Map<String, dynamic>> getLocationPatterns({
+    required double latitude,
+    required double longitude,
+    required String token,
+    double radius = 1000.0, // meters
+    int limit = 10,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$apiBaseUrl/api/vector-search/location-patterns?lat=$latitude&lon=$longitude&radius=$radius&limit=$limit'),
+        headers: _getHeaders(token: token),
+      );
+      
+      return _parseResponse(response);
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Failed to get location patterns: ${_sanitizeErrorMessage(e.toString())}',
+      };
+    }
+  }
+
+  // Search nearby similar reports
+  Future<Map<String, dynamic>> searchNearbySimilar({
+    required double latitude,
+    required double longitude,
+    required String wasteType,
+    required String token,
+    double radius = 2000.0, // meters
+    int limit = 10,
+  }) async {
+    try {
+      final encodedWasteType = Uri.encodeComponent(wasteType);
+      final response = await http.get(
+        Uri.parse('$apiBaseUrl/api/vector-search/nearby-similar?lat=$latitude&lon=$longitude&waste_type=$encodedWasteType&radius=$radius&limit=$limit'),
+        headers: _getHeaders(token: token),
+      );
+      
+      return _parseResponse(response);
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Failed to search nearby similar reports: ${_sanitizeErrorMessage(e.toString())}',
+      };
+    }
+  }
+
+  // Test vector embeddings
+  Future<Map<String, dynamic>> testVectorEmbeddings({
+    required String token,
+    String? text,
+    String? imageUrl,
+  }) async {
+    try {
+      String url = '$apiBaseUrl/api/test/embeddings?';
+      
+      if (text != null) {
+        url += 'text=${Uri.encodeComponent(text)}';
+      }
+      if (imageUrl != null) {
+        url += '${text != null ? "&" : ""}image_url=${Uri.encodeComponent(imageUrl)}';
+      }
+      
+      final response = await http.get(
+        Uri.parse(url),
+        headers: _getHeaders(token: token),
+      );
+      
+      return _parseResponse(response);
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Failed to test vector embeddings: ${_sanitizeErrorMessage(e.toString())}',
       };
     }
   }

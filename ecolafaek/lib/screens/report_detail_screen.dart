@@ -8,10 +8,12 @@ import 'package:animate_do/animate_do.dart';
 import 'package:intl/intl.dart';
 
 import '../providers/report_provider.dart';
+import '../providers/vector_search_provider.dart';
 import '../models/report.dart';
 import '../widgets/loading_indicator.dart';
 import '../widgets/custom_button.dart';
 import '../utils/date_utils.dart' as date_utils;
+import 'similar_reports_screen.dart';
 
 class ReportDetailScreen extends StatefulWidget {
   static const routeName = '/report-detail';
@@ -135,6 +137,15 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
   }
   
   // Share report
+  void _findSimilarReports() {
+    if (_report == null) return;
+    
+    Navigator.of(context).pushNamed(
+      SimilarReportsScreen.routeName,
+      arguments: {'sourceReportId': _report!.id},
+    );
+  }
+
   void _shareReport() {
     if (_report == null) return;
     
@@ -277,6 +288,13 @@ Join the community and help keep Timor-Leste clean. Download EcoLafaek today!
                 pinned: true,
                 backgroundColor: primaryColor,
                 actions: [
+                  // Find Similar button
+                  IconButton(
+                    icon: const Icon(Icons.compare_arrows),
+                    onPressed: _findSimilarReports,
+                    tooltip: 'Find Similar',
+                  ),
+                  
                   // Share button
                   IconButton(
                     icon: const Icon(Icons.share),
