@@ -430,7 +430,6 @@ export default function VectorSearchPage() {
         setError(data.message || "Search failed");
       }
     } catch (err) {
-      console.error("Search error:", err);
       setError(err.message || "Search failed. Please try again.");
     } finally {
       setLoading(false);
@@ -438,16 +437,9 @@ export default function VectorSearchPage() {
   };
 
   const handleClusterAnalysis = async () => {
-    console.log('🔍 Pattern Analysis Started');
-    console.log('Parameters:', {
-      clusterDays,
-      minClusterSize, 
-      clusterThreshold
-    });
 
     // Check if results are cached
     if (isSearchCached()) {
-      console.log('📋 Using cached results');
       setResults(cachedResults);
       return;
     }
@@ -457,48 +449,29 @@ export default function VectorSearchPage() {
     setResults(null);
 
     const apiUrl = `/api/vector-search/clusters?days=${clusterDays}&minClusterSize=${minClusterSize}&similarityThreshold=${clusterThreshold}`;
-    console.log('🌐 API URL:', apiUrl);
 
     try {
-      console.log('📡 Sending request to clusters API...');
       const response = await fetch(apiUrl);
 
-      console.log('📨 Response status:', response.status);
-      console.log('📨 Response OK:', response.ok);
 
       const data = await response.json();
-      console.log('📄 API Response:', data);
 
       if (!response.ok) {
-        console.error('❌ API Error Response:', data);
         throw new Error(data.message || "Analysis failed");
       }
 
       if (data.success) {
-        console.log('✅ Analysis successful!');
-        console.log('📊 Results:', {
-          clusters: data.data?.clusters?.length || 0,
-          totalReports: data.stats?.total_reports || 0,
-          analysisScope: data.stats?.analysis_scope
-        });
         
         setResults(data);
         // Cache the results
         setCachedResults(data);
         setLastSearchParams(getCurrentSearchParams());
       } else {
-        console.error('❌ Analysis failed:', data.message);
         setError(data.message || "Analysis failed");
       }
     } catch (err) {
-      console.error("❌ Analysis error:", err);
-      console.error("Error details:", {
-        message: err.message,
-        stack: err.stack
-      });
       setError(err.message || "Analysis failed. Please try again.");
     } finally {
-      console.log('🏁 Pattern Analysis finished');
       setLoading(false);
     }
   };
@@ -559,7 +532,6 @@ export default function VectorSearchPage() {
         setError(data.message || "Similar reports search failed");
       }
     } catch (err) {
-      console.error("Similar reports search error:", err);
       setError(err.message || "Similar reports search failed. Please try again.");
     } finally {
       setLoading(false);

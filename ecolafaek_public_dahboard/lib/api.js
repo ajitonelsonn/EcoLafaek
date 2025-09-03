@@ -18,34 +18,10 @@ const apiClient = axios.create({
 // Global fetcher function for SWR with improved error handling
 const fetcher = async (url) => {
   try {
-    // Only log in development mode
-    if (process.env.NODE_ENV === "development") {
-      console.log(`Fetching from: ${API_BASE_URL}${url}`);
-      // Uncomment this if you want to test loading states
-      // await new Promise(resolve => setTimeout(resolve, 2000));
-    }
 
     const response = await apiClient.get(url);
     return response.data;
   } catch (error) {
-    // Keep error logging for troubleshooting, but make it more discreet
-    if (process.env.NODE_ENV === "development") {
-      // Detailed error logging in development
-      if (error.response) {
-        console.error("API error response:", {
-          status: error.response.status,
-          data: error.response.data,
-          headers: error.response.headers,
-        });
-      } else if (error.request) {
-        console.error("API request error (no response):", error.request);
-      } else {
-        console.error("API error:", error.message);
-      }
-    } else {
-      // Minimal logging in production
-      console.error("API error:", error.message);
-    }
 
     throw error;
   }
@@ -313,19 +289,10 @@ export async function fetchAPI(endpoint, params = {}) {
       queryParams.toString() ? `?${queryParams.toString()}` : ""
     }`;
 
-    // Only log in development
-    if (process.env.NODE_ENV === "development") {
-      console.log(`Direct API call to: ${API_BASE_URL}${url}`);
-    }
 
     const response = await apiClient.get(url);
     return response.data;
   } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.error(`API error: ${endpoint}`, error);
-    } else {
-      console.error(`API error: ${endpoint}`, error.message);
-    }
     throw error;
   }
 }

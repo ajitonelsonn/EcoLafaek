@@ -52,8 +52,6 @@ export default async function handler(
       LIMIT 1000
     `;
 
-    //console.log("Reports query:", reportsQuery);
-    //console.log("Params:", params);
 
     const reportsResult = await executeQuery<any[]>({
       query: reportsQuery,
@@ -99,7 +97,6 @@ export default async function handler(
       hotspots,
     });
   } catch (error) {
-    console.error("Error getting map reports:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }

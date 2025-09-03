@@ -56,8 +56,6 @@ export default async function handler(
       LIMIT ? OFFSET ?
     `;
 
-    //console.log("Reports query:", reportQuery);
-    //console.log("Params:", [...params, perPage, offset]);
 
     const reportsResult = await executeQuery<Report[]>({
       query: reportQuery,
@@ -83,7 +81,6 @@ export default async function handler(
       total_pages,
     });
   } catch (error) {
-    console.error("Error getting reports:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }

@@ -39,18 +39,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       days = 30 
     } = req.query;
 
-    console.log('🔍 Clusters API Started');
-    console.log('📊 Parameters:', {
-      minClusterSize: parseInt(minClusterSize.toString()),
-      maxClusters: parseInt(maxClusters.toString()),
-      similarityThreshold: parseFloat(similarityThreshold.toString()),
-      days: parseInt(days.toString())
-    });
 
     const connection = await mysql.createConnection(dbConfig);
 
     try {
-      console.log('📡 Fetching reports from database...');
       
       // Get all reports with embeddings from the specified time period
       const [allReports] = await connection.execute(`
@@ -79,11 +71,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ORDER BY r.report_date DESC
       `, [parseInt(days.toString())]);
 
-      console.log('📊 Database query results:', {
-        isArray: Array.isArray(allReports),
-        totalFound: Array.isArray(allReports) ? allReports.length : 0,
-        minRequired: parseInt(minClusterSize.toString())
-      });
 
       // Try a simpler query to see if we have ANY reports at all
       const [simpleReports] = await connection.execute(`
@@ -93,10 +80,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         WHERE a.image_embedding IS NOT NULL
       `);
       
-      console.log('📊 Total reports with embeddings:', simpleReports);
 
       if (!Array.isArray(allReports) || allReports.length < parseInt(minClusterSize.toString())) {
-        console.log('❌ Insufficient reports for clustering');
         return res.status(200).json({
           success: true,
           data: {
@@ -113,22 +98,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       }
 
-      console.log('🔄 Starting clustering analysis...');
       
       // Perform clustering analysis using vector similarity
       const clusters: ClusterResult[] = [];
       const processedReports = new Set<number>();
       const threshold = parseFloat(similarityThreshold.toString());
 
-      console.log('📊 Clustering threshold:', threshold);
 
       for (let i = 0; i < (allReports as any[]).length && clusters.length < parseInt(maxClusters.toString()); i++) {
         const seedReport = (allReports as any[])[i];
         
-        console.log(`🌱 Processing seed report ${i + 1}/${(allReports as any[]).length}: #${seedReport.report_id}`);
         
         if (processedReports.has(seedReport.report_id)) {
-          console.log('⏭️ Skipping already processed report');
           continue;
         }
 
@@ -138,12 +119,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           try {
             seedEmbedding = JSON.parse(seedEmbedding);
           } catch (e) {
-            console.error('❌ Error parsing seed embedding for report', seedReport.report_id, e);
             continue;
           }
         }
 
-        console.log('🔍 Finding similar reports for seed:', seedReport.report_id);
 
         try {
           // Find similar reports to create a cluster
@@ -178,38 +157,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             parseInt(days.toString())
           ]);
 
-          console.log('📊 Similar reports found:', Array.isArray(similarReports) ? similarReports.length : 0);
 
-          if (Array.isArray(similarReports) && similarReports.length > 0) {
-            console.log('📊 Similarity scores:', (similarReports as any[]).map(r => ({
-              id: r.report_id,
-              score: r.similarity_score,
-              passes_threshold: r.similarity_score <= (1 - threshold)
-            })));
-          }
 
           // Filter by similarity threshold and add seed report
           // Note: Lower cosine distance = higher similarity
           // Current scores: ~0.31, ~0.33, ~0.39 (moderate similarity)
           // Let's use a reasonable threshold that includes moderately similar reports
           const adjustedThreshold = 0.5; // Allow cosine distance up to 0.5
-          console.log('📊 Using adjusted threshold:', adjustedThreshold, '(original strict threshold was', 1 - threshold, ')');
           
           const filteredSimilar = Array.isArray(similarReports) 
             ? (similarReports as any[]).filter(r => {
-                console.log(`  Report ${r.report_id}: score ${r.similarity_score} ${r.similarity_score <= adjustedThreshold ? '✅ PASS' : '❌ FAIL'}`);
                 return r.similarity_score <= adjustedThreshold;
               })
             : [];
 
-          console.log('📊 Reports after threshold filter:', filteredSimilar.length);
 
           const clusterReports = [seedReport, ...filteredSimilar];
           
-          console.log('📊 Total cluster size:', clusterReports.length, 'Required:', parseInt(minClusterSize.toString()));
           
           if (clusterReports.length >= parseInt(minClusterSize.toString())) {
-            console.log('✅ Creating cluster with', clusterReports.length, 'reports');
             
             // Calculate cluster statistics
             const wasteTypes = [...new Set(clusterReports.map(r => r.waste_type).filter(Boolean))];
@@ -248,12 +214,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               calculatedConfidence = Math.min(95, similarityConfidence + clusterSizeBonus); // Cap at 95%
             }
 
-            console.log('📊 Confidence calculation:', {
-              hasValidConfidence,
-              originalScores: confidenceScores,
-              calculatedConfidence: calculatedConfidence.toFixed(1),
-              avgSimilarity
-            });
 
             clusters.push({
               cluster_id: clusters.length + 1,
@@ -282,22 +242,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               confidence_level: calculatedConfidence
             });
 
-            console.log('📊 Cluster created:', {
-              id: clusters.length,
-              size: clusterReports.length,
-              wasteTypes,
-              avgSimilarity: parseFloat(avgSimilarity.toFixed(3)),
-              geographicSpread: parseFloat(maxDistance.toFixed(2))
-            });
 
             // Mark all reports in this cluster as processed
             clusterReports.forEach(r => processedReports.add(r.report_id));
           } else {
-            console.log('❌ Cluster too small:', clusterReports.length, 'reports (need', parseInt(minClusterSize.toString()), ')');
           }
 
         } catch (vectorError) {
-          console.error('❌ Vector similarity error for seed', seedReport.report_id, ':', vectorError);
           continue;
         }
       }
@@ -312,12 +263,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       await connection.end();
 
-      console.log('✅ Clustering completed successfully');
-      console.log('📊 Final results:', {
-        clustersFound: clusters.length,
-        totalProcessed: processedReports.size,
-        totalReports: Array.isArray(allReports) ? allReports.length : 0
-      });
 
       // Flatten all reports from all clusters for frontend compatibility
       const allClusterReports = clusters.flatMap(cluster => 
@@ -352,7 +297,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
   } catch (error) {
-    console.error('❌ Clustering error:', error);
     res.status(500).json({ 
       success: false,
       message: 'Internal server error',

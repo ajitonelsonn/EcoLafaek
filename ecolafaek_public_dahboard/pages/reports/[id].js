@@ -28,7 +28,6 @@ export default function ReportDetail() {
           setLoading(false);
         })
         .catch((err) => {
-          console.error("Error fetching report:", err);
           setError("Failed to load report details");
           setLoading(false);
         });
@@ -61,22 +60,18 @@ export default function ReportDetail() {
         throw new Error(data.message || "Failed to fetch similar reports");
       }
 
-      console.log('Similar reports API response:', data);
       
       if (data.success) {
         // The API returns data in data.data.similarReports, not data.similarReports
         const reports = data.data?.similarReports || [];
-        console.log('Setting similar reports:', reports.length, reports);
         setSimilarReports(reports);
         if (reports.length === 0) {
           setSimilarError("No similar reports found in database");
         }
       } else {
-        console.log('API error:', data.message);
         setSimilarError(data.message || "No similar reports found");
       }
     } catch (err) {
-      console.error("Similar reports error:", err);
       setSimilarError(err.message || "Failed to load similar reports");
     } finally {
       setSimilarLoading(false);

@@ -119,15 +119,6 @@ export default function ModernDashboard() {
     refresh: refreshTrends,
   } = useTrends(selectedTrend, 30);
 
-  // Log loading states for debugging
-  useEffect(() => {
-    console.log("Loading states:", {
-      statsLoading,
-      mapLoading,
-      reportsLoading,
-      trendLoading,
-    });
-  }, [statsLoading, mapLoading, reportsLoading, trendLoading]);
 
   // Mark as loaded after initial data fetch
   useEffect(() => {
@@ -151,7 +142,6 @@ export default function ModernDashboard() {
         refreshTrends(),
       ]);
     } catch (error) {
-      console.error("Error refreshing data:", error);
     } finally {
       setRefreshing(false);
     }

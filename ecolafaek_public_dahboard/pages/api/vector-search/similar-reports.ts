@@ -91,7 +91,6 @@ export default async function handler(
       try {
         sourceEmbedding = JSON.parse(sourceEmbedding);
       } catch (e) {
-        console.error("Error parsing source embedding:", e);
         return sendError(
           res,
           500,
@@ -101,12 +100,6 @@ export default async function handler(
       }
     }
 
-    console.log("Source report for similarity:", {
-      report_id: sourceReport.report_id,
-      has_embedding: sourceReport.image_embedding ? true : false,
-      description: sourceReport.description,
-      searchLimit,
-    });
 
     // Try with a simpler query first - just find all other reports
     const [allReportsRows] = await connection.execute(
@@ -136,7 +129,6 @@ export default async function handler(
       [validReportId]
     );
 
-    console.log("Found potential similar reports:", allReportsRows.length);
 
     // Now try to add similarity scoring
     let similarRows = [];
@@ -173,10 +165,8 @@ export default async function handler(
           [JSON.stringify(sourceEmbedding), validReportId]
         );
 
-        console.log("Image similarity results:", imageSimRows.length);
         similarRows = imageSimRows;
       } catch (vecError) {
-        console.error("Vector similarity error:", vecError);
         // Fallback to all reports without similarity scoring
         similarRows = allReportsRows.map((report: any) => ({
           ...report,
@@ -224,8 +214,6 @@ export default async function handler(
         }))
       : [];
 
-    console.log("Final similar reports count:", similarReports.length);
-    console.log("Sample report data:", similarReports[0] || "No reports found");
 
     const nearbyCount =
       Array.isArray(nearbyRows) && nearbyRows.length > 0
@@ -253,7 +241,6 @@ export default async function handler(
       }
     );
   } catch (error) {
-    console.error("Similar reports error:", error);
     return sendError(
       res,
       500,
@@ -266,7 +253,6 @@ export default async function handler(
       try {
         await connection.end();
       } catch (e) {
-        console.error("Error closing connection:", e);
       }
     }
   }
