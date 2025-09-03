@@ -169,7 +169,7 @@ export default function AboutPage() {
               </div>
             </Link>
             <Link
-              href="/dashboard"
+              href="/"
               className="group px-8 py-4 bg-white/80 backdrop-blur-sm border border-emerald-200 text-emerald-700 rounded-xl hover:bg-emerald-50 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               <div className="flex items-center space-x-2">
