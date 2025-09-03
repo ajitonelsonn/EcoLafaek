@@ -38,7 +38,9 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="EcoLafaek API",
     description="Environmental waste monitoring API for Timor-Leste powered by Tidb with Amazon Nova Pro",
-    version="1.0.0"
+    version="1.0.0",
+    docs_url=None if os.getenv("ENVIRONMENT") == "production" else "/docs",
+    redoc_url=None if os.getenv("ENVIRONMENT") == "production" else "/redoc"
 )
 
 # Add CORS middleware
@@ -3236,6 +3238,18 @@ async def test_nova_api(image_url: str, user_id: int = Depends(get_user_from_tok
         logger.error(f"Test Nova API error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@app.exception_handler(404)
+async def custom_404_handler(request: requests, exc: HTTPException):
+    return JSONResponse(
+        status_code=404,
+        content={
+            "project": "EcoLafaek",
+            "message": "🌱 This path doesn't exist in our EcoLafaek ecosystem",
+            "hint": "Contact Admin",
+            "status": "not_found"
+        }
+    )
 
 # Run the app
 if __name__ == "__main__":
