@@ -229,33 +229,68 @@ export default function ModernDashboard() {
       </Head>
 
       <div className="px-6 py-8 max-w-7xl mx-auto">
-        {/* Dashboard Header */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-emerald-700 mb-1">
-              Waste Monitoring Dashboard
-            </h1>
-            <p className="text-gray-600">
-              Real-time waste management data for Timor-Leste
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="text-sm bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg font-medium border border-emerald-200 shadow-sm">
-              <span className="hidden md:inline">Public</span> Dashboard
+        {/* Enhanced Hero Section */}
+        <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-8 mb-8 border border-emerald-100 shadow-sm">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                Live Dashboard
+              </div>
+              <h1 className="text-4xl lg:text-5xl font-bold text-emerald-900 mb-3 leading-tight">
+                Waste Monitoring
+                <span className="block text-emerald-700">Dashboard</span>
+              </h1>
+              <p className="text-lg text-emerald-700 mb-4 max-w-2xl">
+                Real-time waste management insights for Timor-Leste
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link
+                  href="/vector-search"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-semibold shadow-sm transition-all hover:scale-105"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                  AI Vector Search
+                </Link>
+                <Link
+                  href="/map"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-white text-emerald-600 border-2 border-emerald-200 rounded-xl hover:bg-emerald-50 font-semibold shadow-sm transition-all hover:scale-105"
+                >
+                  <MapPin className="w-5 h-5" />
+                  View Map
+                </Link>
+              </div>
             </div>
-            <button
-              onClick={refreshAllData}
-              disabled={refreshing || isLoading}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium shadow-sm transition-colors"
-            >
-              {refreshing || isLoading ? (
-                <RefreshCw className="w-4 h-4 animate-spin" />
-              ) : (
-                <RefreshCw className="w-4 h-4" />
-              )}
-              <span>{refreshing ? "Refreshing..." : "Refresh"}</span>
-            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="text-sm bg-white/80 backdrop-blur-sm text-emerald-700 px-4 py-2 rounded-lg font-medium border border-emerald-200 shadow-sm">
+                <span className="hidden md:inline">Public</span> Dashboard
+              </div>
+              <button
+                onClick={refreshAllData}
+                disabled={refreshing || isLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium shadow-sm transition-colors"
+              >
+                {refreshing || isLoading ? (
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-4 h-4" />
+                )}
+                <span>{refreshing ? "Refreshing..." : "Refresh"}</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -622,31 +657,127 @@ export default function ModernDashboard() {
           </div>
         </div>
 
-        {/* Footer Banner */}
-        <div className="mt-8 bg-green-50 rounded-xl p-6 shadow-sm border border-green-100">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-              <h3 className="text-xl font-bold text-green-800 mb-2">
-                Help Keep Timor-Leste Clean
-              </h3>
-              <p className="text-green-700">
-                Report waste incidents and help track environmental impact in
-                your community
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/download"
-                className="px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium shadow-sm transition-colors text-center"
-              >
-                Submit a Report
-              </Link>
-              <Link
-                href="/about"
-                className="px-5 py-2.5 bg-white text-green-600 border border-green-200 rounded-lg hover:bg-green-50 font-medium shadow-sm transition-colors text-center"
-              >
-                Learn More
-              </Link>
+        {/* Enhanced Call-to-Action Banner */}
+        <div className="mt-8 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 shadow-sm border border-green-100 relative overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <svg
+              className="w-full h-full"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 100 100"
+            >
+              <defs>
+                <pattern
+                  id="grid"
+                  width="10"
+                  height="10"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M 10 0 L 0 0 0 10"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="0.5"
+                  />
+                </pattern>
+              </defs>
+              <rect width="100" height="100" fill="url(#grid)" />
+            </svg>
+          </div>
+
+          <div className="relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+              {/* Main CTA Content */}
+              <div className="lg:col-span-2">
+                <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium mb-3">
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Community Powered
+                </div>
+                <h3 className="text-3xl font-bold text-green-900 mb-3">
+                  Help Keep Timor-Leste Clean
+                </h3>
+                <p className="text-green-700 text-lg mb-4">
+                  Join thousands of citizens using AI-powered tools to report
+                  waste incidents and track environmental impact in your
+                  community.
+                </p>
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-800">
+                      {summaryStats?.reports?.count || "0"}
+                    </div>
+                    <div className="text-sm text-green-600">Reports Made</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-800">
+                      {summaryStats?.types?.count || "0"}
+                    </div>
+                    <div className="text-sm text-green-600">Waste Types</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-800">
+                      {summaryStats?.hotspots?.count || "0"}
+                    </div>
+                    <div className="text-sm text-green-600">
+                      Active Hotspots
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col gap-4">
+                <Link
+                  href="/download"
+                  className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-green-600 text-white rounded-xl hover:bg-green-700 font-semibold shadow-lg transition-all hover:scale-105 text-center"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                  Submit a Report
+                </Link>
+                <Link
+                  href="/leaderboard"
+                  className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-white text-green-600 border-2 border-green-200 rounded-xl hover:bg-green-50 font-semibold shadow-sm transition-all hover:scale-105 text-center"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                    />
+                  </svg>
+                  View Leaderboard
+                </Link>
+                <Link
+                  href="/about"
+                  className="text-center text-green-600 hover:text-green-800 font-medium transition-colors"
+                >
+                  Learn More About EcoLafaek →
+                </Link>
+              </div>
             </div>
           </div>
         </div>

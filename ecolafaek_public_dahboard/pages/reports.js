@@ -315,18 +315,33 @@ export default function PublicReportsPage() {
       </Head>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-1">
-              Waste Reports
-            </h1>
-            <p className="text-gray-600">
-              View waste incident reports from across Timor-Leste
-            </p>
-          </div>
+        {/* Enhanced Page header */}
+        <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-8 mb-8 border border-emerald-100 shadow-sm">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                <FileText className="w-4 h-4" />
+                Public Reports
+              </div>
+              <h1 className="text-4xl font-bold text-emerald-900 mb-2">
+                Waste Reports
+              </h1>
+              <p className="text-lg text-emerald-700 mb-4">
+                View waste incident reports from across Timor-Leste analyzed by AI
+              </p>
+              <div className="flex flex-wrap gap-4 text-sm">
+                <div className="flex items-center gap-1 text-emerald-600">
+                  <BarChart2 className="w-4 h-4" />
+                  <span className="font-medium">{total}</span> Total Reports
+                </div>
+                <div className="flex items-center gap-1 text-emerald-600">
+                  <Clock className="w-4 h-4" />
+                  <span>Real-time updates</span>
+                </div>
+              </div>
+            </div>
 
-          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
@@ -350,6 +365,7 @@ export default function PublicReportsPage() {
               />
               Refresh
             </button>
+            </div>
           </div>
         </div>
 

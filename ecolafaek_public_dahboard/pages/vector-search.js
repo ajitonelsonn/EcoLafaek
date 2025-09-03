@@ -1,5 +1,6 @@
 // pages/vector-search.js
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Head from "next/head";
 import Layout from "../components/Layout";
 import {
@@ -298,6 +299,7 @@ const ReportDetailsModal = ({ report, isOpen, onClose }) => {
 };
 
 export default function VectorSearchPage() {
+  const router = useRouter();
   const [selectedType, setSelectedType] = useState(null);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
@@ -321,6 +323,15 @@ export default function VectorSearchPage() {
   const [minClusterSize, setMinClusterSize] = useState(3);
   const [clusterThreshold, setClusterThreshold] = useState(0.8);
 
+  // Auto-search for similar reports when URL parameter is present
+  useEffect(() => {
+    if (router.isReady && router.query.similar) {
+      const reportId = router.query.similar;
+      setSelectedType("similar");
+      handleSimilarReportsSearch(reportId);
+    }
+  }, [router.isReady, router.query.similar]);
+
   // Check if current search params match cached ones
   const getCurrentSearchParams = () => {
     if (selectedType === "semantic") {
@@ -336,6 +347,12 @@ export default function VectorSearchPage() {
         days: clusterDays,
         minSize: minClusterSize,
         threshold: clusterThreshold,
+      };
+    } else if (selectedType === "similar") {
+      return {
+        type: "similar",
+        reportId: router.query.similar,
+        limit: 10,
       };
     }
     return null;
@@ -421,6 +438,77 @@ export default function VectorSearchPage() {
   };
 
   const handleClusterAnalysis = async () => {
+    console.log('🔍 Pattern Analysis Started');
+    console.log('Parameters:', {
+      clusterDays,
+      minClusterSize, 
+      clusterThreshold
+    });
+
+    // Check if results are cached
+    if (isSearchCached()) {
+      console.log('📋 Using cached results');
+      setResults(cachedResults);
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setResults(null);
+
+    const apiUrl = `/api/vector-search/clusters?days=${clusterDays}&minClusterSize=${minClusterSize}&similarityThreshold=${clusterThreshold}`;
+    console.log('🌐 API URL:', apiUrl);
+
+    try {
+      console.log('📡 Sending request to clusters API...');
+      const response = await fetch(apiUrl);
+
+      console.log('📨 Response status:', response.status);
+      console.log('📨 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📄 API Response:', data);
+
+      if (!response.ok) {
+        console.error('❌ API Error Response:', data);
+        throw new Error(data.message || "Analysis failed");
+      }
+
+      if (data.success) {
+        console.log('✅ Analysis successful!');
+        console.log('📊 Results:', {
+          clusters: data.data?.clusters?.length || 0,
+          totalReports: data.stats?.total_reports || 0,
+          analysisScope: data.stats?.analysis_scope
+        });
+        
+        setResults(data);
+        // Cache the results
+        setCachedResults(data);
+        setLastSearchParams(getCurrentSearchParams());
+      } else {
+        console.error('❌ Analysis failed:', data.message);
+        setError(data.message || "Analysis failed");
+      }
+    } catch (err) {
+      console.error("❌ Analysis error:", err);
+      console.error("Error details:", {
+        message: err.message,
+        stack: err.stack
+      });
+      setError(err.message || "Analysis failed. Please try again.");
+    } finally {
+      console.log('🏁 Pattern Analysis finished');
+      setLoading(false);
+    }
+  };
+
+  const handleSimilarReportsSearch = async (reportId) => {
+    if (!reportId) {
+      setError("Report ID is required for similarity search");
+      return;
+    }
+
     // Check if results are cached
     if (isSearchCached()) {
       setResults(cachedResults);
@@ -432,27 +520,47 @@ export default function VectorSearchPage() {
     setResults(null);
 
     try {
-      const response = await fetch(
-        `/api/vector-search/clusters?days=${clusterDays}&minClusterSize=${minClusterSize}&similarityThreshold=${clusterThreshold}`
-      );
+      const response = await fetch("/api/vector-search/similar-reports", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reportId: reportId,
+          limit: 10, // Maximum 10 similar reports
+          threshold: 0.6, // Minimum similarity threshold
+        }),
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Analysis failed");
+        throw new Error(data.message || "Similar reports search failed");
       }
 
       if (data.success) {
-        setResults(data);
+        // Format the results to match expected structure
+        const formattedResults = {
+          success: true,
+          message: `Found ${data.reports?.length || 0} similar reports to Report #${reportId}`,
+          reports: data.reports || [],
+          metadata: {
+            ...data.metadata,
+            searchType: "similar",
+            originalReportId: reportId,
+          },
+        };
+        
+        setResults(formattedResults);
         // Cache the results
-        setCachedResults(data);
+        setCachedResults(formattedResults);
         setLastSearchParams(getCurrentSearchParams());
       } else {
-        setError(data.message || "Analysis failed");
+        setError(data.message || "Similar reports search failed");
       }
     } catch (err) {
-      console.error("Analysis error:", err);
-      setError(err.message || "Analysis failed. Please try again.");
+      console.error("Similar reports search error:", err);
+      setError(err.message || "Similar reports search failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -462,6 +570,8 @@ export default function VectorSearchPage() {
     setSelectedType(null);
     setResults(null);
     setError("");
+    // Clear URL parameters
+    router.push("/vector-search", undefined, { shallow: true });
   };
 
   return (
@@ -541,6 +651,24 @@ export default function VectorSearchPage() {
               </div>
             </div>
           </div>
+
+          {/* Auto-search notification for similar reports */}
+          {selectedType === "similar" && router.query.similar && (
+            <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <Brain className="h-5 w-5 text-blue-400" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-blue-700">
+                      <span className="font-medium">Auto-searching similar reports</span> for Report #{router.query.similar} using AI vector analysis
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Main Content */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -829,9 +957,19 @@ export default function VectorSearchPage() {
                         <div className="p-6">
                           {/* Header with New Analysis Button */}
                           <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-semibold text-gray-900">
-                              Analysis Results
-                            </h3>
+                            <div>
+                              <h3 className="text-xl font-semibold text-gray-900">
+                                {selectedType === "similar" 
+                                  ? `Similar Reports to #${router.query.similar}`
+                                  : "Analysis Results"
+                                }
+                              </h3>
+                              {selectedType === "similar" && (
+                                <p className="text-sm text-gray-600 mt-1">
+                                  AI-powered similarity analysis using vector embeddings
+                                </p>
+                              )}
+                            </div>
                             <button
                               onClick={startNewAnalysis}
                               className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
@@ -845,42 +983,84 @@ export default function VectorSearchPage() {
                           {results.stats && (
                             <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                                <div>
-                                  <div className="font-medium text-green-700">
-                                    Found
-                                  </div>
-                                  <div className="text-xl font-bold text-green-900">
-                                    {String(
-                                      results.results?.length ||
-                                        results.stats.query_results ||
-                                        0
-                                    )}
-                                  </div>
-                                </div>
-                                <div>
-                                  <div className="font-medium text-green-700">
-                                    Total Reports
-                                  </div>
-                                  <div className="text-xl font-bold text-green-900">
-                                    {String(
-                                      results.stats.total_searchable_reports ||
-                                        "N/A"
-                                    )}
-                                  </div>
-                                </div>
-                                <div>
-                                  <div className="font-medium text-green-700">
-                                    Avg Quality
-                                  </div>
-                                  <div className="text-xl font-bold text-green-900">
-                                    {String(
-                                      results.stats.avg_confidence ||
-                                        results.stats.avg_similarity ||
-                                        0
-                                    )}
-                                    %
-                                  </div>
-                                </div>
+                                {selectedType === "patterns" ? (
+                                  <>
+                                    <div>
+                                      <div className="font-medium text-green-700">
+                                        Patterns Found
+                                      </div>
+                                      <div className="text-xl font-bold text-green-900">
+                                        {results.data?.clusters?.length || 0}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="font-medium text-green-700">
+                                        Total Reports
+                                      </div>
+                                      <div className="text-xl font-bold text-green-900">
+                                        {results.reports?.length || 0}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="font-medium text-green-700">
+                                        Avg Similarity
+                                      </div>
+                                      <div className="text-xl font-bold text-green-900">
+                                        {results.data?.clusters?.length > 0 
+                                          ? Math.round((1 - (results.data.clusters.reduce((sum, c) => sum + c.avg_similarity, 0) / results.data.clusters.length)) * 100) + "%"
+                                          : "0%"}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="font-medium text-green-700">
+                                        Time Period
+                                      </div>
+                                      <div className="text-xl font-bold text-green-900">
+                                        {results.stats?.time_period_days || 0}d
+                                      </div>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div>
+                                      <div className="font-medium text-green-700">
+                                        Found
+                                      </div>
+                                      <div className="text-xl font-bold text-green-900">
+                                        {String(
+                                          results.results?.length ||
+                                            results.reports?.length ||
+                                            results.stats?.query_results ||
+                                            0
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="font-medium text-green-700">
+                                        Total Reports
+                                      </div>
+                                      <div className="text-xl font-bold text-green-900">
+                                        {String(
+                                          results.stats.total_searchable_reports ||
+                                            "N/A"
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="font-medium text-green-700">
+                                        Avg Quality
+                                      </div>
+                                      <div className="text-xl font-bold text-green-900">
+                                        {String(
+                                          results.stats.avg_confidence ||
+                                            results.stats.avg_similarity ||
+                                            0
+                                        )}
+                                        %
+                                      </div>
+                                    </div>
+                                  </>
+                                )}
                                 <div>
                                   <div className="font-medium text-green-700">
                                     Process Time
@@ -899,10 +1079,151 @@ export default function VectorSearchPage() {
 
                           {/* Results List */}
                           <div className="space-y-6">
-                            {results.results &&
-                            Array.isArray(results.results) &&
-                            results.results.length > 0 ? (
-                              results.results.map((report, idx) => (
+                            {/* Pattern Analysis Results */}
+                            {selectedType === "patterns" && results?.data?.clusters && results.data.clusters.length > 0 ? (
+                              <div className="space-y-8">
+                                {results.data.clusters.map((cluster, clusterIdx) => (
+                                  <div key={cluster.cluster_id} className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl border border-emerald-100 overflow-hidden shadow-sm">
+                                    {/* Cluster Header */}
+                                    <div className="bg-gradient-to-r from-emerald-600 to-green-600 text-white p-6">
+                                      <div className="flex items-start justify-between">
+                                        <div className="flex-1">
+                                          <div className="flex items-center gap-3 mb-3">
+                                            <div className="bg-white/20 rounded-lg p-2">
+                                              <BarChart2 className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                              <h3 className="text-xl font-bold">Pattern #{cluster.cluster_id}</h3>
+                                              <div className="flex items-center gap-4 mt-1">
+                                                <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
+                                                  {cluster.pattern_type.charAt(0).toUpperCase() + cluster.pattern_type.slice(1)} Pattern
+                                                </span>
+                                                <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
+                                                  {cluster.reports.length} Reports
+                                                </span>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <p className="text-emerald-100 text-lg">{cluster.centroid_description}</p>
+                                        </div>
+                                        <div className="text-right">
+                                          <div className="text-3xl font-bold mb-1">
+                                            {Math.round((1 - cluster.avg_similarity) * 100)}%
+                                          </div>
+                                          <div className="text-emerald-200 text-sm">Similarity</div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Cluster Insights */}
+                                    <div className="p-6 border-b border-emerald-100">
+                                      <h4 className="font-semibold text-emerald-900 mb-3 flex items-center gap-2">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Pattern Insights
+                                      </h4>
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {cluster.insights.map((insight, idx) => (
+                                          <div key={idx} className="flex items-center gap-2 text-emerald-700 bg-white/60 rounded-lg px-3 py-2">
+                                            <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                                            <span className="text-sm">{insight}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+
+                                    {/* Cluster Statistics */}
+                                    <div className="p-6 border-b border-emerald-100">
+                                      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                        <div className="text-center">
+                                          <div className="text-2xl font-bold text-emerald-900">{cluster.geographic_spread.toFixed(1)}km</div>
+                                          <div className="text-sm text-emerald-600">Geographic Spread</div>
+                                        </div>
+                                        <div className="text-center">
+                                          <div className="text-2xl font-bold text-emerald-900">{cluster.time_span.days}</div>
+                                          <div className="text-sm text-emerald-600">Days Span</div>
+                                        </div>
+                                        <div className="text-center">
+                                          <div className="text-2xl font-bold text-emerald-900">{cluster.severity_level.toFixed(1)}/10</div>
+                                          <div className="text-sm text-emerald-600">Avg Severity</div>
+                                        </div>
+                                        <div className="text-center">
+                                          <div className="text-2xl font-bold text-emerald-900">{Math.round(cluster.confidence_level)}%</div>
+                                          <div className="text-sm text-emerald-600">Confidence</div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Cluster Reports */}
+                                    <div className="p-6">
+                                      <h4 className="font-semibold text-emerald-900 mb-4 flex items-center gap-2">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        Reports in Pattern ({cluster.reports.length})
+                                      </h4>
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {cluster.reports.map((report, idx) => (
+                                          <div key={report.report_id} className="bg-white rounded-xl border border-emerald-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleViewDetails(report)}>
+                                            {/* Report Image */}
+                                            {report.image_url && (
+                                              <div className="aspect-video bg-gray-100">
+                                                <img
+                                                  src={report.image_url}
+                                                  alt={`Report ${report.report_id}`}
+                                                  className="w-full h-full object-cover"
+                                                  onError={(e) => {
+                                                    e.target.style.display = 'none';
+                                                    e.target.parentNode.style.display = 'none';
+                                                  }}
+                                                />
+                                              </div>
+                                            )}
+                                            
+                                            <div className="p-4">
+                                              <div className="flex items-start justify-between mb-3">
+                                                <div className="flex items-center gap-2">
+                                                  <span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-sm font-medium">
+                                                    #{report.report_id}
+                                                  </span>
+                                                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                                                    {Math.round((1 - (report.similarity_score || 0)) * 100)}% match
+                                                  </span>
+                                                </div>
+                                                <span className="text-xs text-gray-500">
+                                                  {new Date(report.report_date).toLocaleDateString()}
+                                                </span>
+                                              </div>
+                                              <div className="mb-3">
+                                                <div className="font-medium text-gray-900 mb-1">{report.waste_type || 'Unknown Type'}</div>
+                                                <p className="text-sm text-gray-600" style={{
+                                                  display: '-webkit-box',
+                                                  WebkitLineClamp: 2,
+                                                  WebkitBoxOrient: 'vertical',
+                                                  overflow: 'hidden'
+                                                }}>
+                                                  {report.description || 'No description'}
+                                                </p>
+                                              </div>
+                                              <div className="flex items-center justify-end text-xs text-gray-500">
+                                                <button className="text-emerald-600 hover:text-emerald-800 font-medium">
+                                                  View Details →
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : 
+                            /* Regular Results */
+                            ((results.results && Array.isArray(results.results) && results.results.length > 0) || 
+                              (results.reports && Array.isArray(results.reports) && results.reports.length > 0)) ? (
+                              (results.results || results.reports).map((report, idx) => (
                                 <ResultCard
                                   key={String(report.report_id || idx)}
                                   report={report}
@@ -922,6 +1243,8 @@ export default function VectorSearchPage() {
                                   <p className="text-gray-500 mb-4">
                                     {selectedType === "patterns" 
                                       ? "No patterns found with current settings. Try adjusting your configuration."
+                                      : selectedType === "similar"
+                                      ? `No similar reports found for Report #${router.query.similar}. The report might be unique or have no similar patterns.`
                                       : "Try different search terms or adjust your filters to find waste reports."
                                     }
                                   </p>
@@ -939,9 +1262,9 @@ export default function VectorSearchPage() {
                                         periods for analysis.
                                       </p>
                                     )}
-                                    {results && results.message && (
-                                      <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
-                                        ❌ {results.message}
+                                    {results && results.message && results.reports && results.reports.length > 0 && (
+                                      <p className="text-sm text-green-600 bg-green-50 p-3 rounded-lg">
+                                        ✅ {results.message}
                                       </p>
                                     )}
                                   </div>
