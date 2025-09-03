@@ -5,7 +5,14 @@ import Head from "next/head";
 import Link from "next/link";
 import ModernLayout from "../../components/Layout";
 import { fetchAPI } from "../../lib/api";
-import { ArrowLeft, MapPin, Calendar, AlertTriangle, X, Search } from "lucide-react";
+import {
+  ArrowLeft,
+  MapPin,
+  Calendar,
+  AlertTriangle,
+  X,
+  Search,
+} from "lucide-react";
 
 export default function ReportDetail() {
   const router = useRouter();
@@ -37,15 +44,15 @@ export default function ReportDetail() {
   // Fetch similar reports
   const fetchSimilarReports = async () => {
     if (!id) return;
-    
+
     setSimilarLoading(true);
     setSimilarError(null);
-    
+
     try {
-      const response = await fetch('/api/vector-search/similar-reports', {
-        method: 'POST',
+      const response = await fetch("/api/vector-search/similar-reports", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           reportId: id,
@@ -60,7 +67,6 @@ export default function ReportDetail() {
         throw new Error(data.message || "Failed to fetch similar reports");
       }
 
-      
       if (data.success) {
         // The API returns data in data.data.similarReports, not data.similarReports
         const reports = data.data?.similarReports || [];
@@ -170,9 +176,9 @@ export default function ReportDetail() {
             className="text-emerald-600 hover:text-emerald-800 flex items-center mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Reports
+            Back
           </button>
-          
+
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium mb-3">
@@ -188,11 +194,12 @@ export default function ReportDetail() {
               </h1>
               {report && (
                 <p className="text-lg text-emerald-700">
-                  {report.waste_type || "Waste"} incident • {getStatusText(report.status)}
+                  {report.waste_type || "Waste"} incident •{" "}
+                  {getStatusText(report.status)}
                 </p>
               )}
             </div>
-            
+
             {report && (
               <div className="flex items-center gap-3">
                 <button
@@ -439,7 +446,7 @@ export default function ReportDetail() {
             </div>
           </div>
         )}
-        
+
         {/* Similar Reports Modal */}
         {showSimilarModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -450,7 +457,8 @@ export default function ReportDetail() {
                   <div>
                     <h2 className="text-2xl font-bold mb-1">Similar Reports</h2>
                     <p className="text-emerald-100">
-                      AI-powered similarity using image comparison and description analysis
+                      AI-powered similarity using image comparison and
+                      description analysis
                     </p>
                   </div>
                   <button
@@ -485,96 +493,127 @@ export default function ReportDetail() {
                     </h3>
                     <p className="text-gray-600 mb-4">{similarError}</p>
                     <p className="text-sm text-gray-500">
-                      This report might be unique or have no similar patterns in our database.
+                      This report might be unique or have no similar patterns in
+                      our database.
                     </p>
                   </div>
                 )}
 
-                {!similarLoading && !similarError && similarReports.length > 0 && (
-                  <div>
-                    <p className="text-sm text-green-600 bg-green-50 p-3 rounded-lg mb-6">
-                      ✅ Found {similarReports.length} similar reports based on image analysis
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {similarReports.map((similarReport) => (
-                        <div
-                          key={similarReport.report_id}
-                          className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer"
-                          onClick={() => {
-                            setShowSimilarModal(false);
-                            router.push(`/reports/${similarReport.report_id}`);
-                          }}
-                        >
-                          <div className="flex items-start gap-3">
-                            {similarReport.image_url && (
-                              <div className="flex-shrink-0">
-                                <img
-                                  src={similarReport.image_url}
-                                  alt="Similar report"
-                                  className="w-16 h-16 object-cover rounded-lg"
-                                  onError={(e) => {
-                                    e.target.src = "https://via.placeholder.com/64x64?text=No+Image";
-                                  }}
-                                />
-                              </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between mb-2">
-                                <h4 className="font-medium text-gray-900 truncate">
-                                  Report #{similarReport.report_id}
-                                </h4>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs text-gray-500">
-                                    {((1 - similarReport.similarity_score) * 100).toFixed(1)}% similar
-                                  </span>
-                                  {similarReport.similarity_type && (
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${
-                                      similarReport.similarity_type === 'image_and_text' ? 'bg-green-100 text-green-600' :
-                                      similarReport.similarity_type === 'image_only' ? 'bg-blue-100 text-blue-600' :
-                                      similarReport.similarity_type === 'text_only' ? 'bg-purple-100 text-purple-600' :
-                                      'bg-gray-100 text-gray-600'
-                                    }`}>
-                                      {similarReport.similarity_type === 'image_and_text' ? '🖼️+📝' :
-                                       similarReport.similarity_type === 'image_only' ? '🖼️' :
-                                       similarReport.similarity_type === 'text_only' ? '📝' : '?'}
+                {!similarLoading &&
+                  !similarError &&
+                  similarReports.length > 0 && (
+                    <div>
+                      <p className="text-sm text-green-600 bg-green-50 p-3 rounded-lg mb-6">
+                        ✅ Found {similarReports.length} similar reports based
+                        on image analysis
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {similarReports.map((similarReport) => (
+                          <div
+                            key={similarReport.report_id}
+                            className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer"
+                            onClick={() => {
+                              setShowSimilarModal(false);
+                              router.push(
+                                `/reports/${similarReport.report_id}`
+                              );
+                            }}
+                          >
+                            <div className="flex items-start gap-3">
+                              {similarReport.image_url && (
+                                <div className="flex-shrink-0">
+                                  <img
+                                    src={similarReport.image_url}
+                                    alt="Similar report"
+                                    className="w-16 h-16 object-cover rounded-lg"
+                                    onError={(e) => {
+                                      e.target.src =
+                                        "https://via.placeholder.com/64x64?text=No+Image";
+                                    }}
+                                  />
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between mb-2">
+                                  <h4 className="font-medium text-gray-900 truncate">
+                                    Report #{similarReport.report_id}
+                                  </h4>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs text-gray-500">
+                                      {(
+                                        (1 - similarReport.similarity_score) *
+                                        100
+                                      ).toFixed(1)}
+                                      % similar
+                                    </span>
+                                    {similarReport.similarity_type && (
+                                      <span
+                                        className={`text-xs px-1.5 py-0.5 rounded ${
+                                          similarReport.similarity_type ===
+                                          "image_and_text"
+                                            ? "bg-green-100 text-green-600"
+                                            : similarReport.similarity_type ===
+                                              "image_only"
+                                            ? "bg-blue-100 text-blue-600"
+                                            : similarReport.similarity_type ===
+                                              "text_only"
+                                            ? "bg-purple-100 text-purple-600"
+                                            : "bg-gray-100 text-gray-600"
+                                        }`}
+                                      >
+                                        {similarReport.similarity_type ===
+                                        "image_and_text"
+                                          ? "🖼️+📝"
+                                          : similarReport.similarity_type ===
+                                            "image_only"
+                                          ? "🖼️"
+                                          : similarReport.similarity_type ===
+                                            "text_only"
+                                          ? "📝"
+                                          : "?"}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-2 mb-2">
+                                  {getStatusBadge(similarReport.status)}
+                                  {similarReport.waste_type && (
+                                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                                      {similarReport.waste_type}
                                     </span>
                                   )}
                                 </div>
-                              </div>
-                              
-                              <div className="flex items-center gap-2 mb-2">
-                                {getStatusBadge(similarReport.status)}
-                                {similarReport.waste_type && (
-                                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                                    {similarReport.waste_type}
-                                  </span>
+
+                                {similarReport.description && (
+                                  <p
+                                    className="text-sm text-gray-600 mb-2"
+                                    style={{
+                                      display: "-webkit-box",
+                                      WebkitLineClamp: 2,
+                                      WebkitBoxOrient: "vertical",
+                                      overflow: "hidden",
+                                    }}
+                                  >
+                                    {similarReport.description}
+                                  </p>
+                                )}
+
+                                {similarReport.address_text && (
+                                  <div className="flex items-center text-xs text-gray-500">
+                                    <MapPin className="w-3 h-3 mr-1" />
+                                    <span className="truncate">
+                                      {similarReport.address_text}
+                                    </span>
+                                  </div>
                                 )}
                               </div>
-
-                              {similarReport.description && (
-                                <p className="text-sm text-gray-600 mb-2" style={{
-                                  display: '-webkit-box',
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: 'vertical',
-                                  overflow: 'hidden'
-                                }}>
-                                  {similarReport.description}
-                                </p>
-                              )}
-
-                              {similarReport.address_text && (
-                                <div className="flex items-center text-xs text-gray-500">
-                                  <MapPin className="w-3 h-3 mr-1" />
-                                  <span className="truncate">{similarReport.address_text}</span>
-                                </div>
-                              )}
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             </div>
           </div>
