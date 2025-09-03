@@ -1,0 +1,313 @@
+/* styles/modern-dashboard.css */
+
+/* Custom styles for the map popups */
+.modern-popup .leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.modern-popup .leaflet-popup-content {
+  margin: 0;
+  padding: 12px;
+  min-width: 200px;
+}
+
+.modern-popup .leaflet-popup-tip {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modern-popup .leaflet-popup-close-button {
+  top: 8px;
+  right: 8px;
+  color: #4b5563;
+}
+
+/* Custom scrollbar for better UI */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Animated transitions for cards */
+.dashboard-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Pulse animation for alert indicators */
+.pulse-alert {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* Custom styles for charts */
+.custom-chart {
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.custom-chart .recharts-tooltip-wrapper {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Status badge styling */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-badge-resolved {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge-analyzed {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-badge-analyzing {
+  background-color: #ede9fe;
+  color: #5b21b6;
+}
+
+.status-badge-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Subtle pattern background for the dashboard */
+.dashboard-bg {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2310b981' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Animated loading skeleton */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Map enhancements */
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15) !important;
+}
+
+.leaflet-control-zoom a {
+  border-radius: 4px !important;
+  color: #4b5563 !important;
+}
+
+.leaflet-control-zoom-in {
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+/* Better map markers */
+.custom-marker-icon {
+  filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.25));
+}
+
+/* Legend styling */
+.legend {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Chart axis improvements */
+.custom-chart .recharts-cartesian-axis-line {
+  stroke: #e5e7eb;
+}
+
+.custom-chart .recharts-cartesian-grid-horizontal line,
+.custom-chart .recharts-cartesian-grid-vertical line {
+  stroke: #f3f4f6;
+}
+
+/* Card styling enhancements */
+.stat-card {
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05),
+    0 4px 6px -2px rgba(0, 0, 0, 0.025);
+}
+
+/* Better hover effects for action buttons */
+.action-button {
+  transition: all 0.2s ease;
+}
+
+.action-button:hover {
+  transform: translateY(-1px);
+}
+
+/* Fade-in animation for content */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-section {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Badge animations */
+.animated-badge {
+  position: relative;
+  overflow: hidden;
+}
+
+.animated-badge::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(30deg);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% {
+    transform: rotate(30deg) translateX(-300%);
+  }
+  100% {
+    transform: rotate(30deg) translateX(300%);
+  }
+}
+
+/* Modern scrolling for hotspot lists */
+.hotspot-scroll {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+}
+
+/* Active tab indicators */
+.active-tab::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #10b981;
+  border-radius: 2px;
+}
+
+/* Tooltip enhancements */
+.enhanced-tooltip {
+  position: relative;
+}
+
+.enhanced-tooltip::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 10px;
+  background-color: #111827;
+  color: white;
+  font-size: 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.enhanced-tooltip:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Pulsing animation for focused marker */
+.pulse-circle {
+  animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+  0% {
+    opacity: 1;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(0.8);
+  }
+}

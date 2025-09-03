@@ -1,0 +1,112 @@
+/* styles/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ededed;
+    --foreground: #0a0a0a;
+  }
+}
+
+/* Mobile Filter Modal Styles */
+.map-filters-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 85vh; /* Adjusted to ensure it fits within the viewport */
+  height: auto; /* Allow the modal to adjust its height */
+  background-color: white;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  z-index: 10000;
+  overflow-y: auto; /* Enable scrolling */
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(0);
+  transition: transform 0.3s ease-in-out;
+  padding-bottom: env(
+    safe-area-inset-bottom,
+    20px
+  ); /* Fallback for safe area */
+}
+
+/* Overlay for the modal */
+.map-filters-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999; /* Ensure it's below the modal but above other content */
+}
+
+/* Fix for map content z-index */
+.leaflet-container {
+  z-index: 0 !important;
+}
+
+/* Fix for mobile sidebar z-index */
+#mobile-sidebar {
+  z-index: 9997;
+}
+
+/* Modal content area */
+.map-filters-modal .modal-content {
+  padding: 16px;
+  max-height: calc(85vh - 120px); /* Adjust based on header and footer height */
+  overflow-y: auto; /* Ensure content is scrollable */
+}
+
+/* Handle for the modal */
+.map-filters-modal .modal-handle {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+  cursor: pointer; /* Indicate it's draggable */
+}
+
+.map-filters-modal .modal-handle div {
+  width: 40px;
+  height: 4px;
+  background-color: #ccc;
+  border-radius: 2px;
+}
+
+/* Modal header */
+.map-filters-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #e5e5e5;
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 1; /* Ensure header stays on top */
+}
+
+/* Modal footer */
+.map-filters-modal .modal-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+  border-top: 1px solid #e5e5e5;
+  background-color: white;
+  position: sticky;
+  bottom: 0;
+  z-index: 1; /* Ensure footer stays on top */
+}

@@ -1,0 +1,47 @@
+/* styles/map-fix.css */
+
+/* Fix for map container to prevent it from overlapping with navigation */
+.map-container {
+  position: relative;
+  z-index: 1; /* Lower z-index than navigation */
+  height: 100%;
+  width: 100%;
+}
+
+/* Ensure map container stays within its parent */
+.map-container .leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+  position: relative !important;
+  z-index: 1;
+}
+
+/* Fix the navigation z-index */
+.fixed-navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50; /* Higher z-index than map */
+}
+
+/* Add space for content below fixed navigation */
+.content-container {
+  padding-top: 64px; /* Height of your navigation bar */
+}
+
+/* Fix for Leaflet popups to ensure they appear above the map */
+.leaflet-popup {
+  z-index: 10;
+}
+
+/* Fix for map controls to ensure they're clickable */
+.leaflet-control-container {
+  z-index: 10;
+}
+
+/* Fix for dashboard layout when using the map */
+.dashboard-layout {
+  position: relative;
+  overflow-x: hidden;
+}
