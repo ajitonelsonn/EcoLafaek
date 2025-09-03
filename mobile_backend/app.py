@@ -225,6 +225,188 @@ def verify_token(token):
     except jwt.InvalidTokenError:
         return None  # Invalid token
 
+def check_and_create_hotspots(cursor, connection, report, report_id, analysis_result):
+    """
+    Check for nearby reports and create/update hotspots if criteria are met.
+    This function works for both waste and non-waste reports.
+    
+    Args:
+        cursor: Database cursor
+        connection: Database connection 
+        report: Report data dictionary
+        report_id: ID of the current report
+        analysis_result: Analysis results dictionary
+    
+    Returns:
+        Dictionary with hotspot creation results
+    """
+    try:
+        # Find nearby reports (within 500 meters)
+        cursor.execute(
+            """
+            SELECT report_id, latitude, longitude
+            FROM reports
+            WHERE (
+                6371 * acos(
+                    cos(radians(%s)) * cos(radians(latitude)) * 
+                    cos(radians(longitude) - radians(%s)) + 
+                    sin(radians(%s)) * sin(radians(latitude))
+                )
+            ) < 0.5  -- Reports within 500 meters
+            AND report_id != %s
+            AND status = 'analyzed'  -- Only include analyzed reports in hotspots
+            """,
+            (report['latitude'], report['longitude'], report['latitude'], report_id)
+        )
+        
+        nearby_reports = cursor.fetchall()
+        nearby_count = len(nearby_reports)
+        
+        logger.info(f"Found {nearby_count} nearby reports for report {report_id}")
+        
+        # If there are nearby reports, create or update a hotspot
+        if nearby_count >= 2:  # Minimum 3 reports to form a hotspot (including this one)
+            # Check if a hotspot already exists in this area
+            cursor.execute(
+                """
+                SELECT hotspot_id
+                FROM hotspots
+                WHERE (
+                    6371 * acos(
+                        cos(radians(%s)) * cos(radians(center_latitude)) * 
+                        cos(radians(center_longitude) - radians(%s)) + 
+                        sin(radians(%s)) * sin(radians(center_latitude))
+                    )
+                ) < 0.5  -- Within 500 meters
+                """,
+                (report['latitude'], report['longitude'], report['latitude'])
+            )
+            
+            hotspot = cursor.fetchone()
+            
+            if hotspot:
+                # Update existing hotspot
+                hotspot_id = hotspot['hotspot_id']
+                cursor.execute(
+                    """
+                    UPDATE hotspots
+                    SET last_reported = %s, total_reports = %s
+                    WHERE hotspot_id = %s
+                    """,
+                    (datetime.now().date(), nearby_count + 1, hotspot_id)
+                )
+                logger.info(f"Updated existing hotspot {hotspot_id}")
+            else:
+                # Create new hotspot
+                cursor.execute(
+                    """
+                    INSERT INTO hotspots (
+                        name, center_latitude, center_longitude, radius_meters,
+                        location_id, first_reported, last_reported, total_reports,
+                        average_severity, status
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """,
+                    (
+                        f"Hotspot near {report.get('address_text', 'Unknown')}",
+                        report['latitude'],
+                        report['longitude'],
+                        500,  # 500 meter radius
+                        report.get('location_id'),
+                        datetime.now().date(),
+                        datetime.now().date(),
+                        nearby_count + 1,  # Include this report
+                        analysis_result.get('severity_score', 1),
+                        'active'
+                    )
+                )
+                
+                hotspot_id = cursor.lastrowid
+                logger.info(f"Created new hotspot {hotspot_id}")
+            
+            # Associate current report with hotspot if not already linked
+            cursor.execute(
+                """
+                SELECT * FROM hotspot_reports 
+                WHERE hotspot_id = %s AND report_id = %s
+                """, 
+                (hotspot_id, report_id)
+            )
+            
+            if not cursor.fetchone():
+                cursor.execute(
+                    """
+                    INSERT INTO hotspot_reports (hotspot_id, report_id)
+                    VALUES (%s, %s)
+                    """,
+                    (hotspot_id, report_id)
+                )
+                logger.info(f"Associated report {report_id} with hotspot {hotspot_id}")
+            
+            # Associate all nearby reports with the hotspot if not already linked
+            for nearby_report in nearby_reports:
+                nearby_id = nearby_report['report_id']
+                
+                cursor.execute(
+                    """
+                    SELECT * FROM hotspot_reports 
+                    WHERE hotspot_id = %s AND report_id = %s
+                    """, 
+                    (hotspot_id, nearby_id)
+                )
+                
+                if not cursor.fetchone():
+                    cursor.execute(
+                        """
+                        INSERT INTO hotspot_reports (hotspot_id, report_id)
+                        VALUES (%s, %s)
+                        """,
+                        (hotspot_id, nearby_id)
+                    )
+            
+            # Update average severity based on all reports in the hotspot
+            cursor.execute(
+                """
+                SELECT AVG(ar.severity_score) as avg_severity
+                FROM hotspot_reports hr
+                JOIN analysis_results ar ON hr.report_id = ar.report_id
+                WHERE hr.hotspot_id = %s
+                """,
+                (hotspot_id,)
+            )
+            
+            avg_result = cursor.fetchone()
+            if avg_result and avg_result['avg_severity'] is not None:
+                cursor.execute(
+                    """
+                    UPDATE hotspots
+                    SET average_severity = %s
+                    WHERE hotspot_id = %s
+                    """,
+                    (avg_result['avg_severity'], hotspot_id)
+                )
+            
+            connection.commit()
+            
+            return {
+                "hotspot_created": hotspot_id,
+                "total_reports": nearby_count + 1,
+                "action": "updated" if hotspot else "created"
+            }
+        else:
+            return {
+                "hotspot_created": None,
+                "total_reports": nearby_count + 1,
+                "action": "insufficient_reports"
+            }
+    
+    except Exception as e:
+        logger.error(f"Error in hotspot detection: {e}")
+        return {
+            "hotspot_created": None,
+            "error": str(e),
+            "action": "error"
+        }
+
 async def get_user_from_token(token: str = Depends(oauth2_scheme)):
     """Extract user ID from token in request"""
     user_id = verify_token(token)
@@ -832,13 +1014,18 @@ async def process_report(report_id, background_tasks: BackgroundTasks):
             )
             connection.commit()
             
+            # Check for hotspots (reports nearby) - for Not Garbage reports too
+            logger.info(f"Checking for hotspots near report {report_id} (Not Garbage)")
+            hotspot_result = check_and_create_hotspots(cursor, connection, report, report_id, analysis_result)
+            
             cursor.close()
             connection.close()
             
             return {
                 "success": True,
                 "message": f"Report {report_id} analyzed successfully: Not Garbage",
-                "analysis": analysis_result
+                "analysis": analysis_result,
+                "hotspot": hotspot_result
             }
         
         # If image contains garbage, continue with normal analysis flow
@@ -918,154 +1105,9 @@ async def process_report(report_id, background_tasks: BackgroundTasks):
         )
         connection.commit()
         
-        # Continue to Part 3 for hotspot logic...
-        
-    except Exception as e:
-        logger.error(f"Error processing report {report_id}: {e}")
-        return {"success": False, "message": f"Error processing report: {str(e)}"}
-    # Check for hotspots (reports nearby) - continuing from process_report function
-        cursor.execute(
-            """
-            SELECT report_id, latitude, longitude
-            FROM reports
-            WHERE (
-                6371 * acos(
-                    cos(radians(%s)) * cos(radians(latitude)) * 
-                    cos(radians(longitude) - radians(%s)) + 
-                    sin(radians(%s)) * sin(radians(latitude))
-                )
-            ) < 0.5  -- Reports within 500 meters
-            AND report_id != %s
-            AND status = 'analyzed'  -- Only include analyzed reports in hotspots
-            """,
-            (report['latitude'], report['longitude'], report['latitude'], report_id)
-        )
-        
-        nearby_reports = cursor.fetchall()
-        nearby_count = len(nearby_reports)
-        
-        # If there are nearby reports, create or update a hotspot
-        if nearby_count >= 2:  # Minimum 3 reports to form a hotspot (including this one)
-            # Check if a hotspot already exists in this area
-            cursor.execute(
-                """
-                SELECT hotspot_id
-                FROM hotspots
-                WHERE (
-                    6371 * acos(
-                        cos(radians(%s)) * cos(radians(center_latitude)) * 
-                        cos(radians(center_longitude) - radians(%s)) + 
-                        sin(radians(%s)) * sin(radians(center_latitude))
-                    )
-                ) < 0.5  -- Within 500 meters
-                """,
-                (report['latitude'], report['longitude'], report['latitude'])
-            )
-            
-            hotspot = cursor.fetchone()
-            
-            if hotspot:
-                # Update existing hotspot
-                hotspot_id = hotspot['hotspot_id']
-                cursor.execute(
-                    """
-                    UPDATE hotspots
-                    SET last_reported = %s, total_reports = %s
-                    WHERE hotspot_id = %s
-                    """,
-                    (datetime.now().date(), nearby_count + 1, hotspot_id)
-                )
-            else:
-                # Create new hotspot
-                cursor.execute(
-                    """
-                    INSERT INTO hotspots (
-                        name, center_latitude, center_longitude, radius_meters,
-                        location_id, first_reported, last_reported, total_reports,
-                        average_severity, status
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """,
-                    (
-                        f"Hotspot near {report.get('address_text', 'Unknown')}",
-                        report['latitude'],
-                        report['longitude'],
-                        500,  # 500 meter radius
-                        report.get('location_id'),
-                        datetime.now().date(),
-                        datetime.now().date(),
-                        nearby_count + 1,  # Include this report
-                        analysis_result['severity_score'],
-                        'active'
-                    )
-                )
-                
-                hotspot_id = cursor.lastrowid
-            
-            # First, check if the current report is already associated with the hotspot
-            cursor.execute(
-                """
-                SELECT * FROM hotspot_reports 
-                WHERE hotspot_id = %s AND report_id = %s
-                """, 
-                (hotspot_id, report_id)
-            )
-            
-            if not cursor.fetchone():
-                # Associate current report with hotspot if not already linked
-                cursor.execute(
-                    """
-                    INSERT INTO hotspot_reports (hotspot_id, report_id)
-                    VALUES (%s, %s)
-                    """,
-                    (hotspot_id, report_id)
-                )
-            
-            # Associate all nearby reports with the hotspot if not already linked
-            for nearby_report in nearby_reports:
-                nearby_id = nearby_report['report_id']
-                
-                # Check if this nearby report is already associated with the hotspot
-                cursor.execute(
-                    """
-                    SELECT * FROM hotspot_reports 
-                    WHERE hotspot_id = %s AND report_id = %s
-                    """, 
-                    (hotspot_id, nearby_id)
-                )
-                
-                if not cursor.fetchone():
-                    # Associate nearby report with hotspot if not already linked
-                    cursor.execute(
-                        """
-                        INSERT INTO hotspot_reports (hotspot_id, report_id)
-                        VALUES (%s, %s)
-                        """,
-                        (hotspot_id, nearby_id)
-                    )
-            
-            # Update average severity based on all reports in the hotspot
-            cursor.execute(
-                """
-                SELECT AVG(ar.severity_score) as avg_severity
-                FROM hotspot_reports hr
-                JOIN analysis_results ar ON hr.report_id = ar.report_id
-                WHERE hr.hotspot_id = %s
-                """,
-                (hotspot_id,)
-            )
-            
-            avg_result = cursor.fetchone()
-            if avg_result and avg_result['avg_severity'] is not None:
-                cursor.execute(
-                    """
-                    UPDATE hotspots
-                    SET average_severity = %s
-                    WHERE hotspot_id = %s
-                    """,
-                    (avg_result['avg_severity'], hotspot_id)
-                )
-            
-            connection.commit()
+        # Check for hotspots (reports nearby) - for actual waste reports
+        logger.info(f"Checking for hotspots near report {report_id} (Actual Waste)")
+        hotspot_result = check_and_create_hotspots(cursor, connection, report, report_id, analysis_result)
         
         # Log the activity
         cursor.execute(
