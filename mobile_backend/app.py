@@ -2247,6 +2247,61 @@ async def delete_report(report_id: int, user_id: int = Depends(get_user_from_tok
             connection.close()
             raise HTTPException(status_code=403, detail="Access denied. You can only delete your own reports.")
 
+        # Handle hotspot count decrements before deleting
+        # First, get all hotspots that include this report
+        cursor.execute(
+            """
+            SELECT h.hotspot_id, h.total_reports
+            FROM hotspots h
+            JOIN hotspot_reports hr ON h.hotspot_id = hr.hotspot_id
+            WHERE hr.report_id = %s
+            """,
+            (report_id,)
+        )
+        affected_hotspots = cursor.fetchall()
+        
+        # Update or delete hotspots based on remaining report count
+        for hotspot in affected_hotspots:
+            hotspot_id = hotspot['hotspot_id']
+            new_count = hotspot['total_reports'] - 1
+            
+            if new_count < 3:  # Below minimum threshold - delete hotspot
+                logger.info(f"Deleting hotspot {hotspot_id} - report count below threshold ({new_count})")
+                cursor.execute("DELETE FROM hotspot_reports WHERE hotspot_id = %s", (hotspot_id,))
+                cursor.execute("DELETE FROM hotspots WHERE hotspot_id = %s", (hotspot_id,))
+            else:  # Update count and recalculate average severity
+                logger.info(f"Updating hotspot {hotspot_id} - new count: {new_count}")
+                cursor.execute(
+                    """
+                    UPDATE hotspots 
+                    SET total_reports = %s
+                    WHERE hotspot_id = %s
+                    """,
+                    (new_count, hotspot_id)
+                )
+                
+                # Recalculate average severity (excluding the report being deleted)
+                cursor.execute(
+                    """
+                    SELECT AVG(ar.severity_score) as avg_severity
+                    FROM hotspot_reports hr
+                    JOIN analysis_results ar ON hr.report_id = ar.report_id
+                    WHERE hr.hotspot_id = %s AND hr.report_id != %s
+                    """,
+                    (hotspot_id, report_id)
+                )
+                
+                avg_result = cursor.fetchone()
+                if avg_result and avg_result['avg_severity'] is not None:
+                    cursor.execute(
+                        """
+                        UPDATE hotspots
+                        SET average_severity = %s
+                        WHERE hotspot_id = %s
+                        """,
+                        (avg_result['avg_severity'], hotspot_id)
+                    )
+
         # Delete from related tables in correct order
         cursor.execute("DELETE FROM hotspot_reports WHERE report_id = %s", (report_id,))
         cursor.execute("DELETE FROM image_processing_queue WHERE report_id = %s", (report_id,))
