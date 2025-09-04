@@ -1,4 +1,4 @@
-package com.example.tl_waste_monitoring
+package com.example.ecolafaek
 
 import io.flutter.embedding.android.FlutterActivity
 
