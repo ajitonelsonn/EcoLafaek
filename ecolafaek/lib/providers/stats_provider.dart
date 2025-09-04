@@ -140,7 +140,9 @@ class StatsProvider with ChangeNotifier {
   // Load statistics from API
   Future<bool> loadStatistics() async {
     if (_authProvider.token == null) {
-      _setError('Not authenticated');
+      // Don't set error if user is not authenticated - they might be logging out
+      // Just silently return false
+      _setLoading(false);
       return false;
     }
     

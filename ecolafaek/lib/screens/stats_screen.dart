@@ -245,6 +245,23 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
     super.build(context); // Required for AutomaticKeepAliveClientMixin
     
     final theme = Theme.of(context);
+    final authProvider = Provider.of<AuthProvider>(context);
+    
+    // If user is not authenticated, don't show error - just show loading or empty state
+    // This prevents showing "Not authenticated" error when user is logging out
+    if (!authProvider.isAuth) {
+      return Scaffold(
+        appBar: widget.isInTabView
+          ? null
+          : AppBar(
+              title: const Text('Statistics'),
+              centerTitle: true,
+            ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     
     // When loading
     if (_isLoading) {
@@ -261,7 +278,7 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
       );
     }
     
-    // When error
+    // When error (only show if user is still authenticated)
     if (_isError) {
       return Scaffold(
         appBar: widget.isInTabView

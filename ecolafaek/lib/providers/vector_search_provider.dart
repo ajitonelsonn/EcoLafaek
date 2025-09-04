@@ -71,7 +71,9 @@ class VectorSearchProvider extends ChangeNotifier {
     try {
       final token = _authProvider?.token;
       if (token == null) {
-        throw Exception('Not authenticated');
+        // User not authenticated - silently return without error
+        notifyListeners();
+        return;
       }
 
       final response = await _apiService.semanticSearchReports(
@@ -107,7 +109,9 @@ class VectorSearchProvider extends ChangeNotifier {
     try {
       final token = _authProvider?.token;
       if (token == null) {
-        throw Exception('Not authenticated');
+        // User not authenticated - silently return without error
+        notifyListeners();
+        return;
       }
 
       final response = await _apiService.findSimilarReports(
@@ -143,7 +147,9 @@ class VectorSearchProvider extends ChangeNotifier {
     try {
       final token = _authProvider?.token;
       if (token == null) {
-        throw Exception('Not authenticated');
+        // User not authenticated - silently return without error
+        notifyListeners();
+        return;
       }
 
       final response = await _apiService.getLocationPatterns(
@@ -181,7 +187,9 @@ class VectorSearchProvider extends ChangeNotifier {
     try {
       final token = _authProvider?.token;
       if (token == null) {
-        throw Exception('Not authenticated');
+        // User not authenticated - silently return without error
+        notifyListeners();
+        return;
       }
 
       final response = await _apiService.searchNearbySimilar(

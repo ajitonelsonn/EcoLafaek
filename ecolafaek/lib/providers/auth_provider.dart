@@ -7,6 +7,7 @@ import '../models/user.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../screens/login_screen.dart';
+import '../screens/splash_screen.dart';
 import '../utils/error_handler.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -59,9 +60,9 @@ class AuthProvider with ChangeNotifier {
         ),
       );
       
-      // Navigate to login screen
-      Navigator.of(_context!).pushNamedAndRemoveUntil(
-        LoginScreen.routeName,
+      // Navigate to splash screen (homepage)
+      Navigator.of(_context!, rootNavigator: true).pushNamedAndRemoveUntil(
+        SplashScreen.routeName,
         (route) => false,
       );
     }
@@ -269,6 +270,10 @@ class AuthProvider with ChangeNotifier {
   
   // Sign out user and navigate to login screen
   Future<void> signOut() async {
+    if (kDebugMode) {
+      print('SignOut: Starting logout process');
+    }
+    
     await _clearAuthData();
 
     _user = null;
@@ -280,14 +285,40 @@ class AuthProvider with ChangeNotifier {
       _authTimer = null;
     }
 
+    if (kDebugMode) {
+      print('SignOut: Auth state cleared, notifying listeners');
+      print('SignOut: isAuth = $isAuth, user = $_user, token = $_token');
+    }
+    
     notifyListeners();
+    
+    // Small delay to ensure UI updates before navigation
+    await Future.delayed(const Duration(milliseconds: 200));
     
     // Navigation if context is provided
     if (_context != null && _context!.mounted) {
-      Navigator.of(_context!).pushNamedAndRemoveUntil(
-        LoginScreen.routeName, 
-        (route) => false
-      );
+      if (kDebugMode) {
+        print('SignOut: Context available, attempting navigation to splash screen');
+        print('SignOut: Context is mounted: ${_context!.mounted}');
+      }
+      
+      try {
+        Navigator.of(_context!, rootNavigator: true).pushNamedAndRemoveUntil(
+          SplashScreen.routeName, 
+          (route) => false
+        );
+        if (kDebugMode) {
+          print('SignOut: Navigation completed successfully');
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('SignOut: Navigation error: $e');
+        }
+      }
+    } else {
+      if (kDebugMode) {
+        print('SignOut: Context not available for navigation. Context: $_context, mounted: ${_context?.mounted}');
+      }
     }
   }
   

@@ -12,6 +12,7 @@ import '../providers/report_provider.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/loading_indicator.dart';
 import 'login_screen.dart';
+import 'splash_screen.dart';
 import 'change_password_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -139,15 +140,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     
     if (confirm != true) return;
     
-    // Sign out
+    // Sign out (AuthProvider will handle navigation)
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await authProvider.signOut();
     
-    // Always navigate to login screen, regardless of isInTabView
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      LoginScreen.routeName, 
-      (route) => false, // This removes all previous routes
-    );
+    // Fallback: If we're still in tab view after logout, force navigation
+    if (widget.isInTabView && context.mounted) {
+      // Small delay to allow AuthProvider to attempt navigation first
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      // Check if we're still in the tab view context (meaning AuthProvider navigation failed)
+      if (context.mounted && !authProvider.isAuth) {
+        Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+          SplashScreen.routeName,
+          (route) => false,
+        );
+      }
+    }
   }
   
   // Share app
@@ -170,6 +179,17 @@ Download EcoLafaek today! [App Link Coming Soon]
     final user = Provider.of<AuthProvider>(context).currentUser;
     
     if (user == null) {
+      // If we're in tab view, don't show this screen - let AuthProvider handle navigation
+      // This prevents the "You are not logged in" screen from appearing during logout
+      if (widget.isInTabView) {
+        return Scaffold(
+          body: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
+      
+      // Only show "not logged in" screen when accessed directly (not in tab view)
       return Scaffold(
         appBar: AppBar(
           title: const Text('Profile'),

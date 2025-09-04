@@ -561,16 +561,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () async {
-                    // Sign out and navigate to login
+                    // Sign out (will auto-navigate to splash screen)
                     final authProvider = Provider.of<AuthProvider>(context, listen: false);
                     await authProvider.signOut();
-                    
-                    if (context.mounted) {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        LoginScreen.routeName,
-                        (route) => false,
-                      );
-                    }
                   },
                   icon: const Icon(Icons.login),
                   label: const Text('Login Again'),
