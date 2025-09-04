@@ -165,17 +165,17 @@ export default async function handler(
           [JSON.stringify(sourceEmbedding), validReportId]
         );
 
-        similarRows = imageSimRows;
+        similarRows = imageSimRows as any[];
       } catch (vecError) {
         // Fallback to all reports without similarity scoring
-        similarRows = allReportsRows.map((report: any) => ({
+        similarRows = (allReportsRows as any[]).map((report: any) => ({
           ...report,
           similarity_score: Math.random() * 0.5 + 0.5, // Random score for testing
         }));
       }
     } else {
       // No embedding, just return other reports
-      similarRows = allReportsRows.map((report: any) => ({
+      similarRows = (allReportsRows as any[]).map((report: any) => ({
         ...report,
         similarity_score: Math.random() * 0.5 + 0.5, // Random score for testing
       }));
