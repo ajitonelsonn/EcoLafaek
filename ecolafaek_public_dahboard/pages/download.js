@@ -20,11 +20,9 @@ export default function DownloadApp() {
 
   // App download links
   const downloadLinks = {
-    android:
-      "https://drive.google.com/drive/folders/1GDBdUBvbf4uOfZrTHFjuXZ_V7ytVeZ2A?usp=sharing",
+    android: "https://ajitonelson.itch.io/ecolafaek",
     ios: "/uc",
-    direct:
-      "https://drive.google.com/drive/folders/1GDBdUBvbf4uOfZrTHFjuXZ_V7ytVeZ2A?usp=sharing",
+    direct: "https://ajitonelson.itch.io/ecolafaek",
   };
 
   return (
