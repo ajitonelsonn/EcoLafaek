@@ -166,7 +166,7 @@ Join me on EcoLafaek - the app helping to keep Timor-Leste clean and beautiful!
 
 Report waste issues, track cleanup progress, and be part of the solution.
 
-Download EcoLafaek today! [App Link Coming Soon]
+Download EcoLafaek today! [https://www.ecolafaek.com/download]
 ''';
     
     Share.share(message, subject: 'Join me on EcoLafaek');
@@ -591,7 +591,7 @@ Download EcoLafaek today! [App Link Coming Soon]
                               trailing: const Icon(Icons.chevron_right),
                               onTap: () {
                                 // Launch email app with support email
-                                launchUrl(Uri.parse('mailto:support@ecolafaek.tl?subject=Support%20Request'));
+                                launchUrl(Uri.parse('mailto:ecolafaek@gmail.com?subject=Support%20Request'));
                               },
                             ),
                             
@@ -741,21 +741,21 @@ Download EcoLafaek today! [App Link Coming Soon]
               IconButton(
                 icon: const Icon(Icons.email),
                 onPressed: () {
-                  launchUrl(Uri.parse('mailto:info@ecolafaek.tl'));
+                  launchUrl(Uri.parse('ecolafaek@gmail.com'));
                 },
                 tooltip: 'Email',
               ),
               IconButton(
                 icon: const Icon(Icons.language),
                 onPressed: () {
-                  launchUrl(Uri.parse('https://ecolafaek.tl'));
+                  launchUrl(Uri.parse('https://www.ecolafaek.com'));
                 },
                 tooltip: 'Website',
               ),
               IconButton(
                 icon: const Icon(Icons.facebook),
                 onPressed: () {
-                  launchUrl(Uri.parse('https://facebook.com/ecolafaek'));
+                  launchUrl(Uri.parse('https://www.facebook.com/profile.php?id=61580125989106'));
                 },
                 tooltip: 'Facebook',
               ),
