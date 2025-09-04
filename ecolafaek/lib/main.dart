@@ -74,6 +74,7 @@ class MyApp extends StatelessWidget {
         initialRoute: SplashScreen.routeName,
         routes: {
           // Define all routes here for navigation
+          '/': (context) => const SplashScreen(), // Root route
           SplashScreen.routeName: (context) => const SplashScreen(),
           LoginScreen.routeName: (context) => const LoginScreen(),
           RegisterScreen.routeName: (context) => const RegisterScreen(),

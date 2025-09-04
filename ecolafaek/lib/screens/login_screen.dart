@@ -67,7 +67,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final size = MediaQuery.of(context).size;
     final primaryColor = theme.primaryColor;
 
-    return Scaffold(
+    return PopScope(
+      canPop: false, // Disable back button on login screen
+      child: Scaffold(
       body: Stack(
         children: [
           // Background design
@@ -448,6 +450,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 }

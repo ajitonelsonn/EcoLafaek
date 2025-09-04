@@ -57,7 +57,6 @@ flutter:
     - assets/images/default-avatar.jpg
     - assets/images/pattern.png
     - assets/images/empty_reports.png
-    - assets/translations/
     - assets/images/app_icon.png
     - assets/images/app_icon_foreground.png
     - .env
