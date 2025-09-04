@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../providers/auth_provider.dart';
 import 'home_screen.dart';
@@ -94,9 +95,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               Positioned.fill(
                 child: Opacity(
                   opacity: 0.06,
-                  child: Image.asset(
-                    'assets/images/pattern.png',
-                    repeat: ImageRepeat.repeat,
+                  child: SvgPicture.asset(
+                    'assets/images/pattern.svg',
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
                   ),
                 ),
               ),

@@ -41,6 +41,7 @@ dependencies:
   url_launcher: ^6.2.5
   share_plus: ^7.2.2
   fl_chart: ^0.64.0
+  flutter_svg: ^2.0.10
 
 dev_dependencies:
   flutter_test:
@@ -55,7 +56,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/default-avatar.jpg
-    - assets/images/pattern.png
+    - assets/images/pattern.svg
     - assets/images/empty_reports.png
     - assets/images/app_icon.png
     - assets/images/app_icon_foreground.png
