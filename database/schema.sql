@@ -199,7 +199,7 @@ CREATE TABLE pending_registrations (
 -- Creating indexes for performance
 CREATE INDEX idx_reports_location ON reports(latitude, longitude);
 CREATE INDEX idx_reports_status ON reports(status);
-CREATE INDEX idx_reports_user_id ON reports(user_id);
 CREATE INDEX idx_analysis_report ON analysis_results(report_id);
 CREATE INDEX idx_hotspots_location ON hotspots(center_latitude, center_longitude);
 CREATE INDEX idx_dashboard_stats_date ON dashboard_statistics(stat_date);
+CREATE INDEX idx_reports_user_id ON reports(user_id);
