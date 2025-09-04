@@ -13,10 +13,13 @@ import {
   CheckCircle,
   ChevronRight,
   ArrowDown,
+  X,
+  Info,
 } from "lucide-react";
 
 export default function DownloadApp() {
   const [activeTab, setActiveTab] = useState("android"); // 'android' or 'ios'
+  const [showIosModal, setShowIosModal] = useState(false);
 
   // App download links
   const downloadLinks = {
@@ -102,19 +105,28 @@ export default function DownloadApp() {
                 </div>
 
                 {/* Download button for the selected platform */}
-                <a
-                  href={downloadLinks[activeTab]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 py-3 px-6 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium shadow-sm mx-auto"
-                >
-                  <Download className="w-5 h-5" />
-                  Download for{" "}
-                  {activeTab === "android" ? "Android" : "iOS SOON"}
-                </a>
+                {activeTab === "android" ? (
+                  <a
+                    href={downloadLinks[activeTab]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 py-3 px-6 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium shadow-sm mx-auto"
+                  >
+                    <Download className="w-5 h-5" />
+                    Download for Android
+                  </a>
+                ) : (
+                  <button
+                    onClick={() => setShowIosModal(true)}
+                    className="flex items-center justify-center gap-2 py-3 px-6 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors font-medium shadow-sm mx-auto cursor-pointer"
+                  >
+                    <Info className="w-5 h-5" />
+                    iOS Coming Soon
+                  </button>
+                )}
 
                 <div className="mt-4 text-sm text-gray-500">
-                  Version 1.1.1 • Released Sep 03, 2025
+                  Version 1.0.0 • Released Sep 01, 2025
                 </div>
 
                 <div className="mt-6">
@@ -264,6 +276,61 @@ export default function DownloadApp() {
           </div>
         </div>
       </div>
+
+      {/* iOS Modal */}
+      {showIosModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 relative">
+            <button
+              onClick={() => setShowIosModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <div className="text-center">
+              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Smartphone className="w-8 h-8 text-blue-600" />
+              </div>
+
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                iOS App Coming Soon!
+              </h3>
+
+              <p className="text-gray-600 mb-4 leading-relaxed">
+                The iOS version will be available in the future. Since this app
+                is built with Flutter, creating an iOS version is technically
+                straightforward, but we currently don't have the budget for an
+                Apple Developer account.
+              </p>
+
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                For now, please use the Android version or access our web
+                dashboard. We'll notify you as soon as the iOS version becomes
+                available!
+              </p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowIosModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                >
+                  Close
+                </button>
+                <a
+                  href={downloadLinks.android}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium text-center"
+                  onClick={() => setShowIosModal(false)}
+                >
+                  Get Android App
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </ModernLayout>
   );
 }
