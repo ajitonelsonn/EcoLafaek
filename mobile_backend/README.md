@@ -12,6 +12,7 @@
   <img src="https://img.shields.io/badge/Amazon_Nova_Pro-FF9900?style=for-the-badge&logo=amazonwebservices" alt="Amazon Nova Pro" />
   <img src="https://img.shields.io/badge/Titan_Embed_Image-FF9900?style=for-the-badge&logo=amazonwebservices" alt="Titan Embed Image" />
   <img src="https://img.shields.io/badge/Python-3,8+-blue?style=for-the-badge&logo=python" alt="Python 3.8+" />
+  <img src="https://img.shields.io/badge/TiDB-FF6B35?style=for-the-badge&logo=tidb" alt="TiDB" />
   <img src="https://img.shields.io/badge/TiDB_Vector-FF6B35?style=for-the-badge&logo=tidb" alt="TiDB Vector" />
   <img src="https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3" alt="AWS S3" />
 </p>
@@ -20,33 +21,156 @@
 
 This is a powerful backend service for an environmental waste monitoring system in Timor-Leste. Named after the crocodile ("Lafaek") which is considered sacred in Timorese culture, this project aims to protect the natural environment through community-driven waste reporting and AI-powered analysis using Amazon Nova Pro.
 
-**Live API Documentation:** [https://ecolafaek.com/docs](https://ecolafaek.com/docs)  
+**Live API :** [https://ecolafaek.com](https://ecolafaek.com)  
 **Public Dashboard:** [https://www.ecolafaek.xyz/](https://www.ecolafaek.xyz/)  
 **Mobile App Download:** [https://www.ecolafaek.xyz/download](https://www.ecolafaek.xyz/download)
-
-This repository is part of a larger ecosystem:
-
-1. [EcoLafaek](https://github.com/ajitonelsonn/EcoLafaek) - Project overview
-2. [EcoLafaek_Mobile_Backend](https://github.com/ajitonelsonn/mobile_backend) - API backend (this repo)
-3. [EcoLafaek_Mobileapp](https://github.com/ajitonelsonn/EcoLafaek_Mobileapp) - Flutter mobile app
-4. [Ecolafaek_webpublic](https://github.com/ajitonelsonn/Ecolafaek_webpublic) - Next.js public dashboard
 
 ## 🤖 AI-Powered Environmental Monitoring
 
 EcoLafaek demonstrates the transformative potential of Amazon Nova Pro for environmental monitoring and civic engagement in developing regions.
 
-**Experience our complete ecosystem:**
-
-- **API Documentation:** [https://ecolafaek.com/docs](https://ecolafaek.com/docs)
-- **Public Dashboard:** [https://www.ecolafaek.xyz/](https://www.ecolafaek.xyz/)
-- **Mobile App:** [https://www.ecolafaek.xyz/download](https://www.ecolafaek.xyz/download)
-
-**Test Credentials for Judges:**
+**Test Credentials for Judges In Mobile App:**
 
 ```
 Username: usertest
 Password: 1234abcd
 ```
+
+## 🗄️ TiDB Database Implementation
+
+### How We Use TiDB
+
+EcoLafaek leverages TiDB's advanced capabilities to create a powerful, scalable environmental monitoring system. Our implementation takes advantage of TiDB's unique combination of distributed SQL and vector search capabilities.
+
+#### Vector Database Integration
+
+We use TiDB's native vector storage for AI-powered data analysis:
+
+```sql
+CREATE TABLE analysis_results (
+    result_id INT AUTO_INCREMENT PRIMARY KEY,
+    report_id INT NOT NULL,
+    waste_type VARCHAR(100),
+    severity_score INT,
+    priority_level VARCHAR(20),
+    image_embedding VECTOR(1024),     -- Content-based embeddings
+    location_embedding VECTOR(1024),  -- Geographic embeddings
+    environmental_impact TEXT,
+    analysis_notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (report_id) REFERENCES reports(report_id)
+);
+```
+
+#### Geospatial and Vector Combined Queries
+
+TiDB enables sophisticated queries combining traditional geospatial calculations with vector similarity:
+
+```sql
+-- Hotspot detection using geographic clustering
+SELECT
+    AVG(latitude) as hotspot_lat,
+    AVG(longitude) as hotspot_lon,
+    COUNT(*) as report_count,
+    AVG(a.severity_score) as avg_severity
+FROM reports r
+JOIN analysis_results a ON r.report_id = a.report_id
+WHERE (
+    6371 * acos(cos(radians(-8.5567)) * cos(radians(r.latitude)) *
+    cos(radians(r.longitude) - radians(125.5736)) + sin(radians(-8.5567)) *
+    sin(radians(r.latitude)))
+) <= 0.5  -- Within 500 meters
+GROUP BY
+    ROUND(latitude, 3),
+    ROUND(longitude, 3)
+HAVING report_count >= 3;
+```
+
+### TiDB Features We Leverage
+
+#### 1. Vector Storage and Search
+
+```python
+# Store embeddings in TiDB
+cursor.execute("""
+    INSERT INTO analysis_results
+    (report_id, image_embedding, location_embedding, ...)
+    VALUES (%s, %s, %s, ...)
+""", (
+    report_id,
+    json.dumps(image_embedding),  # 1024-dimensional vector
+    json.dumps(location_embedding),  # Geographic context vector
+    # ... other fields
+))
+```
+
+#### 2. Distributed Transactions
+
+```python
+# Atomic report processing with ACID guarantees
+try:
+    cursor.execute("START TRANSACTION")
+
+    # Insert report
+    cursor.execute("INSERT INTO reports (...) VALUES (...)")
+    report_id = cursor.lastrowid
+
+    # Insert analysis results with embeddings
+    cursor.execute("INSERT INTO analysis_results (...) VALUES (...)")
+
+    # Update or create hotspot
+    cursor.execute("INSERT INTO hotspots (...) ON DUPLICATE KEY UPDATE ...")
+
+    cursor.execute("COMMIT")
+except Exception as e:
+    cursor.execute("ROLLBACK")
+    raise e
+```
+
+#### 3. Horizontal Scaling
+
+TiDB automatically handles data distribution as EcoLafaek grows:
+
+- **TiKV Storage Layer**: Distributes waste report data across nodes
+- **TiFlash Columnar Storage**: Accelerates analytical queries for dashboard
+- **Auto-Sharding**: Handles growing vector embeddings dataset
+
+#### 4. MySQL Compatibility
+
+Seamless integration with existing Python ecosystem:
+
+```python
+import mysql.connector
+
+# Standard MySQL connector works perfectly with TiDB
+connection = mysql.connector.connect(
+    host=DB_HOST,
+    port=4000,  # TiDB default port
+    database=DB_NAME,
+    user=DB_USER,
+    password=DB_PASSWORD,
+    ssl_disabled=True
+)
+```
+
+### Performance Optimizations
+
+#### Query Optimization
+
+```sql
+-- Optimized hotspot detection with proper indexing
+CREATE INDEX idx_reports_location ON reports(latitude, longitude);
+CREATE INDEX idx_analysis_severity ON analysis_results(severity_score, created_at);
+CREATE INDEX idx_reports_date ON reports(report_date);
+```
+
+### TiDB Benefits
+
+1. **Unified Data Platform**: Store both traditional waste report data and AI vector embeddings in one system
+2. **Real-time Processing**: Handle concurrent report submissions from mobile app users
+3. **Scalable Analytics**: Grow from local Timor-Leste deployment to regional environmental monitoring
+4. **Cost-Effective**: Distributed architecture eliminates need for separate vector database
+5. **Developer Friendly**: MySQL compatibility speeds development and deployment
 
 ## 🧠 Amazon Nova Pro Implementation
 
@@ -107,11 +231,11 @@ This approach ensures:
 - Fallback options when parsing fails
 - Graceful degradation of service
 
-## 🔍 Vector Search & Semantic Similarity
+## 🔍 Vector Embeddings & Data Storage
 
 ### Amazon Titan Embed Image v1 Integration
 
-EcoLafaek implements advanced vector search capabilities using **Amazon Titan Embed Image v1** model for both image and text embeddings. This enables powerful semantic similarity matching and intelligent pattern recognition.
+EcoLafaek uses **Amazon Titan Embed Image v1** model to create embeddings from waste analysis data and location information. These embeddings are stored as vectors for future analysis and potential pattern recognition capabilities.
 
 #### Multimodal Embeddings
 
@@ -130,7 +254,7 @@ def invoke_titan_embed_text(text: str) -> Optional[List[float]]:
             "outputEmbeddingLength": 1024
         }
     }
-    
+
     response = requests.post(
         f"{BEDROCK_ENDPOINT}/model/amazon.titan-embed-image-v1/invoke",
         headers=headers,
@@ -142,7 +266,7 @@ def invoke_titan_embed_text(text: str) -> Optional[List[float]]:
 
 #### TiDB Vector Storage
 
-All embeddings are stored in TiDB using VECTOR(1024) columns:
+All embeddings are stored in TiDB using VECTOR(1024) columns for future analysis:
 
 ```sql
 CREATE TABLE analysis_results (
@@ -153,63 +277,6 @@ CREATE TABLE analysis_results (
 );
 ```
 
-### Vector Search Capabilities
-
-#### 1. Semantic Search API
-
-Find reports based on natural language descriptions:
-
-```bash
-curl -X GET "https://ecolafaek.com/api/vector-search/semantic?query=plastic bottles near water&limit=10" \
-  -H "Authorization: Bearer your_token_here"
-```
-
-Example implementation:
-
-```python
-@app.get("/api/vector-search/semantic")
-async def semantic_search_reports(
-    query: str,
-    limit: int = 10,
-    user_id: int = Depends(get_current_user_id)
-):
-    # Create embedding for search query
-    query_embedding = invoke_titan_embed_text(query)
-    
-    # Search using cosine similarity
-    cursor.execute("""
-        SELECT r.*, ar.*, 
-               VEC_COSINE_DISTANCE(ar.image_embedding, %s) as similarity_score
-        FROM reports r
-        JOIN analysis_results ar ON r.report_id = ar.report_id
-        WHERE ar.image_embedding IS NOT NULL
-        ORDER BY similarity_score ASC
-        LIMIT %s
-    """, [json.dumps(query_embedding), limit])
-    
-    return {"results": cursor.fetchall()}
-```
-
-#### 2. Similar Reports API
-
-Find visually and contextually similar waste reports:
-
-```bash
-curl -X GET "https://ecolafaek.com/api/vector-search/similar/123?limit=5" \
-  -H "Authorization: Bearer your_token_here"
-```
-
-#### 3. Location-Based Patterns API
-
-Discover waste patterns in specific geographic areas:
-
-```bash
-curl -X GET "https://ecolafaek.com/api/vector-search/location-patterns?lat=-8.55&lon=125.58&radius=1000&limit=10" \
-  -H "Authorization: Bearer your_token_here"
-```
-
-### Advanced Vector Features
-
 #### Location-Enhanced Embeddings
 
 We create rich location embeddings that include:
@@ -217,7 +284,7 @@ We create rich location embeddings that include:
 ```python
 def create_location_embedding(latitude: float, longitude: float) -> List[float]:
     location_text = f"latitude {latitude:.6f} longitude {longitude:.6f}"
-    
+
     # Add Timor-Leste geographic context
     if -8.3 <= latitude <= -8.1 and 125.5 <= longitude <= 125.7:
         location_text += " Dili capital city urban area high population density"
@@ -225,7 +292,7 @@ def create_location_embedding(latitude: float, longitude: float) -> List[float]:
         location_text += " northern Timor-Leste coastal region moderate population"
     elif latitude < -8.5:
         location_text += " southern Timor-Leste mountainous rural area"
-    
+
     return invoke_titan_embed_text(location_text)
 ```
 
@@ -244,52 +311,17 @@ def create_image_content_embedding(analysis_result: dict) -> List[float]:
         f"Volume: {analysis_result.get('estimated_volume', '0')} cubic meters",
         f"Description: {analysis_result.get('analysis_notes', '')}"
     ]
-    
+
     content_text = " ".join([part for part in content_parts if part.split(': ')[1]])
     return invoke_titan_embed_text(content_text)
 ```
 
-### Vector Search Benefits
+### Embedding Generation Process
 
-1. **Pattern Recognition**: Identify similar waste accumulation patterns across different locations
-2. **Hotspot Prediction**: Use semantic similarity to predict potential problem areas
-3. **Resource Optimization**: Find clusters of similar waste types for efficient cleanup routing
-4. **Community Insights**: Understand waste composition trends through semantic analysis
-5. **Automated Categorization**: Group reports automatically based on content similarity
-
-### Performance Optimizations
-
+- **Universal Generation**: Embeddings created for **ALL** reports (both waste and non-waste)
 - **Parallel Processing**: Embeddings generated concurrently with Nova Pro analysis
-- **Caching Strategy**: Frequently accessed embeddings cached for faster retrieval
-- **Index Optimization**: TiDB vector indexes for sub-second search performance
-- **Batch Processing**: Multiple similarity calculations in single database queries
-
-### Actual Analysis Example
-
-```
-Processing report 240001 with image URL: [...].jpg
-Attempt 1 - Analyzing image from: [...].jpg
-Successfully downloaded image: Type=image/jpeg, Size=209610 bytes
-Converted image to base64 format (length: 279480 chars)
-Sending multimodal request with image to Nova Pro API
-Received response from Nova Pro API: Status=200
-Detailed analysis attempt 1 for image containing waste
-Sending multimodal request for detailed analysis to Nova Pro
-Received detailed response from Nova Pro API: Status=200
-Nova Pro analysis complete:
-{
-    'waste_type': 'Mixed (predominantly Plastic)',
-    'severity_score': 8,
-    'priority_level': 'high',
-    'environmental_impact': 'Significant risk of plastic pollution contaminating soil and potentially entering nearby water systems. Most visible waste consists of non-biodegradable plastics that can persist in the environment for decades, threatening ecosystems and wildlife.',
-    'estimated_volume': 7.5,
-    'safety_concerns': 'Breeding ground for disease vectors (rodents, insects), potential leachate formation following rainfall, physical hazard to pedestrians, possible blockage of drainage systems',
-    'analysis_notes': 'The scene shows mismanaged waste that has overflowed from designated collection containers. Immediate waste removal and improved waste management practices are urgently needed. Consider implementing separated collection bins, increasing collection frequency, and conducting community education on proper waste disposal to prevent recurrence.',
-    'full_description': 'The image displays a severe case of mismanaged municipal solid waste with primarily plastic materials (bottles, wrappers, containers) and paper/cardboard items spilling outside designated green dumpsters. The waste has accumulated in a significant pile across a wide area, creating both environmental hazards and community health risks in what appears to be an urban setting with nearby buildings.',
-    'waste_detection_confidence': 100,
-    'short_description': 'Overflowing garbage around waste containers'
-}
-```
+- **Comprehensive Storage**: Every report (garbage or no garbage) has embeddings stored in database
+- **Future-Ready**: Complete vector dataset prepared for potential search and analysis features
 
 ### Nova Pro Prompting Strategy
 
@@ -332,30 +364,102 @@ Return your answer as a JSON object with the following structure:
 
 ## 🚀 Key Features
 
-- **FastAPI Backend**: High-performance, easy-to-use, and built for production
-- **Amazon Nova Pro Integration**: Advanced multimodal AI for waste image analysis
-- **Titan Vector Embeddings**: Amazon Titan Embed Image v1 for semantic search and similarity matching
-- **TiDB Vector Search**: Advanced vector storage and search capabilities with 1024-dimensional embeddings
-- **Semantic Search**: Find similar waste patterns and locations using AI-powered embeddings
-- **Secure Authentication**: JWT-based auth with email verification
-- **Comprehensive Reporting**: End-to-end waste report lifecycle management
-- **Hotspot Detection**: Automatic identification of waste problem areas
-- **AWS S3 Integration**: Scalable image storage solution
-- **Detailed Analytics**: Community and personal waste contribution statistics
+### 🧠 AI-Powered Analysis
 
-## 🔝 Advantages of Amazon Nova Pro
+- **Amazon Nova Pro Integration**: Advanced multimodal AI for waste image analysis with bearer token authentication
+- **Two-Phase Analysis**: Initial waste detection followed by detailed analysis for confirmed waste
+- **Intelligent Classification**: Distinguishes between actual waste and everyday objects to reduce false positives
+- **Severity Assessment**: 1-10 scale severity scoring with priority levels (low, medium, high, critical)
+- **Environmental Impact Evaluation**: Detailed assessment of environmental risks and safety concerns
 
-Amazon Nova Pro offers several advantages for our environmental monitoring application:
+### 🔍 Vector Embeddings & Data Storage
 
-1. **Superior Multimodal Understanding**: Nova Pro accurately distinguishes between garbage/waste and regular objects, reducing false positives
-2. **Context-Aware Analysis**: Understands environmental context (proximity to water, public spaces, hazards)
-3. **Nuanced Classification**: More granular waste type identification and severity assessment
-4. **Structured Outputs**: Returns well-formatted JSON objects that integrate seamlessly with our database
-5. **Enterprise-Grade Processing**: AWS-powered infrastructure ensures reliability and scalability
-6. **Fast Response Times**: Low latency suitable for mobile app integration
-7. **Robust Error Handling**: Reliable performance even with varied image quality
+- **Amazon Titan Embed Image v1**: Multimodal embeddings for both image content and text descriptions
+- **TiDB Vector Storage**: 1024-dimensional embeddings stored in TiDB for future analysis
+- **Content Embeddings**: Rich text descriptions from Nova Pro analysis converted to vectors
+- **Location Embeddings**: Geographic context embeddings with Timor-Leste regional awareness
+- **Future-Ready**: Vector data prepared for potential search and analysis capabilities
 
 ## 📱 Application Workflow
+
+### 🔄 Waste Report Processing Flow
+
+![Waste Report Processing Flow](/image/1.svg)
+
+### 🧠 AI Analysis Pipeline
+
+```mermaid
+graph LR
+    subgraph "Phase 1: Initial Detection"
+        A[Image Upload] --> B[Download & Convert to Base64]
+        B --> C[Nova Pro: Waste Detection]
+        C --> D{Contains Waste?}
+    end
+
+    subgraph "Phase 2: Detailed Analysis"
+        D -->|Yes| E[Nova Pro: Detailed Analysis]
+        E --> F[Extract Structured Data]
+        F --> G[Waste Type Classification]
+        G --> H[Severity Scoring 1-10]
+        H --> I[Priority Level Assignment]
+        I --> J[Environmental Impact Assessment]
+    end
+
+    subgraph "Phase 3: Data Processing (Both Paths)"
+        D -->|No| K1[Create Embeddings for Non-Garbage]
+        J --> K2[Create Embeddings for Waste Analysis]
+        K1 --> L[Store Vectors in TiDB]
+        K2 --> L
+        L --> M[Hotspot Management]
+    end
+```
+
+### 📊 System Architecture
+
+![System Architecture](/image/2.svg)
+
+### 🎯 Example Processing Scenarios
+
+#### Scenario 1: Non-Waste Detection
+
+![Non-Waste](/image/nohave.png)
+Based on actual system logs from `this image`:
+
+```
+1. User submits image of laptop screen with code
+2. System downloads image (243,876 bytes)
+3. Converts to base64 (325,168 chars)
+4. Nova Pro analysis: "Image determined not to contain waste"
+5. Report marked as "Not Garbage"
+6. System checks for nearby reports (found 3)
+7. Associates with existing hotspot 60001
+8. Processing complete
+```
+
+#### Scenario 2: Actual Waste Detection
+
+![Non-Waste](have.png)
+Based on actual system logs from `the image above`:
+
+```
+1. User submits image of waste pile
+2. System downloads image (164,808 bytes)
+3. Converts to base64 (219,744 chars)
+4. Nova Pro initial detection: Contains waste (95% confidence)
+5. Nova Pro detailed analysis returns:
+   - Waste Type: Mixed (predominantly plastic)
+   - Severity Score: 8/10
+   - Priority Level: High
+   - Volume: ~10 cubic meters
+   - Environmental Impact: High pollution risk
+   - Safety Concerns: Sharp objects, fire hazard
+6. Generate embeddings for content and location
+7. Store analysis results in database
+8. Check for nearby reports (found 3)
+9. Update existing hotspot 60001
+10. Associate report with hotspot
+11. Processing complete
+```
 
 ## 🏭 Environmental Impact Classification
 
@@ -376,7 +480,7 @@ Each report includes:
 
 ## 🌍 Real-World Impact
 
-EcoLafaek addresses critical waste management challenges in Timor-Leste:
+EcoLafaek addresses waste management challenges in Timor-Leste:
 
 1. **Limited Municipal Resources**: AI-powered prioritization helps focus cleanup efforts
 2. **Civic Engagement**: Community participation through accessible mobile reporting
@@ -387,29 +491,66 @@ EcoLafaek addresses critical waste management challenges in Timor-Leste:
 
 ## 🔧 Technical Implementation
 
-Our backend system is built with:
+### Core Architecture
 
-1. **FastAPI** with asynchronous support for high performance
-2. **TiDB Vector Database** for structured data storage and vector search
-3. **Amazon Titan Embed Image v1** for multimodal embeddings (1024 dimensions)
-4. **AWS S3** for scalable image storage
-5. **JWT Authentication** for secure access
-6. **Amazon Nova Pro** for intelligent image analysis
-7. **Vector Search APIs** for semantic similarity and pattern recognition
-8. **Gunicorn/Uvicorn** for production deployment
+1. **FastAPI Framework** with asynchronous support and automatic API documentation
+2. **TiDB Vector Database** with 1024-dimensional vector storage and search
+3. **Amazon Bedrock Services**:
+   - **Nova Pro v1.0** for multimodal waste image analysis
+   - **Titan Embed Image v1** for generating content and location embeddings
+4. **AWS S3** for secure, scalable image storage
+5. **Bearer Token Authentication** for Bedrock API access
+6. **MySQL Connector** for TiDB database connections
+
+### Database Schema Features
+
+- **Vector Columns**: `VECTOR(1024)` for image and location embeddings
+- **Geospatial Queries**: Haversine formula for distance calculations
+- **Hotspot Management**: Automatic clustering and association tables
+- **User Authentication**: Secure password storage and email verification
+- **Report Lifecycle**: Complete workflow from submission to analysis
+
+### AI/ML Pipeline
+
+1. **Image Processing**: Base64 encoding with MIME type detection
+2. **Nova Pro Analysis**: Two-phase detection and classification
+3. **Embedding Generation**: Parallel processing for content and location vectors
+4. **Vector Storage**: TiDB integration with automatic indexing
+5. **Similarity Search**: Cosine distance calculations for pattern matching
+
+### Environment Variables
+
+```bash
+# Database Configuration
+DB_HOST=your-tidb-host
+DB_NAME=db_ecolafaek
+DB_USER=your-username
+DB_PASSWORD=your-password
+DB_PORT=4000
+
+# AWS Bedrock Configuration
+BEDRICK_MODEL_ID=amazon.nova-pro-v1:0
+AWS_BEARER_TOKEN_BEDROCK=your-bearer-token
+BEDRICK_ENDPOINT=https://bedrock-runtime.us-east-1.amazonaws.com
+
+# AWS S3 Configuration
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+AWS_REGION=us-east-1
+S3_BUCKET_NAME=ecolafaek
+
+# JWT & Email Configuration
+JWT_SECRET=your-jwt-secret
+JWT_EXPIRATION_HOURS=24
+EMAIL_USER=your-email
+EMAIL_PASS=your-app-password
+EMAIL_SERVER=smtp.gmail.com
+EMAIL_PORT=587
+```
 
 ### Database Schema
 
-We've designed a comprehensive database schema to support environmental waste monitoring. View our complete [database structure and SQL schema](https://github.com/ajitonelsonn/EcoLafaek_Perplexity/tree/main/database) to understand how we store and organize:
-
-- User accounts and authentication
-- Waste reports with geolocation data
-- AI analysis results from Amazon Nova Pro
-- **Vector embeddings (1024-dimensional)** for semantic search
-- **TiDB vector indexes** for fast similarity queries
-- Waste type classifications
-- Environmental hotspot detection
-- Image processing queue
+Our comprehensive database schema supports environmental waste monitoring with: [Database schema](https://github.com/ajitonelsonn/EcoLafaek/tree/main/database)
 
 ## 🚀 Setup and Deployment
 
@@ -421,21 +562,10 @@ The application is deployed on AWS Lightsail with:
 4. **Systemd** service for automatic restarts
 5. **Proper error handling** with retry mechanisms
 
-## 🌟 Future Enhancements
-
-With continued development of Amazon Nova Pro, we plan to:
-
-1. Implement **multi-stage reasoning** for complex waste analysis
-2. Add **temporal analysis** to track changes in waste sites over time
-3. Develop **predictive models** for waste accumulation patterns
-4. Create **automated cleanup recommendations** based on waste types
-5. Integrate with **government systems** for coordinated response
-
 ## 🚀 Live Demo
 
 Our complete EcoLafaek ecosystem is publicly accessible for demonstration purposes:
 
-- **Interactive API Documentation:** [https://ecolafaek.xyz/docs](https://ecolafaek.com/docs)
 - **Health Check Endpoint:** [https://ecolafaek.xyz/health](https://ecolafaek.com/health)
 - **Public Dashboard:** [https://www.ecolafaek.com/](https://www.ecolafaek.xyz/)
 - **Mobile App Download:** [https://www.ecolafaek.com/download](https://www.ecolafaek.xyz/download)
@@ -451,7 +581,6 @@ Password: 1234abcd
 
 You can use these credentials in:
 
-- The Swagger UI authorization form at [https://ecolafaek.xyz/docs](https://ecolafaek.com/docs)
 - The mobile app to create and submit waste reports
 - Direct API calls as shown below
 
@@ -468,35 +597,35 @@ curl -X POST https://ecolafaek.xyz/api/auth/login \
 **Test Nova Pro Analysis:**
 
 ```bash
-curl -X GET "https://ecolafaek.xyz/api/test/nova?image_url=https://liberty-society.xyz/cdn/shop/articles/sampah_organik.jpg" \
+curl -X GET "https://ecolafaek.xyz/api/test/nova?image_url=https://example.com/waste-image.jpg" \
   -H "Authorization: Bearer your_token_here"
 ```
 
-**Vector Search - Semantic Search:**
+**List User Reports:**
 
 ```bash
-curl -X GET "https://ecolafaek.xyz/api/vector-search/semantic?query=plastic bottles scattered on ground&limit=5" \
+curl -X GET "https://ecolafaek.xyz/api/reports?page=1&per_page=10" \
   -H "Authorization: Bearer your_token_here"
 ```
 
-**Vector Search - Find Similar Reports:**
+**Get Report Details:**
 
 ```bash
-curl -X GET "https://ecolafaek.xyz/api/vector-search/similar/12345?limit=5" \
+curl -X GET "https://ecolafaek.xyz/api/reports/12345" \
   -H "Authorization: Bearer your_token_here"
 ```
 
-**Vector Search - Location Patterns:**
+**Dashboard Statistics:**
 
 ```bash
-curl -X GET "https://ecolafaek.xyz/api/vector-search/location-patterns?lat=-8.55&lon=125.58&radius=1000&limit=10" \
+curl -X GET "https://ecolafaek.xyz/api/dashboard/stats" \
   -H "Authorization: Bearer your_token_here"
 ```
 
-**Test Vector Embeddings:**
+**Get Hotspots:**
 
 ```bash
-curl -X GET "https://ecolafaek.xyz/api/test/embeddings?text=plastic waste near river&image_url=test_image.jpg" \
+curl -X GET "https://ecolafaek.xyz/api/hotspots?lat=-8.55&lon=125.58&radius=5" \
   -H "Authorization: Bearer your_token_here"
 ```
 
@@ -504,6 +633,16 @@ Replace `your_token_here` with the token received from the login response.
 
 ---
 
+## 📞 Support
+
+For technical support or questions:
+
+- Create an issue in this repository
+- Contact: [ecolafaek@gmail.com](mailto:support@ecolafaek.com)
+- Documentation: [https://docs.ecolafaek.com](https://docs.ecolafaek.com)
+
+---
+
 <div align="center">
-  <p>Built with ❤️ for a cleaner Timor-Leste</p>
+  <p>Built with ❤️ for Timor-Leste</p>
 </div>
