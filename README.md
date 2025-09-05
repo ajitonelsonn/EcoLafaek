@@ -1,8 +1,9 @@
 # EcoLafaek - Environmental Waste Monitoring System for Timor-Leste
 
-<div align="center">
-  <img src="app_logo.webp" alt="EcoLafaek Project Structure" />
-</div>
+<p align="center">
+  <img src="app_logo.webp" alt="EcoLafaek Logo" width="120" style="margin-right: 20px;" />
+  <span style="font-size: 36px; font-weight: bold; margin: 0 20px;">
+</p>
 
 <div align="center">
   <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter" />
