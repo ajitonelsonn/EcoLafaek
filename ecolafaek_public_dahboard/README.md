@@ -25,8 +25,6 @@ A comprehensive public web dashboard for visualizing and analyzing waste managem
 - **🌡️ Severity Heatmaps**: Identify critical areas requiring urgent intervention with color-coded intensity maps
 - **📉 Trend Analysis**: Track waste reporting patterns over time with detailed temporal analytics
 - **🏆 Community Leaderboard**: Recognize and motivate top contributors with filtering and ranking systems
-- **🤖 AI-Powered Insights**: Automated waste classification, anomaly detection, and predictive analytics
-- **📱 Mobile App Integration**: Seamless connection with the EcoLafaek mobile application for real-time data sync
 - **⚡ Smart Caching**: Intelligent result caching system with parameter-based cache invalidation
 - **🎨 Modern UI/UX**: Glassmorphism design, smooth animations, and responsive layouts optimized for all devices
 - **🔐 Secure API Layer**: Comprehensive error handling, input validation, and connection pool management
@@ -35,7 +33,7 @@ A comprehensive public web dashboard for visualizing and analyzing waste managem
 
 Visit the live dashboard: [EcoLafaek Dashboard](https://ecolafaek.xyz)
 
-![Dashboard Overview](public/ss/dashboard-screen.png)
+![Dashboard Overview](public/scs/dashboard-screen.png)
 
 ## 🏗️ Architecture Overview
 
@@ -177,17 +175,13 @@ graph TB
 
 - **AI Platform**: Amazon Bedrock (us-east-1 region)
 - **Vector Embeddings**: Titan Embed Image v1 model for semantic search
-- **Semantic Analysis**: Advanced similarity matching using TiDB's VEC_COSINE_DISTANCE
-- **Pattern Recognition**: AI-powered clustering algorithms for waste pattern detection
-- **Search Capabilities**: Natural language search, similar reports, and batch analysis
-
-### DevOps & Deployment
-
-- **Hosting**: Vercel platform with edge functions
-- **CI/CD**: Automated deployment with GitHub integration
-- **Environment**: Multi-stage environment configuration
-- **Monitoring**: Performance tracking and error logging
-- **Security**: Environment variable protection and API rate limiting
+- **Semantic Analysis**: Advanced similarity matching using TiDB's VEC_COSINE_DISTANCE with VEC_FROM_TEXT conversion
+- **Pattern Recognition**: Enhanced AI-powered clustering algorithms with:
+  - Smart similarity threshold adjustment (0.2 → 0.5 for better matching)
+  - Geographic distance calculations and pattern classification
+  - Time-based pattern analysis and trend detection
+  - Confidence scoring with string-to-number conversion handling
+- **Search Capabilities**: Natural language search, auto-modal similar reports, and comprehensive pattern analysis
 
 ### External Integrations
 
@@ -273,8 +267,8 @@ ecolafaek_public_dashboard/
 │   ├── 🔌 api/               # Backend API endpoints
 │   │   ├── vector-search/    # Vector search APIs
 │   │   │   ├── semantic.ts   # Semantic search endpoint
-│   │   │   ├── similar-reports.ts # Similar reports finder
-│   │   │   ├── clusters.ts   # Pattern analysis endpoint
+│   │   │   ├── similar-reports.ts # Similar reports finder with auto-modal
+│   │   │   ├── clusters.ts   # Enhanced pattern analysis with clustering algorithms
 │   │   │   ├── batch-analysis.ts # Bulk analysis endpoint
 │   │   │   └── utils/        # Shared API utilities
 │   │   ├── reports/          # Report management APIs
@@ -283,7 +277,8 @@ ecolafaek_public_dashboard/
 │   ├── 🏠 index.js           # Homepage with dashboard overview
 │   ├── 📊 analytics.js       # Detailed analytics page
 │   ├── 🗺️ map.js             # Interactive waste map
-│   ├── 🔍 vector-search.js   # Advanced search interface
+│   ├── 🔍 vector-search.js   # Advanced search interface with enhanced pattern analysis
+│   ├── 📄 reports/[id].js    # Individual report page with similar reports modal
 │   ├── 🏆 leaderboard.js     # Community contributors ranking
 │   ├── ℹ️ about.js           # About page with project info
 │   └── 📄 _app.js            # Next.js app configuration
@@ -335,28 +330,33 @@ Our advanced geospatial visualization powered by Leaflet displays waste reports 
 - **Real-time data synchronization** with the mobile app backend
 - **Responsive marker clustering** that adapts to zoom levels
 
-![Waste Map](public/ss/map-screen.png)
+![Waste Map](public/scs/map-screen.png)
 
 ### 🔍 Advanced Vector Search
 
 Powered by Amazon Bedrock and TiDB vector database:
 
-- **Semantic Search**: Find reports using natural language queries
-- **Similar Reports**: AI-powered identification of related waste incidents
-- **Pattern Analysis**: Discover clustering patterns and anomalies in waste data
-- **Batch Analysis**: Process multiple reports simultaneously for trends
-- **Smart Caching**: Intelligent result caching with parameter-based invalidation
+- **Semantic Search**: Find reports using natural language queries with real-time processing
+- **Similar Reports Modal**: Auto-search functionality that displays up to 10 similar reports in an interactive modal instead of redirecting
+- **Pattern Analysis**: Enhanced clustering algorithm with smart similarity thresholds and comprehensive insights
+  - Geographic clustering with adjustable similarity thresholds (0.5-0.8)
+  - Pattern type classification (Geographic, Temporal, Severity-based, Mixed)
+  - Time span analysis with detailed insights generation
+  - Confidence scoring with fallback calculations for data quality assessment
+- **Batch Analysis**: Process multiple reports simultaneously for comprehensive trend analysis
+
+![Waste Map](public/scs/SimilirReportDetails.png)
 
 ### 🌡️ Hotspot Analysis
 
-Automated identification of critical areas using:
+Automated identification the most report in same areas using:
 
 - **Geographic clustering algorithms** to detect waste concentration zones
 - **Temporal analysis** to identify recurring problem areas
 - **Severity weighting** to prioritize urgent intervention sites
 - **Resource allocation guidance** for cleanup teams and officials
 
-![Hotspots Analysis](public/ss/hotspots-screen.png)
+![Hotspots Analysis](public/scs/hotspots-screen.png)
 
 ### 🏆 Community Leaderboard
 
@@ -368,17 +368,7 @@ Comprehensive contributor recognition system featuring:
 - **Achievement badges** and recognition levels
 - **Community engagement metrics** to foster healthy competition
 
-![Leaderboard](public/ss/leaderboard-screen.png)
-
-### 📊 AI-Powered Analytics
-
-Advanced data processing capabilities include:
-
-- **Automated waste classification** using computer vision
-- **Trend prediction** based on historical patterns
-- **Anomaly detection** for unusual waste accumulation
-- **Impact assessment** measuring cleanup effectiveness
-- **Real-time dashboard updates** with live data synchronization
+![Leaderboard](public/scs/leaderboard-screen.png)
 
 ## 🌍 Integration with EcoLafaek Ecosystem
 
@@ -412,13 +402,13 @@ sequenceDiagram
 3. **🔍 Vector Analysis**: Images are converted to embeddings and stored in TiDB for semantic search capabilities
 4. **📊 Real-time Sync**: Dashboard pulls data continuously from TiDB with smart caching
 5. **📈 Analytics Generation**: Advanced analytics are computed and presented through interactive visualizations
-6. **🏛️ Decision Support**: Government officials access actionable insights for strategic planning
+6. **🏛️ Decision Support**: Government officials access actionable insights for strategic planning (Future)
 7. **🏆 Community Engagement**: Contributors are recognized and motivated through the leaderboard system
 8. **🔄 Feedback Loop**: System improvements are made based on usage patterns and effectiveness metrics
 
 ## 🌱 Project Background
 
-EcoLafaek was created to address the significant waste management challenges in Timor-Leste, particularly in Dili where improper waste disposal leads to flooding during heavy rains. Based on research from the JICA survey "Data Collection Survey: Solid Waste Management in Dili City to Reduce Marine Plastic Waste in Timor-Leste," it was evident that community engagement in waste reporting could significantly improve the situation.
+EcoLafaek was created to address the significant waste management challenges in Timor-Leste, particularly in Dili where improper waste disposal leads to flooding during heavy rains. Based on research from the JICA survey "Data Collection [Survey: Solid Waste Management in Dili City to Reduce Marine Plastic Waste in Timor-Leste,"](https://www.jica.go.jp/english/overseas/easttimor/data/__icsFiles/afieldfile/2024/11/30/Dili_SWM_Presentation_Material_English_2.pdf) it was evident that community engagement in waste reporting could significantly improve the situation.
 
 This public dashboard serves as the visualization and analytics layer of the ecosystem, providing decision-makers with the insights needed to take effective action while engaging citizens through transparent data sharing and community recognition.
 
@@ -434,4 +424,6 @@ To review and test the app, judges can easily [download the mobile app](https://
 
 ---
 
-Made with ❤️ from 🇹🇱
+<div align="center">
+  <p>Built with ❤️ in Timor-Leste</p>
+</div>
