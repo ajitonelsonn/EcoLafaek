@@ -66,7 +66,7 @@ graph TB
     style BEDROCK fill:#FF5722,stroke:#D84315,color:white
 ```
 
-## 📱 Mobile Application
+## [ 📱 Mobile Application ](./ecolafaek/README.md)
 
 **Location**: [`/ecolafaek`](./ecolafaek/README.md)
 
@@ -90,10 +90,11 @@ A Flutter-based cross-platform mobile app that empowers citizens to report waste
 
 **Test Credentials for Judges:**
 
-- Username: `usertest`
-- Password: `1234abcd`
+- **[Click to Download APP](https://ecolafaek.com/download)**
+  - Username: `usertest`
+  - Password: `1234abcd`
 
-## 🌐 Public Dashboard
+## [ 🌐 Public Dashboard](./ecolafaek_public_dahboard/README.md)
 
 **Location**: [`/ecolafaek_public_dahboard`](./ecolafaek_public_dahboard/README.md)
 
@@ -118,9 +119,9 @@ A Next.js web dashboard providing comprehensive analytics and visualization for 
 - **Maps**: Leaflet with custom clustering algorithms
 - **Charts**: Chart.js and Tremor for interactive visualizations
 
-**Live Demo**: [ecolafaek.xyz](https://ecolafaek.xyz)
+**Live Demo**: [ecolafaek.com](https://ecolafaek.com)
 
-## ⚡ Backend Services
+## [ ⚡ Backend Services](./mobile_backend/README.md)
 
 **Location**: [`/mobile_backend`](./mobile_backend/README.md)
 
@@ -149,6 +150,8 @@ A FastAPI-powered backend service handling AI processing, data management, and A
 2. **Phase 2**: Detailed analysis for confirmed waste (classification, severity, volume)
 3. **Phase 3**: Vector embedding generation and storage in TiDB
 4. **Phase 4**: Hotspot management and pattern analysis
+
+**Check API Health**: [ecolafaek.xyz](https://ecolafaek.xyz/health)
 
 ## 🗄️ Database Schema
 
@@ -224,11 +227,11 @@ A comprehensive TiDB Cloud database design optimized for environmental monitorin
 
 ## 🌍 Live Demo System
 
-- **API Health Check**: [ecolafaek.com/health](https://ecolafaek.com/health)
-- **Public Dashboard**: [ecolafaek.xyz](https://ecolafaek.xyz)
+- **API Health Check**: [ecolafaek.xyz/health](https://ecolafaek.xyz/health)
+- **Public Dashboard**: [ecolafaek.com](https://ecolafaek.com)
 - **Mobile App Download**: [ecolafaek.com/download](https://ecolafaek.com/download)
 
-### Test Credentials
+### Test Credentials for Mobile App
 
 For evaluation and testing purposes:
 

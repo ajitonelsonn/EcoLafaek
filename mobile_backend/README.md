@@ -21,9 +21,9 @@
 
 This is a powerful backend service for an environmental waste monitoring system in Timor-Leste. Named after the crocodile ("Lafaek") which is considered sacred in Timorese culture, this project aims to protect the natural environment through community-driven waste reporting and AI-powered analysis using Amazon Nova Pro.
 
-**Live API :** [https://ecolafaek.com](https://ecolafaek.com)  
-**Public Dashboard:** [https://www.ecolafaek.xyz/](https://www.ecolafaek.xyz/)  
-**Mobile App Download:** [https://www.ecolafaek.xyz/download](https://www.ecolafaek.xyz/download)
+**Live API :** [https://ecolafaek.xyz/health](https://ecolafaek.com/health)  
+**Public Dashboard:** [https://www.ecolafaek.com/](https://www.ecolafaek.com/)  
+**Mobile App Download:** [https://www.ecolafaek.com/download](https://www.ecolafaek.com/download)
 
 ## 🤖 AI-Powered Environmental Monitoring
 
@@ -566,9 +566,9 @@ The application is deployed on AWS Lightsail with:
 
 Our complete EcoLafaek ecosystem is publicly accessible for demonstration purposes:
 
-- **Health Check Endpoint:** [https://ecolafaek.xyz/health](https://ecolafaek.com/health)
-- **Public Dashboard:** [https://www.ecolafaek.com/](https://www.ecolafaek.xyz/)
-- **Mobile App Download:** [https://www.ecolafaek.com/download](https://www.ecolafaek.xyz/download)
+- **Health Check Endpoint:** [https://ecolafaek.xyz/health](https://ecolafaek.xyz/health)
+- **Public Dashboard:** [https://www.ecolafaek.com/](https://www.ecolafaek.com/)
+- **Mobile App Download:** [https://www.ecolafaek.com/download](https://www.ecolafaek.com/download)
 
 ### 🧪 Test Credentials
 

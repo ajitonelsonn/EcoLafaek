@@ -31,7 +31,7 @@ A comprehensive public web dashboard for visualizing and analyzing waste managem
 
 ## 🖥️ Live Demo
 
-Visit the live dashboard: [EcoLafaek Dashboard](https://ecolafaek.xyz)
+Visit the live dashboard: [EcoLafaek Dashboard](https://ecolafaek.com)
 
 ![Dashboard Overview](public/scs/dashboard-screen.png)
 
