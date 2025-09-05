@@ -384,7 +384,7 @@ Return your answer as a JSON object with the following structure:
 
 ### 🔄 Waste Report Processing Flow
 
-![Waste Report Processing Flow](/image/1.svg)
+![Waste Report Processing Flow](image/1.svg)
 
 ### 🧠 AI Analysis Pipeline
 
@@ -416,13 +416,13 @@ graph LR
 
 ### 📊 System Architecture
 
-![System Architecture](/image/2.svg)
+![System Architecture](image/2.svg)
 
 ### 🎯 Example Processing Scenarios
 
 #### Scenario 1: Non-Waste Detection
 
-![Non-Waste](/image/nohave.png)
+![Non-Waste](image/nohave.png)
 Based on actual system logs from `this image`:
 
 ```
@@ -438,7 +438,7 @@ Based on actual system logs from `this image`:
 
 #### Scenario 2: Actual Waste Detection
 
-![Non-Waste](have.png)
+![Non-Waste](image/have.png)
 Based on actual system logs from `the image above`:
 
 ```
