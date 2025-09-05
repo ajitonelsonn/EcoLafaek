@@ -1,7 +1,7 @@
 # EcoLafaek - Environmental Waste Monitoring System for Timor-Leste
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/ajitonelsonn/EcoLafaek/refs/heads/main/mobile_backend/image/app_logo.png?token=GHSAT0AAAAAAC4OSEMT3K4E3G6WYVSTZUJM2F2RKNA" alt="EcoLafaek Project Structure" />
+  <img src="app_logo.webp" alt="EcoLafaek Project Structure" />
 </div>
 
 <div align="center">
