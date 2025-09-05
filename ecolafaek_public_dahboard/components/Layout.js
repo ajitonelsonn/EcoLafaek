@@ -127,7 +127,7 @@ export default function Layout({ children }) {
                     src="/app_logo.png"
                     alt="Ecolafaek Logo"
                     fill
-                    style={{objectFit: 'contain'}}
+                    style={{ objectFit: "contain" }}
                   />
                 </div>
                 <span
@@ -301,7 +301,7 @@ export default function Layout({ children }) {
                     src="/app_logo.png"
                     alt="Ecolafaek Logo"
                     fill
-                    style={{objectFit: 'contain'}}
+                    style={{ objectFit: "contain" }}
                   />
                 </div>
                 <span className="font-bold text-xl text-green-700">
@@ -394,6 +394,14 @@ export default function Layout({ children }) {
                       className="text-gray-600 hover:text-green-600"
                     >
                       Download App
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="https://github.com/ajitonelsonn/EcoLafaek"
+                      className="text-gray-600 hover:text-green-600"
+                    >
+                      Code Repository
                     </Link>
                   </li>
                 </ul>
