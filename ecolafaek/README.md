@@ -19,10 +19,6 @@
 
 EcoLafaek Mobile is a citizen-focused mobile application that empowers residents of Timor-Leste to report waste issues and track their environmental impact. The app provides a streamlined experience for waste reporting with intelligent analysis and meaningful progress tracking.
 
-<div align="center">
-  <em>"Lafaek" means "crocodile" in Tetum, Timor-Leste's national language, symbolizing the guardian role the app plays in protecting the environment.</em>
-</div>
-
 ### 🌱 How The App Works
 
 #### 📸 **Waste Reporting Process**
@@ -153,7 +149,6 @@ The backend leverages modern cloud services and AI technology for intelligent wa
 - **Database**: TiDB Cloud with VECTOR(1024) columns for embeddings
 - **AI Analysis**: Amazon Nova Pro v1 for waste classification
 - **Vector Embeddings**: Amazon Titan Embed Image v1 (1024-dimensional)
-- **Text Embeddings**: Amazon Titan Embed Text for location semantics
 - **Image Storage**: AWS S3 with organized folder structure
 - **Geographic Analytics**: Hotspot detection using spatial clustering
 
@@ -208,14 +203,6 @@ API_BASE_URL=http://your-api-url
 ```bash
 flutter run
 ```
-
-### Configuration
-
-The app supports multiple environment configurations:
-
-- Development: `.env.development`
-- Staging: `.env.staging`
-- Production: `.env.production`
 
 ## 📊 Project Structure
 

@@ -121,3 +121,4 @@ app.*.symbols
 .env
 some.txt
 check.txt
+hackthon_requriment.md
