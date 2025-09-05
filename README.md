@@ -17,7 +17,7 @@
 
 EcoLafaek is an innovative AI-powered waste management solution designed specifically for Timor-Leste, leveraging Amazon Bedrock's Nova Pro and Titan models to transform how communities identify, report, and address waste issues. Named after the sacred crocodile ("Lafaek") in Timorese culture, our platform serves as a guardian of the nation's natural beauty.
 
-Timor-Leste faces significant waste management challenges, [with Dili producing over 300 tons of waste daily, and more than 100 tons going uncollected.](https://www.jica.go.jp/english/overseas/easttimor/data/__icsFiles/afieldfile/2024/11/30/Dili_SWM_Presentation_Material_English_2.pdf), This waste clogs drainage systems, causes flooding during rainy seasons, and creates environmental hazards. EcoLafaek directly addresses these challenges through AI-powered analysis, community engagement, and data-driven insights.
+Timor-Leste faces significant waste management challenges, [with Dili producing over 300 tons of waste daily, and more than 100 tons going uncollected. `JICA survey page 20`.](https://www.jica.go.jp/english/overseas/easttimor/data/__icsFiles/afieldfile/2024/11/30/Dili_SWM_Presentation_Material_English_2.pdf) This waste clogs drainage systems, causes flooding during rainy seasons, and creates environmental hazards. EcoLafaek directly addresses these challenges through AI-powered analysis, community engagement, and data-driven insights.
 
 ### 🎯 Project Inspiration
 
