@@ -384,7 +384,7 @@ Return your answer as a JSON object with the following structure:
 
 ### 🔄 Waste Report Processing Flow
 
-![Waste Report Processing Flow](image/1.svg)
+![Waste Report Processing Flow](image/1.png)
 
 ### 🧠 AI Analysis Pipeline
 
