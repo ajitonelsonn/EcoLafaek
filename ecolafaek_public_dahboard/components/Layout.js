@@ -15,7 +15,6 @@ import {
   Trophy,
   Download,
   Search,
-  Github,
 } from "lucide-react";
 
 export default function Layout({ children }) {
@@ -191,15 +190,6 @@ export default function Layout({ children }) {
                   >
                     Help
                   </Link>
-                  <Link
-                    href="https://github.com/ajitonelsonn/EcoLafaek"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium hover:underline"
-                  >
-                    <Github className="w-4 h-4" />
-                    GitHub
-                  </Link>
                 </div>
               </div>
             </div>
@@ -275,16 +265,6 @@ export default function Layout({ children }) {
                     >
                       <Sun className="w-5 h-5" />
                       Help
-                    </Link>
-                    <Link
-                      href="https://github.com/ajitonelsonn/EcoLafaek"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <Github className="w-5 h-5" />
-                      GitHub
                     </Link>
                   </div>
                 </div>
@@ -418,7 +398,7 @@ export default function Layout({ children }) {
                   </li>
                   <li>
                     <Link
-                      href="https://github.com/ajitonelsonn/EcoLafaek"
+                      href="/code-repository"
                       className="text-gray-600 hover:text-green-600"
                     >
                       Code Repository
