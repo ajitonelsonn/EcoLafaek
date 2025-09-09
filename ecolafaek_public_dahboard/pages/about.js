@@ -528,57 +528,7 @@ export default function AboutPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Amazon Nova-Pro */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
-                  <Image
-                    src="/tech/amazon-nova.png"
-                    alt="Amazon Nova-Pro"
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
-                </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">
-                  Amazon Nova-Pro
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Advanced AI Analysis
-                </p>
-                <div className="text-xs text-gray-500 leading-relaxed">
-                  Multimodal AI for waste classification, severity assessment,
-                  and environmental impact analysis
-                </div>
-              </div>
-            </div>
-
-            {/* FastAPI */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
-                  <Image
-                    src="/tech/fastapi.svg"
-                    alt="FastAPI"
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
-                </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">
-                  FastAPI
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  High-Performance Backend
-                </p>
-                <div className="text-xs text-gray-500 leading-relaxed">
-                  Fast, modern Python API with automatic documentation and
-                  robust data processing
-                </div>
-              </div>
-            </div>
-
-            {/* Flutter */}
+            {/* Flutter - Frontend Mobile */}
             <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
               <div className="text-center">
                 <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
@@ -590,19 +540,15 @@ export default function AboutPage() {
                     className="object-contain"
                   />
                 </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">
-                  Flutter
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Cross-Platform Mobile
-                </p>
+                <h3 className="font-bold text-xl text-gray-900 mb-2">Flutter</h3>
+                <p className="text-sm text-gray-600 mb-4">Mobile App</p>
                 <div className="text-xs text-gray-500 leading-relaxed">
-                  Optimized for low-connectivity environments.
+                  Cross-platform mobile app for citizen waste reporting with offline capabilities
                 </div>
               </div>
             </div>
 
-            {/* Next.js */}
+            {/* Next.js - Frontend Dashboard */}
             <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
               <div className="text-center">
                 <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
@@ -614,20 +560,95 @@ export default function AboutPage() {
                     className="object-contain"
                   />
                 </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">
-                  Next.js
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Interactive Dashboard
-                </p>
+                <h3 className="font-bold text-xl text-gray-900 mb-2">Next.js</h3>
+                <p className="text-sm text-gray-600 mb-4">Public Dashboard</p>
                 <div className="text-xs text-gray-500 leading-relaxed">
-                  Real-time visualizations, analytics, and community engagement
-                  platform
+                  Real-time analytics dashboard with interactive maps and visualizations
                 </div>
               </div>
             </div>
 
-            {/* TiDB */}
+            {/* FastAPI - Backend */}
+            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
+                  <Image
+                    src="/tech/fastapi.svg"
+                    alt="FastAPI"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
+                </div>
+                <h3 className="font-bold text-xl text-gray-900 mb-2">FastAPI</h3>
+                <p className="text-sm text-gray-600 mb-4">API Backend</p>
+                <div className="text-xs text-gray-500 leading-relaxed">
+                  High-performance Python API for data processing and AI integration
+                </div>
+              </div>
+            </div>
+
+            {/* AWS Lightsail - Deployment */}
+            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
+                  <Image
+                    src="/tech/lightsail.svg"
+                    alt="AWS Lightsail"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
+                </div>
+                <h3 className="font-bold text-xl text-gray-900 mb-2">AWS Lightsail</h3>
+                <p className="text-sm text-gray-600 mb-4">Cloud Hosting</p>
+                <div className="text-xs text-gray-500 leading-relaxed">
+                  Reliable cloud deployment platform with SSL and automated backups
+                </div>
+              </div>
+            </div>
+
+            {/* Amazon Nova-Pro - AI Analysis */}
+            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
+                  <Image
+                    src="/tech/amazon-nova.png"
+                    alt="Amazon Nova-Pro"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
+                </div>
+                <h3 className="font-bold text-xl text-gray-900 mb-2">Nova-Pro</h3>
+                <p className="text-sm text-gray-600 mb-4">AI Analysis</p>
+                <div className="text-xs text-gray-500 leading-relaxed">
+                  Advanced AI for waste classification and environmental impact analysis
+                </div>
+              </div>
+            </div>
+
+            {/* Amazon Titan Embed Image v1 - Embeddings */}
+            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
+                  <Image
+                    src="/tech/titan.png"
+                    alt="Titan Embed Image v1"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
+                </div>
+                <h3 className="font-bold text-xl text-gray-900 mb-2">Titan Embed</h3>
+                <p className="text-sm text-gray-600 mb-4">Image Embeddings</p>
+                <div className="text-xs text-gray-500 leading-relaxed">
+                  Image embedding model for similarity search and pattern recognition
+                </div>
+              </div>
+            </div>
+
+            {/* TiDB - Database */}
             <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
               <div className="text-center">
                 <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
@@ -639,18 +660,15 @@ export default function AboutPage() {
                     className="object-contain"
                   />
                 </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">TiDB</h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Database & Vector Store
-                </p>
+                <h3 className="font-bold text-xl text-gray-900 mb-2">TiDB Cloud</h3>
+                <p className="text-sm text-gray-600 mb-4">Primary Database</p>
                 <div className="text-xs text-gray-500 leading-relaxed">
-                  Distributed SQL database with vector search capabilities for
-                  data storage and similarity search
+                  Stores all data: users, reports, AI analysis, vector embeddings, and S3 image paths
                 </div>
               </div>
             </div>
 
-            {/* AWS S3 */}
+            {/* AWS S3 - Storage */}
             <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
               <div className="text-center">
                 <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
@@ -665,54 +683,7 @@ export default function AboutPage() {
                 <h3 className="font-bold text-xl text-gray-900 mb-2">AWS S3</h3>
                 <p className="text-sm text-gray-600 mb-4">Image Storage</p>
                 <div className="text-xs text-gray-500 leading-relaxed">
-                  Scalable cloud storage for waste images with optimized CDN
-                  delivery and backup
-                </div>
-              </div>
-            </div>
-
-            {/* Amazon Titan Embed Image v1 */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
-                  <Image
-                    src="/tech/titan.png"
-                    alt="Titan Embed Image v1"
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
-                </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">
-                  Titan Embed Image v1
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">Image Embeddings</p>
-                <div className="text-xs text-gray-500 leading-relaxed">
-                  Advanced image embedding model for similarity search and
-                  pattern recognition in waste imagery
-                </div>
-              </div>
-            </div>
-
-            {/* AWS Lightsail */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
-                  <Image
-                    src="/tech/lightsail.svg"
-                    alt="AWS Lightsail"
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
-                </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">
-                  AWS Lightsail
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">Cloud Deployment</p>
-                <div className="text-xs text-gray-500 leading-relaxed">
-                  Simple cloud hosting platform for reliable API deployment with
-                  SSL and automated backups
+                  Stores actual waste images, while URLs and metadata are saved in TiDB
                 </div>
               </div>
             </div>
