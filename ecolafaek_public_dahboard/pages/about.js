@@ -531,8 +531,14 @@ export default function AboutPage() {
             {/* Amazon Nova-Pro */}
             <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <Brain className="w-8 h-8 text-white" />
+                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
+                  <Image
+                    src="/tech/amazon-nova.png"
+                    alt="Amazon Nova-Pro"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
                 </div>
                 <h3 className="font-bold text-xl text-gray-900 mb-2">
                   Amazon Nova-Pro
@@ -550,8 +556,14 @@ export default function AboutPage() {
             {/* FastAPI */}
             <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <Globe className="w-8 h-8 text-white" />
+                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
+                  <Image
+                    src="/tech/fastapi.svg"
+                    alt="FastAPI"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
                 </div>
                 <h3 className="font-bold text-xl text-gray-900 mb-2">
                   FastAPI
@@ -569,8 +581,14 @@ export default function AboutPage() {
             {/* Flutter */}
             <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <Smartphone className="w-8 h-8 text-white" />
+                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
+                  <Image
+                    src="/tech/Flutter.png"
+                    alt="Flutter"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
                 </div>
                 <h3 className="font-bold text-xl text-gray-900 mb-2">
                   Flutter
@@ -587,8 +605,14 @@ export default function AboutPage() {
             {/* Next.js */}
             <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <BarChart2 className="w-8 h-8 text-white" />
+                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
+                  <Image
+                    src="/tech/next-js.svg"
+                    alt="Next.js"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
                 </div>
                 <h3 className="font-bold text-xl text-gray-900 mb-2">
                   Next.js
@@ -599,6 +623,96 @@ export default function AboutPage() {
                 <div className="text-xs text-gray-500 leading-relaxed">
                   Real-time visualizations, analytics, and community engagement
                   platform
+                </div>
+              </div>
+            </div>
+
+            {/* TiDB */}
+            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
+                  <Image
+                    src="/tech/tidb.png"
+                    alt="TiDB"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
+                </div>
+                <h3 className="font-bold text-xl text-gray-900 mb-2">TiDB</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Database & Vector Store
+                </p>
+                <div className="text-xs text-gray-500 leading-relaxed">
+                  Distributed SQL database with vector search capabilities for
+                  data storage and similarity search
+                </div>
+              </div>
+            </div>
+
+            {/* AWS S3 */}
+            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
+                  <Image
+                    src="/tech/s3.svg"
+                    alt="AWS S3"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
+                </div>
+                <h3 className="font-bold text-xl text-gray-900 mb-2">AWS S3</h3>
+                <p className="text-sm text-gray-600 mb-4">Image Storage</p>
+                <div className="text-xs text-gray-500 leading-relaxed">
+                  Scalable cloud storage for waste images with optimized CDN
+                  delivery and backup
+                </div>
+              </div>
+            </div>
+
+            {/* Amazon Titan Embed Image v1 */}
+            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
+                  <Image
+                    src="/tech/titan.png"
+                    alt="Titan Embed Image v1"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
+                </div>
+                <h3 className="font-bold text-xl text-gray-900 mb-2">
+                  Titan Embed Image v1
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">Image Embeddings</p>
+                <div className="text-xs text-gray-500 leading-relaxed">
+                  Advanced image embedding model for similarity search and
+                  pattern recognition in waste imagery
+                </div>
+              </div>
+            </div>
+
+            {/* AWS Lightsail */}
+            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
+                  <Image
+                    src="/tech/lightsail.svg"
+                    alt="AWS Lightsail"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
+                </div>
+                <h3 className="font-bold text-xl text-gray-900 mb-2">
+                  AWS Lightsail
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">Cloud Deployment</p>
+                <div className="text-xs text-gray-500 leading-relaxed">
+                  Simple cloud hosting platform for reliable API deployment with
+                  SSL and automated backups
                 </div>
               </div>
             </div>
