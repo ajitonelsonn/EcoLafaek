@@ -232,13 +232,18 @@ CREATE TABLE IF NOT EXISTS notification_templates (
 
 
 -- Creating indexes for performance
-CREATE INDEX idx_reports_location ON reports(latitude, longitude);
-CREATE INDEX idx_reports_status ON reports(status);
-CREATE INDEX idx_analysis_report ON analysis_results(report_id);
-CREATE INDEX idx_hotspots_location ON hotspots(center_latitude, center_longitude);
-CREATE INDEX idx_dashboard_stats_date ON dashboard_statistics(stat_date);
-CREATE INDEX idx_reports_user_id ON reports(user_id);
-CREATE INDEX idx_admin_users_username ON admin_users(username);
-CREATE INDEX idx_admin_users_email ON admin_users(email);
-CREATE INDEX idx_reports_status_date ON reports(status, report_date);
-CREATE INDEX idx_analysis_results_date ON analysis_results(analyzed_date);
+CREATE INDEX IF NOT EXISTS idx_reports_location ON reports(latitude, longitude);
+CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status);
+CREATE INDEX IF NOT EXISTS idx_analysis_report ON analysis_results(report_id);
+CREATE INDEX IF NOT EXISTS idx_hotspots_location ON hotspots(center_latitude, center_longitude);
+CREATE INDEX IF NOT EXISTS idx_dashboard_stats_date ON dashboard_statistics(stat_date);
+CREATE INDEX IF NOT EXISTS idx_reports_user_id ON reports(user_id);
+
+CREATE INDEX IF NOT EXISTS idx_admin_users_username ON admin_users(username);
+CREATE INDEX IF NOT EXISTS idx_admin_users_email ON admin_users(email);
+CREATE INDEX IF NOT EXISTS idx_reports_status_date ON reports(status, report_date);
+CREATE INDEX IF NOT EXISTS idx_analysis_results_date ON analysis_results(analyzed_date);
+CREATE INDEX IF NOT EXISTS idx_system_settings_key ON system_settings(setting_key);
+CREATE INDEX IF NOT EXISTS idx_admin_notifications_admin_id ON admin_notifications(admin_id);
+CREATE INDEX IF NOT EXISTS idx_admin_notifications_read ON admin_notifications(read_status);
+

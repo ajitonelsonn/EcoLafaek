@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { executeQuery } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
+import bcrypt from 'bcryptjs'
 
 export async function GET(request: NextRequest) {
   try {
@@ -174,6 +175,106 @@ export async function PATCH(request: NextRequest) {
     console.error('User update error:', error)
     return NextResponse.json(
       { error: 'Failed to update user' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const authResult = await verifyToken(request)
+    if (!authResult.valid || !authResult.payload) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { username, email, phone_number, password } = await request.json()
+    
+    if (!username || !password) {
+      return NextResponse.json(
+        { error: 'Username and password are required' },
+        { status: 400 }
+      )
+    }
+
+    // Validate email format if provided
+    if (email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(email)) {
+        return NextResponse.json(
+          { error: 'Please enter a valid email address' },
+          { status: 400 }
+        )
+      }
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      return NextResponse.json(
+        { error: 'Password must be at least 6 characters long' },
+        { status: 400 }
+      )
+    }
+
+    // Check if username or email already exists
+    let existingQuery = 'SELECT user_id FROM users WHERE username = ?'
+    let queryParams = [username]
+    
+    if (email) {
+      existingQuery += ' OR email = ?'
+      queryParams.push(email)
+    }
+    
+    const existingResult = await executeQuery<any[]>(existingQuery, queryParams)
+    
+    if (existingResult.length > 0) {
+      return NextResponse.json(
+        { error: 'Username or email already exists' },
+        { status: 400 }
+      )
+    }
+
+    // Hash password
+    const saltRounds = 12
+    const hashedPassword = await bcrypt.hash(password, saltRounds)
+
+    // Create user
+    const insertQuery = `
+      INSERT INTO users (username, email, phone_number, password_hash, registration_date, account_status, verification_status)
+      VALUES (?, ?, ?, ?, NOW(), 'active', FALSE)
+    `
+    
+    const result = await executeQuery(insertQuery, [
+      username, 
+      email || null, 
+      phone_number || null, 
+      hashedPassword
+    ])
+
+    // Log the creation
+    try {
+      await executeQuery(
+        'INSERT INTO system_logs (agent, action, details, log_level, related_id, related_table) VALUES (?, ?, ?, ?, ?, ?)',
+        [
+          'user_management', 
+          'user_created', 
+          `New user created: ${username} (${email || 'no email'})`, 
+          'info', 
+          (result as any).insertId,
+          'users'
+        ]
+      )
+    } catch (logError) {
+      console.error('Failed to log user creation:', logError)
+    }
+
+    return NextResponse.json({
+      message: 'User created successfully',
+      user_id: (result as any).insertId
+    })
+  } catch (error) {
+    console.error('User creation error:', error)
+    return NextResponse.json(
+      { error: 'Failed to create user' },
       { status: 500 }
     )
   }

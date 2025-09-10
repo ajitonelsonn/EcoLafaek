@@ -8,7 +8,9 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, Users as UsersIcon, UserCheck, UserX, Eye, MoreHorizontal, Download } from 'lucide-react'
+import { Search, Users as UsersIcon, UserCheck, UserX, Eye, MoreHorizontal, Download, UserPlus } from 'lucide-react'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
 
 interface User {
   user_id: number
@@ -34,6 +36,14 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [showAddDialog, setShowAddDialog] = useState(false)
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    phone_number: '',
+    password: ''
+  })
+  const [submitting, setSubmitting] = useState(false)
   const [pagination, setPagination] = useState<Pagination>({
     page: 1,
     limit: 10,
@@ -85,6 +95,37 @@ export default function UsersPage() {
       }
     } catch (error) {
       console.error('Error updating user status:', error)
+    }
+  }
+
+  const handleAddUser = async () => {
+    if (!formData.username || !formData.password) {
+      alert('Username and password are required')
+      return
+    }
+
+    try {
+      setSubmitting(true)
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      if (response.ok) {
+        setShowAddDialog(false)
+        setFormData({ username: '', email: '', phone_number: '', password: '' })
+        fetchUsers()
+        alert('User created successfully')
+      } else {
+        const data = await response.json()
+        alert(data.error || 'Failed to create user')
+      }
+    } catch (error) {
+      console.error('Error creating user:', error)
+      alert('Failed to create user')
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -164,14 +205,80 @@ export default function UsersPage() {
                   <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
                   <p className="text-gray-600">Manage registered users and their accounts</p>
                 </div>
-                <Button
-                  variant="outline"
-                  onClick={exportUsers}
-                  className="flex items-center gap-2"
-                >
-                  <Download className="h-4 w-4" />
-                  Export CSV
-                </Button>
+                <div className="flex gap-2">
+                  <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+                    <DialogTrigger asChild>
+                      <Button className="flex items-center gap-2">
+                        <UserPlus className="h-4 w-4" />
+                        Add User
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add New User</DialogTitle>
+                        <DialogDescription>
+                          Create a new user account for reporting waste issues.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="username">Username *</Label>
+                          <Input
+                            id="username"
+                            value={formData.username}
+                            onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                            placeholder="Enter username"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="email">Email</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                            placeholder="Enter email (optional)"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="phone_number">Phone Number</Label>
+                          <Input
+                            id="phone_number"
+                            value={formData.phone_number}
+                            onChange={(e) => setFormData(prev => ({ ...prev, phone_number: e.target.value }))}
+                            placeholder="Enter phone number (optional)"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="password">Password *</Label>
+                          <Input
+                            id="password"
+                            type="password"
+                            value={formData.password}
+                            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                            placeholder="Enter password"
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+                          Cancel
+                        </Button>
+                        <Button onClick={handleAddUser} disabled={submitting}>
+                          {submitting ? 'Creating...' : 'Create User'}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                  <Button
+                    variant="outline"
+                    onClick={exportUsers}
+                    className="flex items-center gap-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    Export CSV
+                  </Button>
+                </div>
               </div>
             </div>
 
