@@ -235,6 +235,27 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
       });
     }
   }
+
+  // Refresh location with 5-second delay for better accuracy
+  Future<void> _refreshLocationWithDelay() async {
+    setState(() {
+      _isLocating = true;
+      _errorMessage = null;
+    });
+
+    try {
+      // Wait 5 seconds for better GPS accuracy
+      await Future.delayed(const Duration(seconds: 5));
+      
+      // Get current location with high accuracy
+      await _getCurrentLocation();
+    } catch (e) {
+      setState(() {
+        _isLocating = false;
+        _errorMessage = 'Failed to refresh location. Please try again.';
+      });
+    }
+  }
   
   // Pick image from camera only
   Future<void> _takePhoto() async {
@@ -298,7 +319,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
   }
   
   // Navigate to next step
-  void _nextStep() {
+  void _nextStep() async {
     // Validate current step
     if (_currentStep == 0 && _imageFile == null) {
       setState(() {
@@ -329,12 +350,18 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
         curve: Curves.easeInOut,
       );
       
-      // If moving to location step and we already have location, center map
-      if (_currentStep == 1 && _latitude != null && _longitude != null) {
-        // Schedule for after build
-        Future.delayed(const Duration(milliseconds: 300), () {
+      // If moving to location step, refresh location with 5-second delay for better accuracy
+      if (_currentStep == 1) {
+        // Wait 5 seconds for better location accuracy
+        await Future.delayed(const Duration(seconds: 5));
+        
+        // Refresh current location to get more accurate coordinates
+        await _getCurrentLocation();
+        
+        // Center map on the refreshed location
+        if (_latitude != null && _longitude != null) {
           _mapController.move(LatLng(_latitude!, _longitude!), 15);
-        });
+        }
       }
     } else {
       // Final step, submit report
@@ -1046,9 +1073,18 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton.icon(
-                          onPressed: _getCurrentLocation,
-                          icon: const Icon(Icons.refresh),
-                          label: const Text('Refresh My Location'),
+                          onPressed: _isLocating ? null : _refreshLocationWithDelay,
+                          icon: _isLocating 
+                            ? SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: primaryColor,
+                                ),
+                              )
+                            : const Icon(Icons.my_location),
+                          label: Text(_isLocating ? 'Getting Current Location...' : 'Get My Current Location'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: primaryColor,
                             side: BorderSide(color: primaryColor),
