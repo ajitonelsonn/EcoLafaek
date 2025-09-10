@@ -15,6 +15,7 @@ import {
   Trophy,
   Download,
   Search,
+  Mail,
 } from "lucide-react";
 
 export default function Layout({ children }) {
@@ -185,6 +186,12 @@ export default function Layout({ children }) {
                     About
                   </Link>
                   <Link
+                    href="/contact"
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium hover:underline"
+                  >
+                    Contact
+                  </Link>
+                  <Link
                     href="/uc"
                     className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium hover:underline"
                   >
@@ -257,6 +264,14 @@ export default function Layout({ children }) {
                     >
                       <ExternalLink className="w-5 h-5" />
                       About
+                    </Link>
+                    <Link
+                      href="/contact"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Mail className="w-5 h-5" />
+                      Contact
                     </Link>
                     <Link
                       href="/help"
@@ -352,7 +367,7 @@ export default function Layout({ children }) {
                 <ul className="space-y-2 text-sm">
                   <li>
                     <Link
-                      href="/uc"
+                      href="/contact"
                       className="text-gray-600 hover:text-green-600"
                     >
                       Contact Us
@@ -360,7 +375,7 @@ export default function Layout({ children }) {
                   </li>
                   <li>
                     <Link
-                      href="/uc"
+                      href="/contact#contact-form"
                       className="text-gray-600 hover:text-green-600"
                     >
                       Submit Feedback
@@ -368,7 +383,7 @@ export default function Layout({ children }) {
                   </li>
                   <li>
                     <Link
-                      href="/uc"
+                      href="/contact#contact-form"
                       className="text-gray-600 hover:text-green-600"
                     >
                       Report an Issue
