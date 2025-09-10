@@ -196,6 +196,41 @@ CREATE TABLE pending_registrations (
     UNIQUE KEY unique_username (username)
 );
 
+-- Admin users table for the admin panel
+CREATE TABLE IF NOT EXISTS admin_users (
+    admin_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role ENUM('super_admin', 'admin', 'moderator') DEFAULT 'admin',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_login DATETIME,
+    active BOOLEAN DEFAULT TRUE
+);
+
+-- Create system settings table
+CREATE TABLE IF NOT EXISTS system_settings (
+    setting_id INT AUTO_INCREMENT PRIMARY KEY,
+    setting_key VARCHAR(100) NOT NULL UNIQUE,
+    setting_value TEXT,
+    data_type ENUM('string', 'number', 'boolean') DEFAULT 'string',
+    description TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Create notification templates table
+CREATE TABLE IF NOT EXISTS notification_templates (
+    template_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    body TEXT NOT NULL,
+    type ENUM('email', 'sms', 'push') DEFAULT 'email',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
 -- Creating indexes for performance
 CREATE INDEX idx_reports_location ON reports(latitude, longitude);
 CREATE INDEX idx_reports_status ON reports(status);
@@ -203,3 +238,7 @@ CREATE INDEX idx_analysis_report ON analysis_results(report_id);
 CREATE INDEX idx_hotspots_location ON hotspots(center_latitude, center_longitude);
 CREATE INDEX idx_dashboard_stats_date ON dashboard_statistics(stat_date);
 CREATE INDEX idx_reports_user_id ON reports(user_id);
+CREATE INDEX idx_admin_users_username ON admin_users(username);
+CREATE INDEX idx_admin_users_email ON admin_users(email);
+CREATE INDEX idx_reports_status_date ON reports(status, report_date);
+CREATE INDEX idx_analysis_results_date ON analysis_results(analyzed_date);
