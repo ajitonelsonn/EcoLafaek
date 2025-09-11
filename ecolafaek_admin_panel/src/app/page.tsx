@@ -12,6 +12,9 @@ import {
   TrendingUp,
   Activity,
   Calendar,
+  Database,
+  Brain,
+  Target,
 } from "lucide-react";
 
 interface DashboardStats {
@@ -28,6 +31,19 @@ interface DashboardStats {
     name: string;
     count: number;
   }>;
+  // 🏆 TiDB Vector Database Fields
+  total_embeddings: number;
+  avg_ai_confidence: number;
+  vector_processing_rate: number;
+  location_embeddings_count: number;
+  // 🏆 Real Growth Metrics
+  users_growth: number; // vs last month
+  reports_growth: number; // vs last month
+  hotspots_growth: number; // vs last month
+  reports_today_growth: number; // vs yesterday
+  embeddings_growth: number; // vs last month
+  location_embeddings_growth: number; // vs last month
+  confidence_growth: number; // vs last month
 }
 
 interface RecentReport {
@@ -242,7 +258,7 @@ export default function Dashboard() {
                   icon={Users}
                   color="text-blue-600"
                   gradient="from-blue-500 to-blue-600"
-                  percentage={12}
+                  percentage={stats?.users_growth || 0}
                 />
 
                 <ModernMetricCard
@@ -252,7 +268,7 @@ export default function Dashboard() {
                   icon={FileText}
                   color="text-green-600"
                   gradient="from-green-500 to-emerald-600"
-                  percentage={8}
+                  percentage={stats?.reports_growth || 0}
                 />
 
                 <ModernMetricCard
@@ -262,6 +278,7 @@ export default function Dashboard() {
                   icon={MapPin}
                   color="text-red-600"
                   gradient="from-red-500 to-pink-600"
+                  percentage={stats?.hotspots_growth || 0}
                 />
 
                 <ModernMetricCard
@@ -271,8 +288,63 @@ export default function Dashboard() {
                   icon={TrendingUp}
                   color="text-purple-600"
                   gradient="from-purple-500 to-indigo-600"
-                  percentage={24}
+                  percentage={stats?.reports_today_growth || 0}
                 />
+              </div>
+
+              {/* 🏆 TiDB Vector Database Integration Section */}
+              <div className="mb-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-orange-100 rounded-lg">
+                    <Database className="h-6 w-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">TiDB Vector Database Analytics</h2>
+                    <p className="text-sm text-gray-600">AI-powered analysis with 1024-dimensional embeddings</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                  <ModernMetricCard
+                    title="Vector Embeddings"
+                    value={stats?.total_embeddings || 0}
+                    subtitle="AI-generated embeddings"
+                    icon={Database}
+                    color="text-orange-600"
+                    gradient="from-orange-500 to-red-600"
+                    percentage={stats?.embeddings_growth || 0}
+                  />
+
+                  <ModernMetricCard
+                    title="AI Confidence"
+                    value={`${stats?.avg_ai_confidence || 0}%`}
+                    subtitle="Analysis accuracy"
+                    icon={Brain}
+                    color="text-purple-600"
+                    gradient="from-purple-500 to-indigo-600"
+                    percentage={stats?.confidence_growth || 0}
+                  />
+
+                  <ModernMetricCard
+                    title="Processing Rate"
+                    value={`${stats?.vector_processing_rate || 0}%`}
+                    subtitle="Embeddings success rate"
+                    icon={Target}
+                    color="text-green-600"
+                    gradient="from-green-500 to-emerald-600"
+                    percentage={stats?.vector_processing_rate || 0}
+                  />
+
+                  <ModernMetricCard
+                    title="Location Embeddings"
+                    value={stats?.location_embeddings_count || 0}
+                    subtitle="Spatial AI analysis"
+                    icon={MapPin}
+                    color="text-blue-600"
+                    gradient="from-blue-500 to-cyan-600"
+                    percentage={stats?.location_embeddings_growth || 0}
+                  />
+                </div>
               </div>
 
               {/* Progress and Analytics */}
@@ -365,37 +437,67 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
 
-                {/* Severity Indicator */}
-                <Card className="border-0 shadow-lg bg-white">
+                {/* 🏆 TiDB Vector Analytics */}
+                <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-semibold text-gray-900">
-                      Severity Level
+                    <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                      <Database className="h-5 w-5 text-orange-600" />
+                      Vector Analytics
                     </CardTitle>
                     <p className="text-sm text-gray-600">
-                      Average threat level
+                      TiDB AI embeddings insights
                     </p>
                   </CardHeader>
-                  <CardContent className="flex items-center justify-center py-8">
-                    <div className="text-center">
-                      <div className="text-4xl font-bold text-orange-600 mb-2">
-                        {Number(stats?.average_severity || 0).toFixed(1)}
+                  <CardContent className="space-y-4 py-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-orange-100 rounded-lg">
+                          <Brain className="h-4 w-4 text-orange-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            AI Embeddings
+                          </p>
+                          <p className="text-xs text-gray-500">1024-dimensional</p>
+                        </div>
                       </div>
-                      <div className="text-lg font-semibold text-gray-700">
-                        / 10.0
+                      <span className="text-lg font-bold text-orange-600">
+                        {stats?.total_embeddings || 0}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-purple-100 rounded-lg">
+                          <Target className="h-4 w-4 text-purple-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            Confidence
+                          </p>
+                          <p className="text-xs text-gray-500">AI accuracy</p>
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-500 mt-2">
-                        Risk Score
+                      <span className="text-lg font-bold text-purple-600">
+                        {stats?.avg_ai_confidence || 0}%
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-green-100 rounded-lg">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            Processing
+                          </p>
+                          <p className="text-xs text-gray-500">Success rate</p>
+                        </div>
                       </div>
-                      <div className="w-24 h-2 bg-gray-200 rounded-full mx-auto mt-3">
-                        <div
-                          className="h-2 bg-gradient-to-r from-orange-400 to-red-500 rounded-full transition-all duration-1000"
-                          style={{
-                            width: `${
-                              ((stats?.average_severity || 0) / 10) * 100
-                            }%`,
-                          }}
-                        />
-                      </div>
+                      <span className="text-lg font-bold text-green-600">
+                        {stats?.vector_processing_rate || 0}%
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
