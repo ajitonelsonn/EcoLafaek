@@ -244,6 +244,3 @@ CREATE INDEX IF NOT EXISTS idx_admin_users_email ON admin_users(email);
 CREATE INDEX IF NOT EXISTS idx_reports_status_date ON reports(status, report_date);
 CREATE INDEX IF NOT EXISTS idx_analysis_results_date ON analysis_results(analyzed_date);
 CREATE INDEX IF NOT EXISTS idx_system_settings_key ON system_settings(setting_key);
-CREATE INDEX IF NOT EXISTS idx_admin_notifications_admin_id ON admin_notifications(admin_id);
-CREATE INDEX IF NOT EXISTS idx_admin_notifications_read ON admin_notifications(read_status);
-
