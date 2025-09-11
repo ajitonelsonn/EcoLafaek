@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { 
   LayoutDashboard, 
@@ -11,7 +12,6 @@ import {
   BarChart3, 
   Settings, 
   LogOut,
-  Leaf,
   Activity,
   Shield
 } from 'lucide-react'
@@ -42,9 +42,15 @@ export function Sidebar() {
   return (
     <div className="flex flex-col w-64 bg-white border-r border-gray-200 h-full">
       {/* Logo */}
-      <div className="flex items-center gap-2 p-6 border-b border-gray-200">
-        <div className="bg-green-600 p-2 rounded-lg">
-          <Leaf className="h-6 w-6 text-white" />
+      <div className="flex items-center gap-3 p-6 border-b border-gray-200">
+        <div className="w-10 h-10 relative">
+          <Image
+            src="/app_logo.png"
+            alt="EcoLafaek Logo"
+            width={40}
+            height={40}
+            className="rounded-lg"
+          />
         </div>
         <div>
           <h1 className="text-lg font-semibold text-gray-900">EcoLafaek</h1>

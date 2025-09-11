@@ -1,6 +1,14 @@
-# EcoLafaek Admin Panel
-
-A comprehensive administrative interface for the EcoLafaek environmental waste monitoring system. Built with Next.js 15, TypeScript, and modern UI components.And remember that right now we just run this admin pannel in local only.
+<div align="center">
+  <h1>🌿 EcoLafaek Admin Panel</h1>
+  
+  <p><strong>A comprehensive administrative interface for the EcoLafaek environmental waste monitoring system</strong></p>
+  
+  <p>Built with Next.js 15, TypeScript, and modern UI components</p>
+  
+  <p>📍 <em>Currently running in local development environment only</em></p>
+  
+  <br/>
+</div>
 
 ## 🚀 Features
 
@@ -35,58 +43,58 @@ A comprehensive administrative interface for the EcoLafaek environmental waste m
 
 ## ⚡ Quick Start
 
-1. **Clone the repository**:
+### 📥 Installation
 
-   ```bash
-   git clone https://github.com/ajitonelsonn/EcoLafaek.git
-   cd EcoLafaek/ecolafaek_admin_panel
-   ```
+```bash
+# 1. Clone the repository
+git clone https://github.com/ajitonelsonn/EcoLafaek.git
+cd EcoLafaek/ecolafaek_admin_panel
 
-2. **Install dependencies**:
+# 2. Install dependencies
+npm install
+```
 
-   ```bash
-   npm install
-   ```
+### 🔧 Configuration
 
-3. **Setup environment variables**:
+```bash
+# 3. Setup environment variables
+cp example.env.example .env.local
+```
 
-   ```bash
-   cp example.env.example .env.local
-   ```
+**Update `.env.local` with your credentials:**
 
-   Update `.env.local` with your credentials:
+```env
+# Database Configuration (TiDB Cloud)
+DB_HOST=gateway01.ap-northeast-1.prod.aws.tidbcloud.com
+DB_NAME=db_ecolafaek
+DB_USER=your_tidb_user
+DB_PASSWORD=your_tidb_password
+DB_PORT=4000
 
-   ```env
-   # Database Configuration (TiDB Cloud)
-   DB_HOST=gateway01.ap-northeast-1.prod.aws.tidbcloud.com
-   DB_NAME=db_ecolafaek
-   DB_USER=your_tidb_user
-   DB_PASSWORD=your_tidb_password
-   DB_PORT=4000
+# JWT Secret for admin authentication
+JWT_SECRET=your-secure-jwt-secret-key
 
-   # JWT Secret for admin authentication
-   JWT_SECRET=your-secure-jwt-secret-key
+# Application Settings
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-nextauth-secret
+NODE_ENV=development
+```
 
-   # Application Settings
-   NEXTAUTH_URL=http://localhost:3000
-   NEXTAUTH_SECRET=your-nextauth-secret
-   NODE_ENV=development
-   ```
+### 🗄️ Database Setup
 
-4. **Setup database schema**:
+```bash
+# 4. Execute the setup.sql file in your TiDB database
+```
 
-   ```bash
-   # Execute the setup.sql file in your TiDB database
-   ```
+### 🚀 Launch
 
-5. **Start development server**:
+```bash
+# 5. Start development server
+npm run dev
 
-   ```bash
-   npm run dev
-   ```
-
-6. **Open in browser**:
-   Navigate to [http://localhost:3000](http://localhost:3000)
+# 6. Open in browser
+# Navigate to http://localhost:3000
+```
 
 ## 🗄️ Database Setup
 
@@ -102,18 +110,30 @@ The admin panel requires these database tables:
 - `waste_types` - Waste classification types
 - `system_logs` - Activity logging
 
-### Default Admin Accounts
+---
+
+### 👤 Default Admin Accounts
 
 The setup script creates default admin accounts:
 
-#### Super Admin
+<table>
+<tr>
+<th>Account Type</th>
+<th>Username</th>
+<th>Password</th>
+<th>Role</th>
+<th>Email</th>
+</tr>
+<tr>
+<td>🔑 Super Admin</td>
+<td><code>admin</code></td>
+<td><code>admin123</code></td>
+<td><code>super_admin</code></td>
+<td><code>admin@ecolafaek.com</code></td>
+</tr>
+</table>
 
-- **Username**: `admin`
-- **Password**: `admin123`
-- **Role**: `super_admin`
-- **Email**: `admin@ecolafaek.com`
-
-⚠️ **Security Note**: Change the default passwords immediately after first login.
+> ⚠️ **Security Note**: Change the default passwords immediately after first login.
 
 ## 🔑 Authentication
 
@@ -179,75 +199,81 @@ npm run build    # Build for production
 npm run start    # Start production server
 ```
 
-### API Endpoints
+### 🔗 API Endpoints
 
-#### Authentication
+<details>
+<summary><strong>🔐 Authentication</strong></summary>
 
-- `POST /api/auth/login` - Admin login
-- `POST /api/auth/logout` - Admin logout
-- `GET /api/auth/me` - Get current admin user
-- `PUT /api/auth/profile` - Update admin profile
-- `PUT /api/auth/change-password` - Change admin password
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/auth/login` | Admin login |
+| `POST` | `/api/auth/logout` | Admin logout |
+| `GET` | `/api/auth/me` | Get current admin user |
+| `PUT` | `/api/auth/profile` | Update admin profile |
+| `PUT` | `/api/auth/change-password` | Change admin password |
 
-#### Dashboard
+</details>
 
-- `GET /api/dashboard/stats` - Get dashboard statistics
+<details>
+<summary><strong>📊 Dashboard</strong></summary>
 
-#### User Management
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/dashboard/stats` | Get dashboard statistics |
 
-- `GET /api/users` - List users with pagination/filtering
-- `POST /api/users` - Create new user account
-- `PATCH /api/users` - Update user status
+</details>
 
-#### Admin User Management
+<details>
+<summary><strong>👥 User Management</strong></summary>
 
-- `GET /api/admin-users` - List admin users (super_admin only)
-- `POST /api/admin-users` - Create new admin user (super_admin only)
-- `PUT /api/admin-users/[id]` - Update admin user (super_admin only)
-- `DELETE /api/admin-users/[id]` - Delete admin user (super_admin only)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/users` | List users with pagination/filtering |
+| `POST` | `/api/users` | Create new user account |
+| `PATCH` | `/api/users` | Update user status |
 
-#### Notifications
+</details>
 
-- `GET /api/notifications` - Get user notifications
-- `POST /api/notifications` - Create new notification
-- `PUT /api/notifications/[id]/read` - Mark notification as read
+<details>
+<summary><strong>🛡️ Admin User Management</strong></summary>
 
-### User Management
+| Method | Endpoint | Description | Access |
+|--------|----------|-------------|---------|
+| `GET` | `/api/admin-users` | List admin users | super_admin only |
+| `POST` | `/api/admin-users` | Create new admin user | super_admin only |
+| `PUT` | `/api/admin-users/[id]` | Update admin user | super_admin only |
+| `DELETE` | `/api/admin-users/[id]` | Delete admin user | super_admin only |
 
-- Create new user accounts with validation
-- Searchable user directory with real-time filtering
-- Status filtering (active/inactive/suspended)
-- CSV export functionality
-- User profile details with contact information
+</details>
 
-### Admin User Management
+---
 
-- Role-based admin account creation (admin/moderator)
-- Super admin exclusive access controls
-- Edit admin profiles and permissions
-- Delete protection for super admin accounts
-- Visual role indicators and avatars
+## 🖼️ Interface Screenshots
 
-### Notification System
+<div align="center">
 
-- Real-time notification bell with unread count
-- Type-specific notification icons (info, warning, success, error)
-- Mark as read functionality
-- Notification history tracking
+### 🔐 Login Page
+![Login](public/ssc/login.png)
 
-### Profile Management
+### 📊 Dashboard 
+![Dashboard](public/ssc/ana.png)
 
-- Change password with current password verification
-- Update profile information (username, email)
-- Session management and logout functionality
+### 👥 User Management
+![Users](public/ssc/user.png)
 
-### Authentication Flow
+### 📋 Reports Management
+![Reports](public/ssc/report.png)
 
-1. Admin enters credentials
-2. Server validates against `admin_users` table
-3. JWT token generated and stored in HTTP-only cookie
-4. Middleware protects all admin routes
-5. Token verified on each request
+### 📄 Report Details
+![Report Details](public/ssc/report_detail.png)
+
+### 🗺️ Hotspots Management
+![Hotspots](public/ssc/ana.png)
+
+### 📈 Analytics Dashboard
+![Analytics](public/ssc/syslog.png)
+
+</div>
 
 ---
 
