@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { 
   Bell, 
-  Search, 
   User, 
   Settings, 
   LogOut, 
@@ -209,15 +208,11 @@ export function Header() {
     <>
       <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-40 backdrop-blur-sm bg-white/95">
         <div className="flex items-center justify-between">
-          {/* Search */}
-          <div className="flex-1 max-w-md">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                type="text"
-                placeholder="Search reports, users, hotspots..."
-                className="pl-10 w-full bg-gray-50 border-gray-200 focus:bg-white transition-colors"
-              />
+          {/* Welcome Text */}
+          <div className="flex-1">
+            <div className="flex items-center space-x-2">
+              <h2 className="text-lg font-semibold text-gray-800">EcoLafaek Admin</h2>
+              <span className="text-sm text-gray-500">Environmental Monitoring System</span>
             </div>
           </div>
 

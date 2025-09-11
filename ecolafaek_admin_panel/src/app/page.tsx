@@ -1,64 +1,64 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Sidebar } from '@/components/layout/sidebar'
-import { Header } from '@/components/layout/header'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { 
-  Users, 
-  FileText, 
-  MapPin, 
-  CheckCircle, 
+import { useState, useEffect } from "react";
+import { Sidebar } from "@/components/layout/sidebar";
+import { Header } from "@/components/layout/header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Users,
+  FileText,
+  MapPin,
+  CheckCircle,
   AlertCircle,
   TrendingUp,
   Activity,
   Calendar,
   Target,
-  Zap
-} from 'lucide-react'
+  Zap,
+} from "lucide-react";
 
 interface DashboardStats {
-  total_users: number
-  total_reports: number
-  reports_today: number
-  reports_this_week: number
-  reports_this_month: number
-  active_hotspots: number
-  resolved_reports: number
-  pending_reports: number
-  average_severity: number
+  total_users: number;
+  total_reports: number;
+  reports_today: number;
+  reports_this_week: number;
+  reports_this_month: number;
+  active_hotspots: number;
+  resolved_reports: number;
+  pending_reports: number;
+  average_severity: number;
   top_waste_types: Array<{
-    name: string
-    count: number
-  }>
+    name: string;
+    count: number;
+  }>;
 }
 
 interface RecentReport {
-  report_id: number
-  report_date: string
-  status: string
-  username: string
-  waste_type_name?: string
+  report_id: number;
+  report_date: string;
+  status: string;
+  username: string;
+  waste_type_name?: string;
 }
 
 // Circular Progress Component
-const CircularProgress = ({ 
-  percentage, 
-  size = 120, 
+const CircularProgress = ({
+  percentage,
+  size = 120,
   strokeWidth = 8,
   color = "#10b981",
-  backgroundColor = "#f3f4f6"
+  backgroundColor = "#f3f4f6",
 }: {
-  percentage: number
-  size?: number
-  strokeWidth?: number
-  color?: string
-  backgroundColor?: string
+  percentage: number;
+  size?: number;
+  strokeWidth?: number;
+  color?: string;
+  backgroundColor?: string;
 }) => {
-  const radius = (size - strokeWidth) / 2
-  const circumference = radius * 2 * Math.PI
-  const strokeDasharray = circumference
-  const strokeDashoffset = circumference - (percentage / 100) * circumference
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const strokeDasharray = circumference;
+  const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
     <div className="relative inline-flex items-center justify-center">
@@ -86,13 +86,15 @@ const CircularProgress = ({
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-2xl font-bold text-gray-900">{Math.round(percentage)}%</div>
+          <div className="text-2xl font-bold text-gray-900">
+            {Math.round(percentage)}%
+          </div>
           <div className="text-xs text-gray-500">Complete</div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 // Modern Metric Card
 const ModernMetricCard = ({
@@ -102,18 +104,20 @@ const ModernMetricCard = ({
   icon: Icon,
   color,
   gradient,
-  percentage
+  percentage,
 }: {
-  title: string
-  value: string | number
-  subtitle?: string
-  icon: any
-  color: string
-  gradient: string
-  percentage?: number
+  title: string;
+  value: string | number;
+  subtitle?: string;
+  icon: any;
+  color: string;
+  gradient: string;
+  percentage?: number;
 }) => (
   <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white">
-    <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5`} />
+    <div
+      className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5`}
+    />
     <CardContent className="p-6">
       <div className="flex items-center justify-between mb-4">
         <div className={`p-3 rounded-2xl bg-gradient-to-br ${gradient}`}>
@@ -121,59 +125,68 @@ const ModernMetricCard = ({
         </div>
         {percentage !== undefined && (
           <div className="text-right">
-            <div className={`text-sm font-semibold ${color}`}>+{percentage}%</div>
+            <div className={`text-sm font-semibold ${color}`}>
+              +{percentage}%
+            </div>
             <div className="text-xs text-gray-500">vs last month</div>
           </div>
         )}
       </div>
       <div className="space-y-1">
-        <h3 className="text-2xl font-bold text-gray-900">{typeof value === 'number' ? value.toLocaleString() : value}</h3>
+        <h3 className="text-2xl font-bold text-gray-900">
+          {typeof value === "number" ? value.toLocaleString() : value}
+        </h3>
         <p className="text-gray-600 font-medium">{title}</p>
         {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
       </div>
     </CardContent>
   </Card>
-)
+);
 
 // Status Badge Component
 const StatusBadge = ({ status }: { status: string }) => {
   const styles = {
-    submitted: 'bg-blue-100 text-blue-800 border-blue-200',
-    analyzing: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    analyzed: 'bg-green-100 text-green-800 border-green-200',
-    rejected: 'bg-red-100 text-red-800 border-red-200'
-  }
-  
+    submitted: "bg-blue-100 text-blue-800 border-blue-200",
+    analyzing: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    analyzed: "bg-green-100 text-green-800 border-green-200",
+    rejected: "bg-red-100 text-red-800 border-red-200",
+  };
+
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${styles[status as keyof typeof styles] || 'bg-gray-100 text-gray-800 border-gray-200'}`}>
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+        styles[status as keyof typeof styles] ||
+        "bg-gray-100 text-gray-800 border-gray-200"
+      }`}
+    >
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
-  )
-}
+  );
+};
 
 export default function Dashboard() {
-  const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [recentReports, setRecentReports] = useState<RecentReport[]>([])
-  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [recentReports, setRecentReports] = useState<RecentReport[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch('/api/dashboard/stats')
+        const response = await fetch("/api/dashboard/stats");
         if (response.ok) {
-          const data = await response.json()
-          setStats(data.stats)
-          setRecentReports(data.recent_reports || [])
+          const data = await response.json();
+          setStats(data.stats);
+          setRecentReports(data.recent_reports || []);
         }
       } catch (error) {
-        console.error('Failed to fetch dashboard data:', error)
+        console.error("Failed to fetch dashboard data:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchDashboardData()
-  }, [])
+    fetchDashboardData();
+  }, []);
 
   if (loading) {
     return (
@@ -188,11 +201,15 @@ export default function Dashboard() {
           </main>
         </div>
       </div>
-    )
+    );
   }
 
-  const completionRate = stats ? Math.round((stats.resolved_reports / stats.total_reports) * 100) : 0
-  const activeRate = stats ? Math.round((stats.active_hotspots / (stats.active_hotspots + 10)) * 100) : 0
+  const completionRate = stats
+    ? Math.round((stats.resolved_reports / stats.total_reports) * 100)
+    : 0;
+  const activeRate = stats
+    ? Math.round((stats.active_hotspots / (stats.active_hotspots + 10)) * 100)
+    : 0;
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -209,11 +226,15 @@ export default function Dashboard() {
                     <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
                       Dashboard
                     </h1>
-                    <p className="text-gray-600 mt-2">Environmental waste monitoring overview</p>
+                    <p className="text-gray-600 mt-2">
+                      Environmental waste monitoring overview
+                    </p>
                   </div>
                   <div className="text-right">
                     <div className="text-sm text-gray-500">Today</div>
-                    <div className="text-lg font-semibold text-gray-900">{new Date().toLocaleDateString()}</div>
+                    <div className="text-lg font-semibold text-gray-900">
+                      {new Date().toLocaleDateString()}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -229,7 +250,7 @@ export default function Dashboard() {
                   gradient="from-blue-500 to-blue-600"
                   percentage={12}
                 />
-                
+
                 <ModernMetricCard
                   title="Total Reports"
                   value={stats?.total_reports || 0}
@@ -239,7 +260,7 @@ export default function Dashboard() {
                   gradient="from-green-500 to-emerald-600"
                   percentage={8}
                 />
-                
+
                 <ModernMetricCard
                   title="Active Hotspots"
                   value={stats?.active_hotspots || 0}
@@ -248,7 +269,7 @@ export default function Dashboard() {
                   color="text-red-600"
                   gradient="from-red-500 to-pink-600"
                 />
-                
+
                 <ModernMetricCard
                   title="Reports Today"
                   value={stats?.reports_today || 0}
@@ -265,12 +286,16 @@ export default function Dashboard() {
                 {/* Completion Rate */}
                 <Card className="border-0 shadow-lg bg-white">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-semibold text-gray-900">Report Resolution</CardTitle>
-                    <p className="text-sm text-gray-600">Total completion rate</p>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
+                      Report Resolution
+                    </CardTitle>
+                    <p className="text-sm text-gray-600">
+                      Total completion rate
+                    </p>
                   </CardHeader>
                   <CardContent className="flex items-center justify-center py-8">
-                    <CircularProgress 
-                      percentage={completionRate} 
+                    <CircularProgress
+                      percentage={completionRate}
                       color="#10b981"
                       size={140}
                       strokeWidth={10}
@@ -281,8 +306,12 @@ export default function Dashboard() {
                 {/* Activity Stats */}
                 <Card className="border-0 shadow-lg bg-white">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-semibold text-gray-900">Activity Overview</CardTitle>
-                    <p className="text-sm text-gray-600">Recent activity metrics</p>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
+                      Activity Overview
+                    </CardTitle>
+                    <p className="text-sm text-gray-600">
+                      Recent activity metrics
+                    </p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -291,37 +320,53 @@ export default function Dashboard() {
                           <Calendar className="h-4 w-4 text-blue-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">This Week</p>
+                          <p className="text-sm font-medium text-gray-900">
+                            This Week
+                          </p>
                           <p className="text-xs text-gray-500">New reports</p>
                         </div>
                       </div>
-                      <span className="text-lg font-bold text-gray-900">{stats?.reports_this_week || 0}</span>
+                      <span className="text-lg font-bold text-gray-900">
+                        {stats?.reports_this_week || 0}
+                      </span>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div className="p-2 bg-green-100 rounded-lg">
                           <CheckCircle className="h-4 w-4 text-green-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">Resolved</p>
-                          <p className="text-xs text-gray-500">Completed reports</p>
+                          <p className="text-sm font-medium text-gray-900">
+                            Resolved
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Completed reports
+                          </p>
                         </div>
                       </div>
-                      <span className="text-lg font-bold text-green-600">{stats?.resolved_reports || 0}</span>
+                      <span className="text-lg font-bold text-green-600">
+                        {stats?.resolved_reports || 0}
+                      </span>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div className="p-2 bg-yellow-100 rounded-lg">
                           <Activity className="h-4 w-4 text-yellow-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">Pending</p>
-                          <p className="text-xs text-gray-500">Awaiting review</p>
+                          <p className="text-sm font-medium text-gray-900">
+                            Pending
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Awaiting review
+                          </p>
                         </div>
                       </div>
-                      <span className="text-lg font-bold text-yellow-600">{stats?.pending_reports || 0}</span>
+                      <span className="text-lg font-bold text-yellow-600">
+                        {stats?.pending_reports || 0}
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
@@ -329,20 +374,32 @@ export default function Dashboard() {
                 {/* Severity Indicator */}
                 <Card className="border-0 shadow-lg bg-white">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-semibold text-gray-900">Severity Level</CardTitle>
-                    <p className="text-sm text-gray-600">Average threat level</p>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
+                      Severity Level
+                    </CardTitle>
+                    <p className="text-sm text-gray-600">
+                      Average threat level
+                    </p>
                   </CardHeader>
                   <CardContent className="flex items-center justify-center py-8">
                     <div className="text-center">
                       <div className="text-4xl font-bold text-orange-600 mb-2">
                         {Number(stats?.average_severity || 0).toFixed(1)}
                       </div>
-                      <div className="text-lg font-semibold text-gray-700">/ 10.0</div>
-                      <div className="text-sm text-gray-500 mt-2">Risk Score</div>
+                      <div className="text-lg font-semibold text-gray-700">
+                        / 10.0
+                      </div>
+                      <div className="text-sm text-gray-500 mt-2">
+                        Risk Score
+                      </div>
                       <div className="w-24 h-2 bg-gray-200 rounded-full mx-auto mt-3">
-                        <div 
+                        <div
                           className="h-2 bg-gradient-to-r from-orange-400 to-red-500 rounded-full transition-all duration-1000"
-                          style={{ width: `${((stats?.average_severity || 0) / 10) * 100}%` }}
+                          style={{
+                            width: `${
+                              ((stats?.average_severity || 0) / 10) * 100
+                            }%`,
+                          }}
                         />
                       </div>
                     </div>
@@ -354,40 +411,60 @@ export default function Dashboard() {
               {stats?.top_waste_types && stats.top_waste_types.length > 0 && (
                 <Card className="mb-8 border-0 shadow-lg bg-white">
                   <CardHeader>
-                    <CardTitle className="text-lg font-semibold text-gray-900">Top Waste Types</CardTitle>
-                    <p className="text-sm text-gray-600">Most reported waste categories</p>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
+                      Top Waste Types
+                    </CardTitle>
+                    <p className="text-sm text-gray-600">
+                      Most reported waste categories
+                    </p>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {stats.top_waste_types.map((type, index) => {
-                        const percentage = stats.total_reports > 0 ? (type.count / stats.total_reports) * 100 : 0
+                        const percentage =
+                          stats.total_reports > 0
+                            ? (type.count / stats.total_reports) * 100
+                            : 0;
                         const colors = [
-                          'from-blue-500 to-blue-600',
-                          'from-green-500 to-emerald-600', 
-                          'from-yellow-500 to-orange-600',
-                          'from-purple-500 to-indigo-600',
-                          'from-pink-500 to-rose-600'
-                        ]
-                        
+                          "from-blue-500 to-blue-600",
+                          "from-green-500 to-emerald-600",
+                          "from-yellow-500 to-orange-600",
+                          "from-purple-500 to-indigo-600",
+                          "from-pink-500 to-rose-600",
+                        ];
+
                         return (
-                          <div key={type.name} className="flex items-center justify-between">
+                          <div
+                            key={type.name}
+                            className="flex items-center justify-between"
+                          >
                             <div className="flex items-center space-x-4 flex-1">
-                              <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${colors[index % colors.length]}`} />
+                              <div
+                                className={`w-3 h-3 rounded-full bg-gradient-to-r ${
+                                  colors[index % colors.length]
+                                }`}
+                              />
                               <div className="flex-1">
                                 <div className="flex items-center justify-between mb-1">
-                                  <span className="text-sm font-medium text-gray-900">{type.name}</span>
-                                  <span className="text-sm font-semibold text-gray-700">{type.count} reports</span>
+                                  <span className="text-sm font-medium text-gray-900">
+                                    {type.name}
+                                  </span>
+                                  <span className="text-sm font-semibold text-gray-700">
+                                    {type.count} reports
+                                  </span>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2">
-                                  <div 
-                                    className={`h-2 bg-gradient-to-r ${colors[index % colors.length]} rounded-full transition-all duration-1000`}
+                                  <div
+                                    className={`h-2 bg-gradient-to-r ${
+                                      colors[index % colors.length]
+                                    } rounded-full transition-all duration-1000`}
                                     style={{ width: `${percentage}%` }}
                                   />
                                 </div>
                               </div>
                             </div>
                           </div>
-                        )
+                        );
                       })}
                     </div>
                   </CardContent>
@@ -398,29 +475,44 @@ export default function Dashboard() {
               {recentReports.length > 0 && (
                 <Card className="border-0 shadow-lg bg-white">
                   <CardHeader>
-                    <CardTitle className="text-lg font-semibold text-gray-900">Recent Reports</CardTitle>
-                    <p className="text-sm text-gray-600">Latest submissions from users</p>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
+                      Recent Reports
+                    </CardTitle>
+                    <p className="text-sm text-gray-600">
+                      Latest submissions from users
+                    </p>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {recentReports.slice(0, 5).map((report) => (
-                        <div key={report.report_id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                        <div
+                          key={report.report_id}
+                          className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+                        >
                           <div className="flex items-center space-x-4">
                             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                               {report.username.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-gray-900">Report #{report.report_id}</p>
-                              <p className="text-xs text-gray-500">by {report.username}</p>
+                              <p className="text-sm font-medium text-gray-900">
+                                Report #{report.report_id}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                by {report.username}
+                              </p>
                               {report.waste_type_name && (
-                                <p className="text-xs text-blue-600 font-medium">{report.waste_type_name}</p>
+                                <p className="text-xs text-blue-600 font-medium">
+                                  {report.waste_type_name}
+                                </p>
                               )}
                             </div>
                           </div>
                           <div className="text-right space-y-2">
                             <StatusBadge status={report.status} />
                             <p className="text-xs text-gray-500">
-                              {new Date(report.report_date).toLocaleDateString()}
+                              {new Date(
+                                report.report_date
+                              ).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
@@ -434,5 +526,5 @@ export default function Dashboard() {
         </main>
       </div>
     </div>
-  )
+  );
 }

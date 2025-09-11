@@ -12,12 +12,14 @@ import {
   Settings, 
   LogOut,
   Leaf,
-  Activity
+  Activity,
+  Shield
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Users', href: '/users', icon: Users },
+  { name: 'Admin Users', href: '/admin-users', icon: Shield },
   { name: 'Reports', href: '/reports', icon: FileText },
   { name: 'Hotspots', href: '/hotspots', icon: MapPin },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
