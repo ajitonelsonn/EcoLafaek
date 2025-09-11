@@ -1,18 +1,21 @@
 # EcoLafaek Admin Panel
 
-A comprehensive administrative interface for the EcoLafaek environmental waste monitoring system. Built with Next.js 15, TypeScript, and modern UI components.
+A comprehensive administrative interface for the EcoLafaek environmental waste monitoring system. Built with Next.js 15, TypeScript, and modern UI components.And remember that right now we just run this admin pannel in local only.
 
 ## 🚀 Features
 
-- **🔐 Secure Authentication** - JWT-based admin login system
-- **📊 Dashboard Analytics** - Real-time statistics and metrics
-- **👥 User Management** - View, edit, and manage user accounts
+- **🔐 Secure Authentication** - JWT-based admin login system with role management
+- **📊 Modern Dashboard** - Real-time statistics with circular progress indicators
+- **👥 User Management** - Complete CRUD operations for regular users
+- **🛡️ Admin User Management** - Create and manage admin accounts with role-based permissions
 - **📋 Report Management** - Handle waste reports and their statuses
-- **🗺️ Hotspot Management** - Manage environmental hotspots
-- **📈 Advanced Analytics** - Detailed reporting and insights
-- **🔍 System Monitoring** - Activity logs and system health
-- **📤 Data Export** - CSV and PDF report generation
-- **⚙️ Settings Management** - Configure system parameters
+- **🗺️ Hotspot Management** - Manage environmental hotspots with interactive maps
+- **📈 Advanced Analytics** - Detailed reporting and insights with visual charts
+- **🔔 Notification System** - Real-time notifications with read/unread status
+- **👤 Profile Management** - Change passwords and update profile information
+- **🔍 System Monitoring** - Activity logs and system health tracking
+- **📤 Data Export** - CSV export functionality for users and reports
+- **⚙️ Settings Management** - Comprehensive system configuration
 
 ## 🛠️ Tech Stack
 
@@ -33,22 +36,26 @@ A comprehensive administrative interface for the EcoLafaek environmental waste m
 ## ⚡ Quick Start
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/ajitonelsonn/EcoLafaek.git
    cd EcoLafaek/ecolafaek_admin_panel
    ```
 
 2. **Install dependencies**:
+
    ```bash
    npm install
    ```
 
 3. **Setup environment variables**:
+
    ```bash
-   cp .env.example .env.local
+   cp example.env.example .env.local
    ```
-   
+
    Update `.env.local` with your credentials:
+
    ```env
    # Database Configuration (TiDB Cloud)
    DB_HOST=gateway01.ap-northeast-1.prod.aws.tidbcloud.com
@@ -67,12 +74,13 @@ A comprehensive administrative interface for the EcoLafaek environmental waste m
    ```
 
 4. **Setup database schema**:
+
    ```bash
    # Execute the setup.sql file in your TiDB database
-   # This will create the admin_users table and other required tables
    ```
 
 5. **Start development server**:
+
    ```bash
    npm run dev
    ```
@@ -94,14 +102,18 @@ The admin panel requires these database tables:
 - `waste_types` - Waste classification types
 - `system_logs` - Activity logging
 
-### Default Admin Account
+### Default Admin Accounts
 
-The setup script creates a default admin account:
+The setup script creates default admin accounts:
+
+#### Super Admin
+
 - **Username**: `admin`
 - **Password**: `admin123`
 - **Role**: `super_admin`
+- **Email**: `admin@ecolafaek.com`
 
-⚠️ **Security Note**: Change the default password immediately after first login.
+⚠️ **Security Note**: Change the default passwords immediately after first login.
 
 ## 🔑 Authentication
 
@@ -128,10 +140,19 @@ ecolafaek_admin_panel/
 │   │   ├── api/                 # API routes
 │   │   │   ├── auth/           # Authentication endpoints
 │   │   │   ├── dashboard/      # Dashboard data
-│   │   │   └── users/          # User management
+│   │   │   ├── users/          # User management API
+│   │   │   ├── admin-users/    # Admin user management API
+│   │   │   ├── notifications/  # Notification system API
+│   │   │   └── settings/       # System settings API
 │   │   ├── login/              # Login page
 │   │   ├── users/              # User management page
-│   │   └── page.tsx            # Dashboard homepage
+│   │   ├── admin-users/        # Admin user management page
+│   │   ├── reports/            # Report management page
+│   │   ├── hotspots/           # Hotspot management page
+│   │   ├── analytics/          # Analytics dashboard
+│   │   ├── logs/               # System logs page
+│   │   ├── settings/           # Settings configuration
+│   │   └── page.tsx            # Modern dashboard homepage
 │   ├── components/
 │   │   ├── ui/                 # Reusable UI components
 │   │   ├── layout/             # Layout components
@@ -156,111 +177,77 @@ ecolafaek_admin_panel/
 npm run dev      # Start development server
 npm run build    # Build for production
 npm run start    # Start production server
-npm run lint     # Run ESLint
 ```
 
 ### API Endpoints
 
 #### Authentication
+
 - `POST /api/auth/login` - Admin login
 - `POST /api/auth/logout` - Admin logout
 - `GET /api/auth/me` - Get current admin user
+- `PUT /api/auth/profile` - Update admin profile
+- `PUT /api/auth/change-password` - Change admin password
 
 #### Dashboard
+
 - `GET /api/dashboard/stats` - Get dashboard statistics
 
 #### User Management
+
 - `GET /api/users` - List users with pagination/filtering
+- `POST /api/users` - Create new user account
 - `PATCH /api/users` - Update user status
 
-## 🎨 UI Components
+#### Admin User Management
 
-The admin panel uses a consistent design system:
+- `GET /api/admin-users` - List admin users (super_admin only)
+- `POST /api/admin-users` - Create new admin user (super_admin only)
+- `PUT /api/admin-users/[id]` - Update admin user (super_admin only)
+- `DELETE /api/admin-users/[id]` - Delete admin user (super_admin only)
 
-- **Colors**: Green primary theme matching EcoLafaek branding
-- **Typography**: Clean, readable fonts with proper hierarchy
-- **Layout**: Responsive sidebar + header layout
-- **Components**: shadcn/ui components with custom styling
-- **Icons**: Lucide React icon library
+#### Notifications
 
-## 🔍 Features Deep Dive
-
-### Dashboard
-- Real-time user and report statistics
-- Top waste types visualization
-- Recent activity feed
-- Quick action buttons
+- `GET /api/notifications` - Get user notifications
+- `POST /api/notifications` - Create new notification
+- `PUT /api/notifications/[id]/read` - Mark notification as read
 
 ### User Management
-- Searchable user directory
+
+- Create new user accounts with validation
+- Searchable user directory with real-time filtering
 - Status filtering (active/inactive/suspended)
-- Bulk operations support
-- User profile details
+- CSV export functionality
+- User profile details with contact information
+
+### Admin User Management
+
+- Role-based admin account creation (admin/moderator)
+- Super admin exclusive access controls
+- Edit admin profiles and permissions
+- Delete protection for super admin accounts
+- Visual role indicators and avatars
+
+### Notification System
+
+- Real-time notification bell with unread count
+- Type-specific notification icons (info, warning, success, error)
+- Mark as read functionality
+- Notification history tracking
+
+### Profile Management
+
+- Change password with current password verification
+- Update profile information (username, email)
+- Session management and logout functionality
 
 ### Authentication Flow
+
 1. Admin enters credentials
 2. Server validates against `admin_users` table
 3. JWT token generated and stored in HTTP-only cookie
 4. Middleware protects all admin routes
 5. Token verified on each request
-
-## 📊 Database Queries
-
-The admin panel includes optimized queries for:
-
-- Dashboard statistics aggregation
-- User management with pagination
-- Report status updates
-- Activity logging
-- Performance indexing
-
-## 🛡️ Security Considerations
-
-- All passwords hashed with bcrypt (12 rounds)
-- JWT tokens expire after 24 hours
-- HTTP-only cookies prevent XSS
-- SSL/TLS required for TiDB connections
-- Input validation and sanitization
-- Rate limiting on authentication endpoints
-
-## 🚀 Deployment
-
-### Production Build
-
-```bash
-npm run build
-npm start
-```
-
-### Environment Variables
-
-Ensure all production environment variables are set:
-
-```env
-NODE_ENV=production
-NEXTAUTH_URL=https://yourdomain.com
-DB_HOST=your-production-tidb-host
-JWT_SECRET=your-production-jwt-secret
-```
-
-## 📞 Support
-
-For technical support or questions:
-- Create an issue in the repository
-- Email: ecolafaek@gmail.com
-- Documentation: [EcoLafaek Main Docs](../README.md)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is part of the EcoLafaek ecosystem. See the main repository for license information.
 
 ---
 
