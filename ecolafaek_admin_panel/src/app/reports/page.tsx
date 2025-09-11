@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
@@ -91,7 +91,7 @@ export default function ReportsPage() {
     pages: 0,
   });
 
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -116,7 +116,7 @@ export default function ReportsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit, searchTerm, statusFilter, wasteTypeFilter, sortBy, sortOrder]);
 
   const updateReportStatus = async (
     reportId: number,
@@ -175,7 +175,7 @@ export default function ReportsPage() {
 
   useEffect(() => {
     fetchReports();
-  }, [pagination.page, statusFilter, wasteTypeFilter, sortBy, sortOrder]);
+  }, [fetchReports]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -184,7 +184,7 @@ export default function ReportsPage() {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+  }, [searchTerm, fetchReports]);
 
   const getStatusBadge = (status: string) => {
     const variants = {

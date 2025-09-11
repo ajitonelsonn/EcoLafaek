@@ -15,6 +15,26 @@ interface SeverityDistribution {
   avg_confidence: number
 }
 
+interface VectorStatsResult {
+  total_embeddings: number
+  avg_confidence: number
+  high_accuracy_count: number
+  complete_embeddings: number
+}
+
+interface ProcessingTrend {
+  month: string
+  embedding_count: number
+  avg_confidence: number
+}
+
+interface MonthlyComparison {
+  current_month_embeddings: number
+  last_month_embeddings: number
+  current_month_confidence: number
+  last_month_confidence: number
+}
+
 export async function GET(request: NextRequest) {
   try {
     // 🏆 TiDB Vector Database - Advanced Analytics Endpoint
@@ -34,7 +54,7 @@ export async function GET(request: NextRequest) {
       WHERE image_embedding IS NOT NULL
     `
     
-    const vectorStatsResult = await executeQuery<any[]>(vectorStatsQuery, [])
+    const vectorStatsResult = await executeQuery<VectorStatsResult[]>(vectorStatsQuery, [])
     const vectorStats = vectorStatsResult[0] || {
       total_embeddings: 0,
       avg_confidence: 0,
@@ -102,7 +122,7 @@ export async function GET(request: NextRequest) {
       ORDER BY month ASC
     `
     
-    const processingTrends = await executeQuery<any[]>(processingTrendsQuery, [])
+    const processingTrends = await executeQuery<ProcessingTrend[]>(processingTrendsQuery, [])
 
     // Real vector insights from TiDB data
     const currentMonth = new Date().getMonth() + 1;
@@ -121,7 +141,7 @@ export async function GET(request: NextRequest) {
       WHERE image_embedding IS NOT NULL
     `
     
-    const monthlyComparison = await executeQuery<any[]>(monthlyComparisonQuery, [
+    const monthlyComparison = await executeQuery<MonthlyComparison[]>(monthlyComparisonQuery, [
       currentMonth, currentYear, 
       lastMonthDate.getMonth() + 1, lastMonthDate.getFullYear(),
       currentMonth, currentYear,

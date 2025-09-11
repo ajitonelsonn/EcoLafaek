@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
@@ -79,7 +79,7 @@ export default function UsersPage() {
     pages: 0,
   });
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -100,7 +100,7 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit, searchTerm, statusFilter]);
 
   const updateUserStatus = async (userId: number, newStatus: string) => {
     try {
@@ -164,7 +164,7 @@ export default function UsersPage() {
 
   useEffect(() => {
     fetchUsers();
-  }, [pagination.page, statusFilter]);
+  }, [fetchUsers]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -173,7 +173,7 @@ export default function UsersPage() {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+  }, [searchTerm, fetchUsers]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Header } from '@/components/layout/header'
 import { Button } from '@/components/ui/button'
@@ -271,9 +272,11 @@ export default function ReportDetailPage() {
                       <div>
                         <label className="text-sm font-medium text-gray-500">Image</label>
                         <div className="mt-1">
-                          <img 
+                          <Image 
                             src={report.image_url} 
                             alt="Report"
+                            width={400}
+                            height={300}
                             className="max-w-md rounded-lg border"
                             onError={(e) => {
                               (e.target as HTMLImageElement).style.display = 'none'

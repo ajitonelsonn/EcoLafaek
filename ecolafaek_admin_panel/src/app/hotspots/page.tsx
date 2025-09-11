@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Header } from '@/components/layout/header'
 import { Button } from '@/components/ui/button'
@@ -114,7 +114,7 @@ export default function HotspotsPage() {
     limit: 10
   })
 
-  const fetchHotspots = async () => {
+  const fetchHotspots = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -134,11 +134,11 @@ export default function HotspotsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filters])
 
   useEffect(() => {
     fetchHotspots()
-  }, [filters])
+  }, [fetchHotspots])
 
   const handleFilterChange = (key: string, value: string | number) => {
     setFilters(prev => ({

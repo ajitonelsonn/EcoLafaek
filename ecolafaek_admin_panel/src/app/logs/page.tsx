@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Header } from '@/components/layout/header'
 import { Button } from '@/components/ui/button'
@@ -77,7 +77,7 @@ export default function SystemLogsPage() {
     limit: 25
   })
 
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -98,7 +98,7 @@ export default function SystemLogsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filters])
 
   const refreshLogs = async () => {
     setRefreshing(true)
@@ -108,7 +108,7 @@ export default function SystemLogsPage() {
 
   useEffect(() => {
     fetchLogs()
-  }, [filters])
+  }, [fetchLogs])
 
   const handleFilterChange = (key: string, value: string | number) => {
     setFilters(prev => ({

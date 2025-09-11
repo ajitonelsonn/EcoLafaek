@@ -32,6 +32,23 @@ interface HotspotByStatus {
   count: number
 }
 
+interface VectorAnalytics {
+  total_embeddings: number
+  avg_confidence: number
+  with_image_embeddings: number
+  with_location_embeddings: number
+  avg_severity: number
+  high_confidence_analyses: number
+  low_confidence_analyses: number
+}
+
+interface SimilarityPattern {
+  waste_type: string
+  embedding_count: number
+  avg_confidence: number
+  high_confidence_count: number
+}
+
 export async function GET(request: NextRequest) {
   try {
     const authResult = await verifyToken(request)
@@ -160,7 +177,7 @@ export async function GET(request: NextRequest) {
       WHERE analyzed_date >= DATE_SUB(NOW(), INTERVAL ${monthsBack} MONTH)
     `
     
-    const vectorAnalytics = await executeQuery<any[]>(vectorAnalyticsQuery, [])
+    const vectorAnalytics = await executeQuery<VectorAnalytics[]>(vectorAnalyticsQuery, [])
     const vectorStats = vectorAnalytics[0] || {
       total_embeddings: 0,
       avg_confidence: 0,
@@ -188,7 +205,7 @@ export async function GET(request: NextRequest) {
       LIMIT 5
     `
     
-    const similarityPatterns = await executeQuery<any[]>(similarityPatternsQuery, [])
+    const similarityPatterns = await executeQuery<SimilarityPattern[]>(similarityPatternsQuery, [])
 
     return NextResponse.json({
       overview,

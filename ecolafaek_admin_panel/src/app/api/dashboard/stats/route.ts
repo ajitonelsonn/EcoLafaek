@@ -28,15 +28,20 @@ interface ReportStatusCount {
   count: number
 }
 
+interface VectorProcessingStats {
+  with_embeddings: number
+  with_location_embeddings: number
+  total_analyses: number
+}
+
+interface LastMonthVectorStats {
+  with_embeddings: number
+  with_location_embeddings: number
+  avg_confidence: number
+}
+
 export async function GET() {
   try {
-    // Calculate dates for comparison
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
-    const lastMonth = new Date();
-    lastMonth.setMonth(lastMonth.getMonth() - 1);
-    const lastMonthNum = lastMonth.getMonth() + 1;
-    const lastMonthYear = lastMonth.getFullYear();
 
     // Get total users
     const totalUsersResult = await executeQuery<CountResult[]>(
@@ -162,7 +167,7 @@ export async function GET() {
     const avgConfidence = avgConfidenceResult[0]?.avg_severity || 0
 
     // Get vector similarity processing stats
-    const vectorProcessingStats = await executeQuery<any[]>(
+    const vectorProcessingStats = await executeQuery<VectorProcessingStats[]>(
       `SELECT 
         COUNT(CASE WHEN image_embedding IS NOT NULL THEN 1 END) as with_embeddings,
         COUNT(CASE WHEN location_embedding IS NOT NULL THEN 1 END) as with_location_embeddings,
@@ -172,7 +177,7 @@ export async function GET() {
     const vectorStats = vectorProcessingStats[0] || { with_embeddings: 0, with_location_embeddings: 0, total_analyses: 0 }
 
     // Get last month vector stats for comparison
-    const lastMonthVectorStats = await executeQuery<any[]>(
+    const lastMonthVectorStats = await executeQuery<LastMonthVectorStats[]>(
       `SELECT 
         COUNT(CASE WHEN image_embedding IS NOT NULL THEN 1 END) as with_embeddings,
         COUNT(CASE WHEN location_embedding IS NOT NULL THEN 1 END) as with_location_embeddings,
