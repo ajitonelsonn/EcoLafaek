@@ -25,7 +25,7 @@ Living in Timor-Leste, seeing the daily struggle with waste management inspired 
 
 ## 🏗️ Project Architecture
 
-EcoLafaek consists of four integrated components:
+EcoLafaek consists of five integrated components:
 
 ```mermaid
 graph TB
@@ -36,6 +36,10 @@ graph TB
 
         subgraph "🌐 Public Dashboard"
             WEB[Next.js Public Dashboard<br/>Analytics & Visualization]
+        end
+
+        subgraph "🛡️ Admin Panel"
+            ADMIN[Next.js Admin Panel<br/>Administrative Interface]
         end
 
         subgraph "⚡ Backend Services"
@@ -54,6 +58,7 @@ graph TB
 
     MOBILE --> API
     WEB --> DB
+    ADMIN --> DB
     API --> DB
     API --> BEDROCK
     API --> S3
@@ -61,6 +66,7 @@ graph TB
 
     style MOBILE fill:#4CAF50,stroke:#2E7D32,color:white
     style WEB fill:#2196F3,stroke:#1976D2,color:white
+    style ADMIN fill:#FF6B6B,stroke:#E53E3E,color:white
     style API fill:#FF9800,stroke:#F57C00,color:white
     style DB fill:#9C27B0,stroke:#7B1FA2,color:white
     style BEDROCK fill:#FF5722,stroke:#D84315,color:white
@@ -120,6 +126,43 @@ A Next.js web dashboard providing comprehensive analytics and visualization for 
 - **Charts**: Chart.js and Tremor for interactive visualizations
 
 **Live Demo**: [ecolafaek.com](https://ecolafaek.com)
+
+## [ 🛡️ Admin Panel](./ecolafaek_admin_panel/README.md)
+
+**Location**: [`/ecolafaek_admin_panel`](./ecolafaek_admin_panel/README.md)
+
+A comprehensive Next.js administrative interface for managing the EcoLafaek system with secure role-based access control.
+
+### Key Features:
+
+- 🔐 **Secure Authentication**: JWT-based admin login with role management (super_admin, admin, moderator)
+- 📊 **Modern Dashboard**: Real-time statistics with circular progress indicators and visual analytics
+- 👥 **User Management**: Complete CRUD operations for regular users with filtering and pagination
+- 🛡️ **Admin User Management**: Create and manage admin accounts with role-based permissions
+- 📋 **Report Management**: Handle waste reports lifecycle and status management
+- 🗺️ **Hotspot Management**: Manage environmental hotspots with interactive mapping
+- 📈 **Advanced Analytics**: Detailed reporting and insights with visual charts
+- 🔔 **Notification System**: Real-time notifications with read/unread status tracking
+- 📤 **Data Export**: CSV export functionality for users and reports
+- 🔍 **System Monitoring**: Activity logs and system health tracking
+- ⚙️ **Settings Management**: Comprehensive system configuration options
+
+### Technology Stack:
+
+- **Framework**: Next.js 15 with TypeScript and built-in API routes
+- **Styling**: Tailwind CSS with shadcn/ui components for modern design
+- **Database**: Direct TiDB Cloud connection with SSL security
+- **Authentication**: JWT with HTTP-only secure cookies
+- **UI Components**: Radix UI primitives for accessibility
+- **Icons**: Lucide React for consistent iconography
+
+### Default Admin Access:
+
+- **Username**: `admin`
+- **Password**: `admin123` (change immediately after first login)
+- **Role**: `super_admin`
+
+**Local Development**: Currently running in development environment only
 
 ## [ ⚡ Backend Services](./mobile_backend/README.md)
 
@@ -219,7 +262,16 @@ A comprehensive TiDB Cloud database design optimized for environmental monitorin
    npm run dev
    ```
 
-5. **Configure Environment Variables:**
+5. **Admin Panel Setup:**
+
+   ```bash
+   cd ecolafaek_admin_panel
+   npm install
+   cp example.env.example .env.local
+   npm run dev
+   ```
+
+6. **Configure Environment Variables:**
    - Set up TiDB Cloud connection
    - Configure Amazon Bedrock credentials
    - Set up AWS S3 bucket

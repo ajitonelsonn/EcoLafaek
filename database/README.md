@@ -20,6 +20,7 @@ erDiagram
     REPORTS }o--o{ HOTSPOT_REPORTS : belongs_to
     REPORTS ||--o{ IMAGE_PROCESSING_QUEUE : queued_for
     USERS ||--o{ API_KEYS : created_by
+    ADMIN_USERS ||--o{ SYSTEM_LOGS : created_by
 
     USERS {
         int user_id PK
@@ -152,6 +153,37 @@ erDiagram
         int retry_count
         text error_message
     }
+
+    ADMIN_USERS {
+        int admin_id PK
+        string username UK
+        string email UK
+        string password_hash
+        enum role
+        datetime created_at
+        datetime last_login
+        boolean active
+    }
+
+    SYSTEM_SETTINGS {
+        int setting_id PK
+        string setting_key UK
+        text setting_value
+        enum data_type
+        text description
+        datetime created_at
+        datetime updated_at
+    }
+
+    NOTIFICATION_TEMPLATES {
+        int template_id PK
+        string name
+        string subject
+        text body
+        enum type
+        datetime created_at
+        datetime updated_at
+    }
 ```
 
 ## Key Tables
@@ -267,6 +299,38 @@ System activities audit trail for monitoring and debugging.
 - Error logging
 - User action history
 
+### Administrative Tables
+
+#### `admin_users`
+
+Administrative user accounts for the EcoLafaek admin panel with role-based access control.
+
+- Role-based permissions (super_admin, admin, moderator)
+- Secure password hashing with bcrypt
+- Activity tracking with last_login timestamps
+- Account status management for security
+- Separate from regular citizen users for security isolation
+
+#### `system_settings`
+
+Configurable system parameters for application-wide settings management.
+
+- Key-value store for application configuration
+- Data type validation (string, number, boolean)
+- Version control with created_at/updated_at timestamps
+- Centralized configuration management
+- Dynamic settings without code deployment
+
+#### `notification_templates`
+
+Reusable templates for system notifications across different channels.
+
+- Multi-channel support (email, SMS, push notifications)
+- Template-based messaging for consistency
+- Version control and audit trail
+- Customizable subject and body content
+- Supports multiple notification types
+
 ## Amazon Bedrock Titan Integration
 
 The database schema is optimized for storing structured data from Amazon Bedrock Titan models:
@@ -302,6 +366,7 @@ The database schema is optimized for storing structured data from Amazon Bedrock
 
    ```sql
    CREATE INDEX idx_reports_status ON reports(status);
+   CREATE INDEX idx_reports_status_date ON reports(status, report_date);
    ```
 
 3. **Async Processing:** Queue system for handling large image analysis workloads
@@ -310,14 +375,26 @@ The database schema is optimized for storing structured data from Amazon Bedrock
    CREATE INDEX idx_queue_status ON image_processing_queue(status);
    ```
 
-4. **Security Features:**
+4. **Admin Panel Performance:** Optimized indexes for administrative interface
 
-   - Password hashing with salting
-   - Email verification system
-   - Session management with JWT
-   - API key authorization
+   ```sql
+   CREATE INDEX idx_admin_users_username ON admin_users(username);
+   CREATE INDEX idx_admin_users_email ON admin_users(email);
+   CREATE INDEX idx_system_settings_key ON system_settings(setting_key);
+   CREATE INDEX idx_analysis_results_date ON analysis_results(analyzed_date);
+   ```
 
-5. **Performance Optimizations:**
+5. **Security Features:**
+
+   - User password hashing with PBKDF2-SHA256
+   - Admin password hashing with bcrypt
+   - Email verification system with OTP
+   - JWT authentication with secure refresh tokens
+   - API key authorization with scoped permissions
+   - Role-based access control for admin panel
+   - Separate authentication systems for users and admins
+
+6. **Performance Optimizations:**
    - Pre-calculated statistics for dashboards
    - Efficient spatial indexes
    - Query optimizations for mobile app performance
