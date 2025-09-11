@@ -1,8 +1,22 @@
 # EcoLafaek Database Schema
 
+<div align="center">
+  <img src="https://img.shields.io/badge/TiDB_AgentX_Hackathon_2025-🏆_DATABASE_SCHEMA-FF6B35?style=for-the-badge&logoColor=white" alt="TiDB Hackathon 2025" />
+</div>
+
+This **TiDB Cloud database schema** demonstrates advanced vector database capabilities for the TiDB AgentX Hackathon 2025. It showcases how modern environmental monitoring systems can leverage TiDB's unique combination of traditional SQL and cutting-edge vector search functionality.
+
+### 🧠 Vector Database Innovation:
+
+- **1024-dimensional embeddings** stored natively in TiDB `VECTOR(1024)` columns
+- **Amazon Titan integration** for AI-generated image and spatial embeddings
+- **Real-time similarity search** using `VEC_COSINE_DISTANCE()` function
+- **Multi-application access** from mobile, web dashboard, and admin interfaces
+- **Production-scale deployment** serving real environmental data from Timor-Leste
+
 ## Overview
 
-This TiDB database powers the EcoLafaek environmental waste monitoring system for Timor-Leste. It manages community waste reports, AI-powered analysis with vector embeddings, user authentication, and real-time dashboard visualization.
+This TiDB Cloud database powers the EcoLafaek environmental waste monitoring system for Timor-Leste. It manages community waste reports, AI-powered analysis with vector embeddings, user authentication, and real-time dashboard visualization - all demonstrating TiDB's advanced capabilities for modern AI-driven applications.
 
 ## Entity Relationship Diagram
 
