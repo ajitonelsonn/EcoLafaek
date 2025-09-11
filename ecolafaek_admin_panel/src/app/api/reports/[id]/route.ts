@@ -2,6 +2,71 @@ import { NextRequest, NextResponse } from 'next/server'
 import { executeQuery } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 
+interface DetailedReport {
+  report_id: number
+  user_id: number
+  latitude: number
+  longitude: number
+  report_date: string
+  description: string
+  status: string
+  image_url: string | null
+  address_text: string | null
+  device_info: string | null
+  username: string | null
+  email: string | null
+  phone_number: string | null
+  registration_date: string | null
+  analysis_id: number | null
+  analyzed_date: string | null
+  waste_type_id: number | null
+  confidence_score: number | null
+  estimated_volume: number | null
+  severity_score: number | null
+  priority_level: string | null
+  analysis_notes: string | null
+  full_description: string | null
+  waste_type_name: string | null
+  waste_type_description: string | null
+  hazard_level: string | null
+  recyclable: boolean | null
+  icon_url: string | null
+}
+
+interface AssociatedHotspot {
+  hotspot_id: number
+  name: string
+  center_latitude: number
+  center_longitude: number
+  radius_meters: number
+  total_reports: number
+  average_severity: number
+  status: string
+}
+
+interface NearbyReport {
+  report_id: number
+  latitude: number
+  longitude: number
+  report_date: string
+  status: string
+  description: string
+  username: string | null
+  waste_type_id: number | null
+  severity_score: number | null
+  waste_type_name: string | null
+  distance: number
+}
+
+interface ReportLog {
+  log_id: number
+  timestamp: string
+  agent: string
+  action: string
+  details: string
+  log_level: string
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -52,7 +117,7 @@ export async function GET(
       WHERE r.report_id = ?
     `
     
-    const reports = await executeQuery<any[]>(reportQuery, [reportId])
+    const reports = await executeQuery<DetailedReport[]>(reportQuery, [reportId])
     
     if (reports.length === 0) {
       return NextResponse.json(
@@ -79,7 +144,7 @@ export async function GET(
       WHERE hr.report_id = ?
     `
     
-    const hotspots = await executeQuery<any[]>(hotspotsQuery, [reportId])
+    const hotspots = await executeQuery<AssociatedHotspot[]>(hotspotsQuery, [reportId])
     
     // Get related reports in the same area (within 1km)
     const nearbyReportsQuery = `
@@ -111,7 +176,7 @@ export async function GET(
       LIMIT 10
     `
     
-    const nearbyReports = await executeQuery<any[]>(
+    const nearbyReports = await executeQuery<NearbyReport[]>(
       nearbyReportsQuery, 
       [report.latitude, report.longitude, report.latitude, reportId]
     )
@@ -131,7 +196,7 @@ export async function GET(
       LIMIT 20
     `
     
-    const logs = await executeQuery<any[]>(logsQuery, [reportId])
+    const logs = await executeQuery<ReportLog[]>(logsQuery, [reportId])
     
     return NextResponse.json({
       report,

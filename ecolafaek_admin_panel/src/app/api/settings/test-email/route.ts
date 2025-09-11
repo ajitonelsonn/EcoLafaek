@@ -19,16 +19,6 @@ export async function POST(request: NextRequest) {
 
     // In a real implementation, you would use a library like nodemailer
     // For now, we'll simulate the email test
-    const emailConfig = {
-      host: smtp_host,
-      port: smtp_port,
-      secure: smtp_port === 465,
-      auth: {
-        user: smtp_username,
-        pass: smtp_password
-      }
-    }
-
     // Simulate email sending (replace with actual email sending logic)
     const testSuccess = true // This would be the result of actual email sending
 

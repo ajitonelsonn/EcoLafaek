@@ -2,6 +2,40 @@ import { NextRequest, NextResponse } from 'next/server'
 import { executeQuery } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 
+interface Hotspot {
+  hotspot_id: number
+  name: string
+  center_latitude: number
+  center_longitude: number
+  radius_meters: number
+  total_reports: number
+  average_severity: number
+  status: string
+  first_reported: string
+  last_reported: string
+  notes: string | null
+  active_reports: number
+  latest_report_date?: string
+}
+
+interface CountResult {
+  total: number
+}
+
+interface HotspotStats {
+  total_hotspots: number
+  active_hotspots: number
+  monitored_hotspots: number
+  resolved_hotspots: number
+  avg_reports_per_hotspot: number
+  avg_severity_score: number
+}
+
+interface QueryResult {
+  insertId: number
+  affectedRows: number
+}
+
 export async function GET(request: NextRequest) {
   try {
     const authResult = await verifyToken(request)
@@ -19,8 +53,8 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit
 
     // Build query conditions
-    let whereConditions = []
-    let queryParams = []
+    const whereConditions = []
+    const queryParams = []
     
     if (search) {
       whereConditions.push('(h.name LIKE ? OR h.description LIKE ?)')
@@ -58,7 +92,7 @@ export async function GET(request: NextRequest) {
         ORDER BY h.last_reported DESC
       `
       
-      const hotspots = await executeQuery<any[]>(exportQuery, queryParams)
+      const hotspots = await executeQuery<Hotspot[]>(exportQuery, queryParams)
       
       // Create CSV content
       const headers = ['Hotspot ID', 'Name', 'Latitude', 'Longitude', 'Radius (m)', 'Total Reports', 'Avg Severity', 'Status', 'First Reported', 'Last Reported', 'Notes', 'Active Reports']
@@ -113,7 +147,7 @@ export async function GET(request: NextRequest) {
       LIMIT ${limit} OFFSET ${offset}
     `
     
-    const hotspots = await executeQuery<any[]>(hotspotsQuery, queryParams)
+    const hotspots = await executeQuery<Hotspot[]>(hotspotsQuery, queryParams)
     
     // Get total count
     const countQuery = `
@@ -122,7 +156,7 @@ export async function GET(request: NextRequest) {
       ${whereClause}
     `
     
-    const countResult = await executeQuery<any[]>(countQuery, queryParams)
+    const countResult = await executeQuery<CountResult[]>(countQuery, queryParams)
     const total = countResult[0]?.total || 0
     
     // Get statistics
@@ -137,7 +171,7 @@ export async function GET(request: NextRequest) {
       FROM hotspots
     `
     
-    const stats = await executeQuery<any[]>(statsQuery, [])
+    const stats = await executeQuery<HotspotStats[]>(statsQuery, [])
 
     return NextResponse.json({
       hotspots,
@@ -188,7 +222,7 @@ export async function POST(request: NextRequest) {
     try {
       await executeQuery(
         'INSERT INTO system_logs (agent, action, details, log_level, related_id, related_table) VALUES (?, ?, ?, ?, ?, ?)',
-        ['admin_panel', 'hotspot_create', `New hotspot created: ${name}`, 'info', (result as any).insertId, 'hotspots']
+        ['admin_panel', 'hotspot_create', `New hotspot created: ${name}`, 'info', (result as QueryResult).insertId, 'hotspots']
       )
     } catch (logError) {
       console.error('Failed to log hotspot creation:', logError)
@@ -196,7 +230,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       message: 'Hotspot created successfully',
-      hotspot_id: (result as any).insertId
+      hotspot_id: (result as QueryResult).insertId
     })
   } catch (error) {
     console.error('Hotspot creation error:', error)
@@ -231,8 +265,8 @@ export async function PATCH(request: NextRequest) {
     }
     
     // Build update query dynamically
-    let updateFields = []
-    let updateParams = []
+    const updateFields = []
+    const updateParams = []
     
     if (name !== undefined) {
       updateFields.push('name = ?')

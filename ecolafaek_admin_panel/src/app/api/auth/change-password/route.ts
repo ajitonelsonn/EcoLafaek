@@ -3,6 +3,11 @@ import { executeQuery } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 import bcrypt from 'bcryptjs'
 
+interface AdminCredentials {
+  admin_id: number
+  password_hash: string
+}
+
 export async function PUT(request: NextRequest) {
   try {
     const authResult = await verifyToken(request)
@@ -28,7 +33,7 @@ export async function PUT(request: NextRequest) {
 
     // Get current admin user
     const adminQuery = 'SELECT admin_id, password_hash FROM admin_users WHERE admin_id = ?'
-    const adminResult = await executeQuery<any[]>(adminQuery, [authResult.payload.admin_id])
+    const adminResult = await executeQuery<AdminCredentials[]>(adminQuery, [authResult.payload.admin_id])
     
     if (adminResult.length === 0) {
       return NextResponse.json({ error: 'Admin user not found' }, { status: 404 })

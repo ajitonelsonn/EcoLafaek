@@ -9,12 +9,9 @@ import {
   FileText,
   MapPin,
   CheckCircle,
-  AlertCircle,
   TrendingUp,
   Activity,
   Calendar,
-  Target,
-  Zap,
 } from "lucide-react";
 
 interface DashboardStats {
@@ -109,7 +106,7 @@ const ModernMetricCard = ({
   title: string;
   value: string | number;
   subtitle?: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   color: string;
   gradient: string;
   percentage?: number;
@@ -206,9 +203,6 @@ export default function Dashboard() {
 
   const completionRate = stats
     ? Math.round((stats.resolved_reports / stats.total_reports) * 100)
-    : 0;
-  const activeRate = stats
-    ? Math.round((stats.active_hotspots / (stats.active_hotspots + 10)) * 100)
     : 0;
 
   return (

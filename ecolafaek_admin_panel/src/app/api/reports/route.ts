@@ -2,6 +2,56 @@ import { NextRequest, NextResponse } from 'next/server'
 import { executeQuery } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 
+interface ReportExport {
+  report_id: number
+  latitude: number
+  longitude: number
+  report_date: string
+  description: string | null
+  status: string
+  address_text: string | null
+  username: string | null
+  email: string | null
+  waste_type_name: string | null
+  confidence_score: number | null
+  estimated_volume: number | null
+  severity_score: number | null
+}
+
+interface Report {
+  report_id: number
+  user_id: number
+  latitude: number
+  longitude: number
+  report_date: string
+  description: string | null
+  status: string
+  image_url: string | null
+  address_text: string | null
+  username: string | null
+  email: string | null
+  analysis_id: number | null
+  waste_type_id: number | null
+  confidence_score: number | null
+  estimated_volume: number | null
+  severity_score: number | null
+  priority_level: string | null
+  analysis_notes: string | null
+  full_description: string | null
+  analyzed_date: string | null
+  waste_type_name: string | null
+  hazard_level: string | null
+  recyclable: boolean | null
+}
+
+interface CountResult {
+  total: number
+}
+
+interface WasteType {
+  name: string
+}
+
 export async function GET(request: NextRequest) {
   try {
     const authResult = await verifyToken(request)
@@ -21,8 +71,8 @@ export async function GET(request: NextRequest) {
     
     const offset = (page - 1) * limit
     // Build query conditions
-    let whereConditions = []
-    let queryParams = []
+    const whereConditions = []
+    const queryParams = []
     
     if (search) {
       whereConditions.push('(r.description LIKE ? OR u.username LIKE ? OR r.address_text LIKE ?)')
@@ -66,7 +116,7 @@ export async function GET(request: NextRequest) {
         ORDER BY r.report_date DESC
       `
       
-      const reports = await executeQuery<any[]>(exportQuery, queryParams)
+      const reports = await executeQuery<ReportExport[]>(exportQuery, queryParams)
       
       // Create CSV content
       const headers = ['Report ID', 'Latitude', 'Longitude', 'Date', 'Description', 'Status', 'Address', 'Username', 'Email', 'Waste Type', 'Confidence', 'Volume', 'Severity']
@@ -132,7 +182,7 @@ export async function GET(request: NextRequest) {
       LIMIT ${limit} OFFSET ${offset}
     `
     
-    const reports = await executeQuery<any[]>(reportsQuery, queryParams)
+    const reports = await executeQuery<Report[]>(reportsQuery, queryParams)
     
     // Get total count
     const countQuery = `
@@ -144,11 +194,11 @@ export async function GET(request: NextRequest) {
       ${whereClause}
     `
     
-    const countResult = await executeQuery<any[]>(countQuery, queryParams)
+    const countResult = await executeQuery<CountResult[]>(countQuery, queryParams)
     const total = countResult[0]?.total || 0
     
     // Get waste types for filter
-    const wasteTypes = await executeQuery<any[]>('SELECT DISTINCT name FROM waste_types ORDER BY name')
+    const wasteTypes = await executeQuery<WasteType[]>('SELECT DISTINCT name FROM waste_types ORDER BY name')
     
     return NextResponse.json({
       reports,

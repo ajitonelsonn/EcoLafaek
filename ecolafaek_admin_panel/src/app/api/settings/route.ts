@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { executeQuery } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 
+interface SystemSetting {
+  setting_key: string
+  setting_value: string
+  data_type: string
+}
+
+interface NotificationTemplate {
+  template_id: number
+  name: string
+  subject: string
+  body: string
+  type: string
+}
+
 export async function GET(request: NextRequest) {
   try {
     const authResult = await verifyToken(request)
@@ -19,12 +33,12 @@ export async function GET(request: NextRequest) {
       ORDER BY setting_key
     `
     
-    const settingsResult = await executeQuery<any[]>(settingsQuery, [])
+    const settingsResult = await executeQuery<SystemSetting[]>(settingsQuery, [])
     
     // Convert to key-value object with proper types
-    const settings: any = {}
+    const settings: Record<string, unknown> = {}
     settingsResult.forEach(row => {
-      let value = row.setting_value
+      let value: unknown = row.setting_value
       
       // Convert based on data type
       switch (row.data_type) {
@@ -32,7 +46,7 @@ export async function GET(request: NextRequest) {
           value = value === 'true' || value === '1'
           break
         case 'number':
-          value = parseInt(value)
+          value = parseInt(value as string)
           break
         case 'string':
         default:
@@ -83,7 +97,7 @@ export async function GET(request: NextRequest) {
       ORDER BY name
     `
     
-    const templates = await executeQuery<any[]>(templatesQuery, [])
+    const templates = await executeQuery<NotificationTemplate[]>(templatesQuery, [])
 
     return NextResponse.json({
       settings: finalSettings,
@@ -108,7 +122,7 @@ export async function PUT(request: NextRequest) {
     const settings = await request.json()
     
     // Update or insert each setting
-    for (const [key, value] of Object.entries(settings)) {
+    for (const [key, value] of Object.entries(settings as Record<string, unknown>)) {
       let dataType = 'string'
       let settingValue = String(value)
       

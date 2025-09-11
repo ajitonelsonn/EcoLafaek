@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { executeQuery } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 
+interface AdminUser {
+  admin_id: number
+  role: string
+  username?: string
+  email?: string
+}
+
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const authResult = await verifyToken(request)
@@ -46,7 +53,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       SELECT admin_id, role FROM admin_users 
       WHERE admin_id = ?
     `
-    const userResult = await executeQuery<any[]>(userQuery, [adminId])
+    const userResult = await executeQuery<AdminUser[]>(userQuery, [adminId])
     
     if (userResult.length === 0) {
       return NextResponse.json(
@@ -67,7 +74,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       SELECT admin_id FROM admin_users 
       WHERE (username = ? OR email = ?) AND admin_id != ?
     `
-    const existingResult = await executeQuery<any[]>(existingQuery, [username, email, adminId])
+    const existingResult = await executeQuery<Pick<AdminUser, 'admin_id'>[]>(existingQuery, [username, email, adminId])
     
     if (existingResult.length > 0) {
       return NextResponse.json(
@@ -133,7 +140,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
       SELECT admin_id, role, username FROM admin_users 
       WHERE admin_id = ?
     `
-    const userResult = await executeQuery<any[]>(userQuery, [adminId])
+    const userResult = await executeQuery<AdminUser[]>(userQuery, [adminId])
     
     if (userResult.length === 0) {
       return NextResponse.json(

@@ -26,8 +26,6 @@ import {
   Users as UsersIcon,
   UserCheck,
   UserX,
-  Eye,
-  MoreHorizontal,
   Download,
   UserPlus,
 } from "lucide-react";

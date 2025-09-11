@@ -2,6 +2,33 @@ import { NextRequest, NextResponse } from 'next/server'
 import { executeQuery } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 
+interface SystemLog {
+  log_id: number
+  agent: string
+  action: string
+  details: string
+  log_level: string
+  timestamp: string
+  related_id: number | null
+  related_table: string | null
+}
+
+interface CountResult {
+  total: number
+}
+
+interface LogStats {
+  total_logs: number
+  error_logs: number
+  warning_logs: number
+  info_logs: number
+}
+
+interface QueryResult {
+  insertId: number
+  affectedRows: number
+}
+
 export async function GET(request: NextRequest) {
   try {
     const authResult = await verifyToken(request)
@@ -20,8 +47,8 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit
 
     // Build query conditions
-    let whereConditions = []
-    let queryParams = []
+    const whereConditions = []
+    const queryParams = []
     
     if (search) {
       whereConditions.push('(action LIKE ? OR details LIKE ?)')
@@ -57,7 +84,7 @@ export async function GET(request: NextRequest) {
         ORDER BY timestamp DESC
       `
       
-      const logs = await executeQuery<any[]>(exportQuery, queryParams)
+      const logs = await executeQuery<SystemLog[]>(exportQuery, queryParams)
       
       // Create CSV content
       const headers = ['Log ID', 'Agent', 'Action', 'Details', 'Level', 'Timestamp', 'Related ID', 'Related Table']
@@ -69,7 +96,7 @@ export async function GET(request: NextRequest) {
           `"${log.action}"`,
           `"${log.details.replace(/"/g, '""')}"`,
           log.log_level,
-          log.created_at,
+          log.timestamp,
           log.related_id || '',
           log.related_table || ''
         ].join(','))
@@ -100,7 +127,7 @@ export async function GET(request: NextRequest) {
       LIMIT ${limit} OFFSET ${offset}
     `
     
-    const logs = await executeQuery<any[]>(logsQuery, queryParams)
+    const logs = await executeQuery<SystemLog[]>(logsQuery, queryParams)
     
     // Get total count
     const countQuery = `
@@ -109,7 +136,7 @@ export async function GET(request: NextRequest) {
       ${whereClause}
     `
     
-    const countResult = await executeQuery<any[]>(countQuery, queryParams)
+    const countResult = await executeQuery<CountResult[]>(countQuery, queryParams)
     const total = countResult[0]?.total || 0
     
     // Get statistics
@@ -123,7 +150,7 @@ export async function GET(request: NextRequest) {
       ${whereClause}
     `
     
-    const stats = await executeQuery<any[]>(statsQuery, queryParams)
+    const stats = await executeQuery<LogStats[]>(statsQuery, queryParams)
 
     return NextResponse.json({
       logs,
@@ -172,7 +199,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       message: 'Log entry created successfully',
-      log_id: (result as any).insertId
+      log_id: (result as QueryResult).insertId
     })
   } catch (error) {
     console.error('Log creation error:', error)

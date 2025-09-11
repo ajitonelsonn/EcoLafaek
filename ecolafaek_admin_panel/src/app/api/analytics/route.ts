@@ -2,6 +2,36 @@ import { NextRequest, NextResponse } from 'next/server'
 import { executeQuery } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 
+interface OverviewStats {
+  total_users: number
+  total_reports: number
+  total_hotspots: number
+  active_hotspots: number
+  reports_today: number
+  users_this_month: number
+}
+
+interface MonthlyCount {
+  month: string
+  count: number
+}
+
+interface ReportByStatus {
+  status: string
+  count: number
+  percentage: number
+}
+
+interface ReportByWasteType {
+  waste_type: string
+  count: number
+}
+
+interface HotspotByStatus {
+  status: string
+  count: number
+}
+
 export async function GET(request: NextRequest) {
   try {
     const authResult = await verifyToken(request)
@@ -14,25 +44,20 @@ export async function GET(request: NextRequest) {
     
     // Calculate date range
     let dateFilter = ''
-    let userDateFilter = ''
     
     switch (range) {
       case '3months':
         dateFilter = 'AND r.report_date >= DATE_SUB(NOW(), INTERVAL 3 MONTH)'
-        userDateFilter = 'AND u.registration_date >= DATE_SUB(NOW(), INTERVAL 3 MONTH)'
         break
       case '6months':
         dateFilter = 'AND r.report_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)'
-        userDateFilter = 'AND u.registration_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)'
         break
       case '12months':
         dateFilter = 'AND r.report_date >= DATE_SUB(NOW(), INTERVAL 12 MONTH)'
-        userDateFilter = 'AND u.registration_date >= DATE_SUB(NOW(), INTERVAL 12 MONTH)'
         break
       case 'all':
       default:
         dateFilter = ''
-        userDateFilter = ''
     }
 
     // Get overview statistics
@@ -46,7 +71,7 @@ export async function GET(request: NextRequest) {
         (SELECT COUNT(*) FROM users WHERE MONTH(registration_date) = MONTH(NOW()) AND YEAR(registration_date) = YEAR(NOW())) as users_this_month
     `
     
-    const overviewResult = await executeQuery<any[]>(overviewQuery, [])
+    const overviewResult = await executeQuery<OverviewStats[]>(overviewQuery, [])
     const overview = overviewResult[0] || {}
 
     // Get reports by month
@@ -64,7 +89,7 @@ export async function GET(request: NextRequest) {
       ORDER BY month ASC
     `
     
-    const reportsByMonth = await executeQuery<any[]>(reportsByMonthQuery, [])
+    const reportsByMonth = await executeQuery<MonthlyCount[]>(reportsByMonthQuery, [])
 
     // Get reports by status
     const reportsByStatusQuery = `
@@ -78,7 +103,7 @@ export async function GET(request: NextRequest) {
       ORDER BY count DESC
     `
     
-    const reportsByStatus = await executeQuery<any[]>(reportsByStatusQuery, [])
+    const reportsByStatus = await executeQuery<ReportByStatus[]>(reportsByStatusQuery, [])
 
     // Get reports by waste type
     const reportsByWasteTypeQuery = `
@@ -94,7 +119,7 @@ export async function GET(request: NextRequest) {
       LIMIT 10
     `
     
-    const reportsByWasteType = await executeQuery<any[]>(reportsByWasteTypeQuery, [])
+    const reportsByWasteType = await executeQuery<ReportByWasteType[]>(reportsByWasteTypeQuery, [])
 
     // Get hotspots by status
     const hotspotsByStatusQuery = `
@@ -106,7 +131,7 @@ export async function GET(request: NextRequest) {
       ORDER BY count DESC
     `
     
-    const hotspotsByStatus = await executeQuery<any[]>(hotspotsByStatusQuery, [])
+    const hotspotsByStatus = await executeQuery<HotspotByStatus[]>(hotspotsByStatusQuery, [])
 
     // Get user registration trend
     const userRegistrationQuery = `
@@ -119,7 +144,7 @@ export async function GET(request: NextRequest) {
       ORDER BY month ASC
     `
     
-    const userRegistrationTrend = await executeQuery<any[]>(userRegistrationQuery, [])
+    const userRegistrationTrend = await executeQuery<MonthlyCount[]>(userRegistrationQuery, [])
 
     return NextResponse.json({
       overview,

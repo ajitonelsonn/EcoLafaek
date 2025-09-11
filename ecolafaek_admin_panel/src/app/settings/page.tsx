@@ -20,14 +20,12 @@ import { Textarea } from '@/components/ui/textarea'
 import { 
   Settings as SettingsIcon,
   Save,
-  RefreshCw,
   Database,
   Mail,
   Shield,
   Bell,
   Globe,
   Users,
-  FileText,
   Loader2,
   AlertCircle,
   CheckCircle
@@ -57,17 +55,8 @@ interface SystemSettings {
   api_rate_limit: number
 }
 
-interface NotificationTemplate {
-  template_id: number
-  name: string
-  subject: string
-  body: string
-  type: string
-}
-
 export default function SettingsPage() {
   const [settings, setSettings] = useState<SystemSettings | null>(null)
-  const [templates, setTemplates] = useState<NotificationTemplate[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
@@ -80,7 +69,6 @@ export default function SettingsPage() {
       if (response.ok) {
         const data = await response.json()
         setSettings(data.settings)
-        setTemplates(data.templates || [])
       }
     } catch (error) {
       console.error('Failed to fetch settings:', error)
@@ -116,7 +104,7 @@ export default function SettingsPage() {
     }
   }
 
-  const updateSetting = (key: keyof SystemSettings, value: any) => {
+  const updateSetting = (key: keyof SystemSettings, value: unknown) => {
     if (!settings) return
     setSettings(prev => prev ? { ...prev, [key]: value } : null)
   }

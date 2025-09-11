@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyTokenFromString } from '@/lib/auth'
 import { executeQuery } from '@/lib/db'
 
+interface TokenPayload {
+  admin_id: number
+  username: string
+  role: string
+}
+
+interface AdminUser {
+  admin_id: number
+  username: string
+  email: string
+  role: string
+  created_at: string
+  last_login: string | null
+}
+
 export async function GET(request: NextRequest) {
   try {
     const token = request.cookies.get('admin-token')?.value
@@ -13,7 +28,7 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    const decoded = await verifyTokenFromString(token) as any
+    const decoded = await verifyTokenFromString(token) as TokenPayload | null
     
     if (!decoded) {
       return NextResponse.json(
@@ -23,7 +38,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Fetch fresh admin data
-    const admins = await executeQuery<any[]>(
+    const admins = await executeQuery<AdminUser[]>(
       'SELECT admin_id, username, email, role, created_at, last_login FROM admin_users WHERE admin_id = ?',
       [decoded.admin_id]
     )

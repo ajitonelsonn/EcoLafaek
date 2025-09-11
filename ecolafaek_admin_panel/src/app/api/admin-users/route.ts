@@ -3,6 +3,21 @@ import { executeQuery } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 import bcrypt from 'bcryptjs'
 
+interface AdminUser {
+  admin_id: number
+  username: string
+  email: string
+  role: string
+  created_at: string
+  last_login?: string
+  active: boolean
+}
+
+interface QueryResult {
+  insertId: number
+  affectedRows: number
+}
+
 export async function GET(request: NextRequest) {
   try {
     const authResult = await verifyToken(request)
@@ -21,7 +36,7 @@ export async function GET(request: NextRequest) {
       ORDER BY created_at DESC
     `
     
-    const adminUsers = await executeQuery<any[]>(query, [])
+    const adminUsers = await executeQuery<AdminUser[]>(query, [])
 
     return NextResponse.json({
       adminUsers
@@ -86,7 +101,7 @@ export async function POST(request: NextRequest) {
       SELECT admin_id FROM admin_users 
       WHERE username = ? OR email = ?
     `
-    const existingResult = await executeQuery<any[]>(existingQuery, [username, email])
+    const existingResult = await executeQuery<Pick<AdminUser, 'admin_id'>[]>(existingQuery, [username, email])
     
     if (existingResult.length > 0) {
       return NextResponse.json(
@@ -116,7 +131,7 @@ export async function POST(request: NextRequest) {
           'admin_user_created', 
           `New admin user created: ${username} (${email}) with role ${role}`, 
           'info', 
-          (result as any).insertId,
+          (result as QueryResult).insertId,
           'admin_users'
         ]
       )
@@ -126,7 +141,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: 'Admin user created successfully',
-      admin_id: (result as any).insertId
+      admin_id: (result as QueryResult).insertId
     })
   } catch (error) {
     console.error('Admin user creation error:', error)

@@ -12,6 +12,10 @@ export interface AdminUser {
   last_login?: string
 }
 
+export interface AdminUserWithPassword extends AdminUser {
+  password_hash: string
+}
+
 export interface LoginCredentials {
   username: string
   password: string
@@ -42,7 +46,7 @@ export async function generateToken(adminUser: AdminUser): Promise<string> {
     .sign(secret)
 }
 
-export async function verifyToken(request: any) {
+export async function verifyToken(request: { cookies?: { get: (name: string) => { value?: string } | undefined } }) {
   try {
     const token = request.cookies?.get('admin-token')?.value
     
@@ -53,8 +57,8 @@ export async function verifyToken(request: any) {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET!)
     const { payload } = await jwtVerify(token, secret)
     return { valid: true, payload }
-  } catch (error) {
-    console.error('Token verification error:', error)
+  } catch {
+    console.error('Token verification error')
     return { valid: false, payload: null }
   }
 }
@@ -64,7 +68,7 @@ export async function verifyTokenFromString(token: string) {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET!)
     const { payload } = await jwtVerify(token, secret)
     return payload
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -83,7 +87,7 @@ export function generateTokenSync(adminUser: AdminUser): string {
 
 export async function authenticateAdmin(credentials: LoginCredentials): Promise<AdminUser | null> {
   try {
-    const admins = await executeQuery<any[]>(
+    const admins = await executeQuery<AdminUserWithPassword[]>(
       'SELECT * FROM admin_users WHERE username = ?',
       [credentials.username]
     )

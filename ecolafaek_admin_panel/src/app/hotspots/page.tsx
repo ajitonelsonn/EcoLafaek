@@ -35,7 +35,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { 
   Search,
   Filter,
-  Eye,
   Edit,
   Trash2,
   Plus,

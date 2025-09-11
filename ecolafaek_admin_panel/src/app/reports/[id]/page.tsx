@@ -17,7 +17,6 @@ import {
   CheckCircle,
   Clock,
   XCircle,
-  Camera,
   Activity,
   TrendingUp,
   Zap
@@ -36,7 +35,7 @@ interface ReportDetails {
   status: string
   image_url?: string
   address_text?: string
-  device_info?: any
+  device_info?: string | null
   analysis_id?: number
   analyzed_date?: string
   waste_type_name?: string

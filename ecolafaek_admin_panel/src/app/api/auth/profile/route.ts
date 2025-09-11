@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { executeQuery } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 
+interface AdminProfile {
+  admin_id: number
+  username: string
+  email: string
+  role: string
+}
+
 export async function PUT(request: NextRequest) {
   try {
     const authResult = await verifyToken(request)
@@ -32,7 +39,7 @@ export async function PUT(request: NextRequest) {
       SELECT admin_id FROM admin_users 
       WHERE (username = ? OR email = ?) AND admin_id != ?
     `
-    const existingResult = await executeQuery<any[]>(existingQuery, [username, email, authResult.payload.admin_id])
+    const existingResult = await executeQuery<Pick<AdminProfile, 'admin_id'>[]>(existingQuery, [username, email, authResult.payload.admin_id])
     
     if (existingResult.length > 0) {
       return NextResponse.json(
@@ -56,7 +63,7 @@ export async function PUT(request: NextRequest) {
       FROM admin_users 
       WHERE admin_id = ?
     `
-    const updatedUserResult = await executeQuery<any[]>(updatedUserQuery, [authResult.payload.admin_id])
+    const updatedUserResult = await executeQuery<AdminProfile[]>(updatedUserQuery, [authResult.payload.admin_id])
     const updatedUser = updatedUserResult[0]
 
     // Log the profile update

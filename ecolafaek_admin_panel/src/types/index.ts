@@ -21,7 +21,7 @@ export interface Report {
   description?: string
   status: 'submitted' | 'analyzing' | 'analyzed' | 'resolved' | 'rejected'
   image_url?: string
-  device_info?: any
+  device_info?: Record<string, unknown>
   address_text?: string
 }
 

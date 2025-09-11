@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { executeQuery } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 
+interface AdminNotification {
+  id: number
+  title: string
+  message: string
+  type: string
+  created_at: string
+  is_read: boolean
+}
+
+interface QueryResult {
+  insertId: number
+  affectedRows: number
+}
+
 export async function GET(request: NextRequest) {
   try {
     const authResult = await verifyToken(request)
@@ -24,7 +38,7 @@ export async function GET(request: NextRequest) {
       LIMIT 50
     `
     
-    const notifications = await executeQuery<any[]>(notificationsQuery, [authResult.payload.admin_id])
+    const notifications = await executeQuery<AdminNotification[]>(notificationsQuery, [authResult.payload.admin_id])
 
     return NextResponse.json({
       notifications
@@ -69,7 +83,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       message: 'Notification created successfully',
-      notification_id: (result as any).insertId
+      notification_id: (result as QueryResult).insertId
     })
   } catch (error) {
     console.error('Notification creation error:', error)

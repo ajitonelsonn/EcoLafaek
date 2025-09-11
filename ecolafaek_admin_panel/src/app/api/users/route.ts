@@ -3,6 +3,31 @@ import { executeQuery } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 import bcrypt from 'bcryptjs'
 
+interface User {
+  user_id: number
+  username: string
+  email: string | null
+  phone_number: string | null
+  registration_date: string
+  last_login: string | null
+  account_status: string
+  verification_status: boolean
+  total_reports: number
+}
+
+interface CountResult {
+  total: number
+}
+
+interface ExistingUser {
+  user_id: number
+}
+
+interface QueryResult {
+  insertId: number
+  affectedRows: number
+}
+
 export async function GET(request: NextRequest) {
   try {
     const authResult = await verifyToken(request)
@@ -19,8 +44,8 @@ export async function GET(request: NextRequest) {
     
     const offset = (page - 1) * limit
     // Build query conditions
-    let whereConditions = []
-    let queryParams = []
+    const whereConditions = []
+    const queryParams = []
     
     if (search) {
       whereConditions.push('(u.username LIKE ? OR u.email LIKE ?)')
@@ -54,7 +79,7 @@ export async function GET(request: NextRequest) {
         ORDER BY u.registration_date DESC
       `
       
-      const users = await executeQuery<any[]>(exportQuery, queryParams)
+      const users = await executeQuery<User[]>(exportQuery, queryParams)
       
       // Create CSV content
       const headers = ['User ID', 'Username', 'Email', 'Phone', 'Registration Date', 'Last Login', 'Status', 'Verified', 'Total Reports']
@@ -101,7 +126,7 @@ export async function GET(request: NextRequest) {
       LIMIT ${limit} OFFSET ${offset}
     `
     
-    const users = await executeQuery<any[]>(usersQuery, queryParams)
+    const users = await executeQuery<User[]>(usersQuery, queryParams)
     
     // Get total count
     const countQuery = `
@@ -110,7 +135,7 @@ export async function GET(request: NextRequest) {
       ${whereClause}
     `
     
-    const countResult = await executeQuery<any[]>(countQuery, queryParams)
+    const countResult = await executeQuery<CountResult[]>(countQuery, queryParams)
     const total = countResult[0]?.total || 0
     
     return NextResponse.json({
@@ -217,14 +242,14 @@ export async function POST(request: NextRequest) {
 
     // Check if username or email already exists
     let existingQuery = 'SELECT user_id FROM users WHERE username = ?'
-    let queryParams = [username]
+    const queryParams = [username]
     
     if (email) {
       existingQuery += ' OR email = ?'
       queryParams.push(email)
     }
     
-    const existingResult = await executeQuery<any[]>(existingQuery, queryParams)
+    const existingResult = await executeQuery<ExistingUser[]>(existingQuery, queryParams)
     
     if (existingResult.length > 0) {
       return NextResponse.json(
@@ -259,7 +284,7 @@ export async function POST(request: NextRequest) {
           'user_created', 
           `New user created: ${username} (${email || 'no email'})`, 
           'info', 
-          (result as any).insertId,
+          (result as QueryResult).insertId,
           'users'
         ]
       )
@@ -269,7 +294,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: 'User created successfully',
-      user_id: (result as any).insertId
+      user_id: (result as QueryResult).insertId
     })
   } catch (error) {
     console.error('User creation error:', error)

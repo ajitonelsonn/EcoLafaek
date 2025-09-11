@@ -31,12 +31,10 @@ import {
   Users,
   AlertTriangle,
   Target,
-  Calendar,
   Activity,
   Loader2,
   BarChart3,
-  PieChart as PieChartIcon,
-  TrendingDown
+  PieChart as PieChartIcon
 } from 'lucide-react'
 
 interface AnalyticsData {
@@ -257,7 +255,7 @@ export default function AnalyticsPage() {
                           cx="50%"
                           cy="50%"
                           labelLine={false}
-                          label={({ status, percentage }) => `${status} (${Number(percentage || 0).toFixed(1)}%)`}
+                          label={(props: any) => `${props.status} (${Number(props.percentage || 0).toFixed(1)}%)`} // eslint-disable-line @typescript-eslint/no-explicit-any
                           outerRadius={80}
                           fill="#8884d8"
                           dataKey="count"
