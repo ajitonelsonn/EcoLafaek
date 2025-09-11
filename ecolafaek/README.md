@@ -4,6 +4,7 @@
     <img src="assets/images/app_logo.png" alt="EcoLafaek Logo" width="120" style="margin-right: 20px;" />
     <span style="font-size: 36px; font-weight: bold; margin: 0 20px;">
     <h3>Guarding Timor's Beauty</h3>
+    <img src="https://img.shields.io/badge/TiDB_AgentX_Hackathon_2025-_MOBILE_APP-FF6B35?style=for-the-badge&logoColor=white" alt="TiDB Hackathon 2025" />
     <p>
         <a href="https://ecolafaek.com/download" target="_blank">
             <img src="https://img.shields.io/badge/Download_App-4CAF50?style=for-the-badge&logo=android&logoColor=white" alt="Download App"/>
@@ -11,9 +12,18 @@
         <a href="https://ecolafaek.com" target="_blank">
             <img src="https://img.shields.io/badge/Public_Dashboard-2196F3?style=for-the-badge&logo=react&logoColor=white" alt="Public Dashboard"/>
         </a>
+        <img src="https://img.shields.io/badge/TiDB_Cloud-POWERED-FF6B35?style=for-the-badge&logo=tidb&logoColor=white" alt="TiDB Cloud" />
     </p>
-
 </div>
+
+## 🏆 TiDB Cloud Integration
+
+This Flutter mobile app is part of EcoLafaek's **TiDB AgentX Hackathon 2025** submission, showcasing how mobile applications can leverage TiDB Cloud's vector database capabilities for AI-powered environmental monitoring.
+
+### 🔗 TiDB Connection Flow:
+
+1. **Report Submission** → FastAPI Backend → **TiDB Cloud Storage**
+2. **AI Analysis** → Amazon Bedrock → **Vector Embeddings in TiDB**
 
 ## 📱 About
 
@@ -32,7 +42,6 @@ EcoLafaek Mobile is a citizen-focused mobile application that empowers residents
 #### 🗺️ **Interactive Mapping**
 
 - **Personal Reports**: See all your submitted reports plotted on the map
-- **Waste Hotspots**: Discover environmental problem areas in your community
 - **Location Context**: Understand waste patterns by geographic distribution
 
 ## 🔍 App Screens
@@ -115,17 +124,7 @@ Detailed view of user and general reporting stats.
 
 ### System Architecture
 
-```mermaid
-graph TD
-    subgraph "User Journey Flow"
-        E[📸 Capture Waste Photo] --> F[📍 Auto-GPS Location]
-        F --> G[📤 Submit to Backend]
-        G --> H[🤖 AI Analysis Pipeline]
-        H --> I[🔍 Vector Embeddings]
-        I --> J[📊 Progress Tracking]
-        J --> K[🏆 Achievement System]
-    end
-```
+![Analytics](../Diagram/uj_ecolafaek.png)
 
 **Advanced AI-Powered Architecture**: The EcoLafaek mobile app leverages cutting-edge AI and vector database technology to deliver intelligent waste monitoring. Images are stored in AWS S3 and analyzed using Amazon Nova Pro v1, while Amazon Titan Embed Image v1 generates 1024-dimensional vector embeddings stored in TiDB. This enables semantic similarity search, hotspot detection, and advanced analytics for environmental insights.
 
