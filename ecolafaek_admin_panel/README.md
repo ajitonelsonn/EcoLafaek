@@ -3,23 +3,64 @@
   
   <p><strong>A comprehensive administrative interface for the EcoLafaek environmental waste monitoring system</strong></p>
   
-  <p>Built with Next.js 15, TypeScript, and modern UI components</p>
+  <img src="https://img.shields.io/badge/TiDB_AgentX_Hackathon_2025-🏆_ADMIN_PANEL-FF6B35?style=for-the-badge&logoColor=white" alt="TiDB Hackathon 2025" />
+  
+  <p><strong>Powered by TiDB Cloud Vector Database</strong></p>
   
   <p>📍 <em>Currently running in local development environment only</em></p>
   
   <br/>
 </div>
 
+## 🏆 TiDB Cloud Administration Features
+
+This admin panel showcases **TiDB Cloud's enterprise-grade capabilities** for the TiDB AgentX Hackathon 2025:
+
+### 🗃️ Advanced TiDB Operations:
+
+- **Vector Data Management**: Administer 1024-dimensional embeddings and similarity searches
+- **Multi-Table Joins**: Complex queries spanning users, reports, analysis_results, and admin_users tables
+- **Real-time Analytics**: Live statistics powered by TiDB's high-performance queries
+- **Role-Based Access**: Secure admin authentication with JWT stored in TiDB admin_users table
+- **System Monitoring**: Track database performance and vector search efficiency
+
+### 🧠 TiDB Vector Integration:
+
+```sql
+-- Real vector analytics with month-over-month growth
+SELECT
+  COUNT(CASE WHEN image_embedding IS NOT NULL THEN 1 END) as with_embeddings,
+  COUNT(CASE WHEN location_embedding IS NOT NULL THEN 1 END) as with_location_embeddings,
+  AVG(confidence_score) as avg_confidence,
+  COUNT(CASE WHEN confidence_score >= 90 THEN 1 END) as high_confidence_analyses
+FROM analysis_results;
+
+-- Growth comparison queries (current vs last month)
+SELECT
+  COUNT(CASE WHEN MONTH(analyzed_date) = ? AND YEAR(analyzed_date) = ? THEN 1 END) as current_month,
+  COUNT(CASE WHEN MONTH(analyzed_date) = ? AND YEAR(analyzed_date) = ? THEN 1 END) as last_month
+FROM analysis_results WHERE image_embedding IS NOT NULL;
+```
+
+### 📊 Database Administration:
+
+- **User Management**: CRUD operations on TiDB users table
+- **Report Oversight**: Monitor waste reports lifecycle in TiDB
+- **Vector Analytics**: Analyze AI embedding performance and accuracy
+- **System Settings**: Configure TiDB-stored application parameters
+
 ## 🚀 Features
 
 - **🔐 Secure Authentication** - JWT-based admin login system with role management
-- **📊 Modern Dashboard** - Real-time statistics with circular progress indicators
+- **📊 Modern Dashboard** - Real-time statistics with circular progress indicators and TiDB vector analytics
+- **🧠 Vector Analytics Dashboard** - Live TiDB vector embeddings monitoring with 1024-dimensional insights
+- **📈 Month-over-Month Growth Tracking** - Real comparison analytics (vs last month/yesterday)
 - **👥 User Management** - Complete CRUD operations for regular users
 - **🛡️ Admin User Management** - Create and manage admin accounts with role-based permissions
 - **📋 Report Management** - Handle waste reports and their statuses
 - **🗺️ Hotspot Management** - Manage environmental hotspots with interactive maps
 - **📈 Advanced Analytics** - Detailed reporting and insights with visual charts
-- **🔔 Notification System** - Real-time notifications with read/unread status
+- **🤖 AI Confidence Monitoring** - Track Amazon Bedrock AI analysis performance
 - **👤 Profile Management** - Change passwords and update profile information
 - **🔍 System Monitoring** - Activity logs and system health tracking
 - **📤 Data Export** - CSV export functionality for users and reports
@@ -31,9 +72,6 @@
 - **Styling**: Tailwind CSS + shadcn/ui components
 - **Database**: TiDB Cloud with SSL connection
 - **Authentication**: JWT with HTTP-only cookies
-- **UI Components**: Radix UI primitives
-- **Icons**: Lucide React
-- **State Management**: React hooks and context
 
 ## 📋 Prerequisites
 
@@ -133,8 +171,6 @@ The setup script creates default admin accounts:
 </tr>
 </table>
 
-> ⚠️ **Security Note**: Change the default passwords immediately after first login.
-
 ## 🔑 Authentication
 
 ### Admin Roles
@@ -142,14 +178,6 @@ The setup script creates default admin accounts:
 - **super_admin** - Full system access
 - **admin** - Standard administrative privileges
 - **moderator** - Limited management access
-
-### Security Features
-
-- JWT tokens with 24-hour expiration
-- HTTP-only secure cookies
-- Protected routes with middleware
-- Password hashing with bcrypt
-- Activity logging for audit trails
 
 ## 📁 Project Structure
 
@@ -204,45 +232,55 @@ npm run start    # Start production server
 <details>
 <summary><strong>🔐 Authentication</strong></summary>
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/auth/login` | Admin login |
-| `POST` | `/api/auth/logout` | Admin logout |
-| `GET` | `/api/auth/me` | Get current admin user |
-| `PUT` | `/api/auth/profile` | Update admin profile |
-| `PUT` | `/api/auth/change-password` | Change admin password |
+| Method | Endpoint                    | Description            |
+| ------ | --------------------------- | ---------------------- |
+| `POST` | `/api/auth/login`           | Admin login            |
+| `POST` | `/api/auth/logout`          | Admin logout           |
+| `GET`  | `/api/auth/me`              | Get current admin user |
+| `PUT`  | `/api/auth/profile`         | Update admin profile   |
+| `PUT`  | `/api/auth/change-password` | Change admin password  |
 
 </details>
 
 <details>
-<summary><strong>📊 Dashboard</strong></summary>
+<summary><strong>📊 Dashboard & Analytics</strong></summary>
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/dashboard/stats` | Get dashboard statistics |
+| Method | Endpoint                | Description                                                        |
+| ------ | ----------------------- | ------------------------------------------------------------------ |
+| `GET`  | `/api/dashboard/stats`  | Get dashboard statistics with real growth metrics                  |
+| `GET`  | `/api/analytics`        | Get comprehensive analytics with date filtering                    |
+| `GET`  | `/api/vector-analytics` | 🏆 **TiDB Vector Analytics** - Advanced vector embeddings insights |
+
+#### 🧠 Vector Analytics Features:
+
+- **1024-dimensional embeddings analysis** - Track AI-generated vector storage
+- **Month-over-month comparisons** - Real growth calculations vs previous periods
+- **Confidence distribution tracking** - Monitor AI analysis accuracy trends
+- **Waste type embedding patterns** - Vector clustering by waste categories
+- **Processing efficiency metrics** - TiDB vector operation performance
 
 </details>
 
 <details>
 <summary><strong>👥 User Management</strong></summary>
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/users` | List users with pagination/filtering |
-| `POST` | `/api/users` | Create new user account |
-| `PATCH` | `/api/users` | Update user status |
+| Method  | Endpoint     | Description                          |
+| ------- | ------------ | ------------------------------------ |
+| `GET`   | `/api/users` | List users with pagination/filtering |
+| `POST`  | `/api/users` | Create new user account              |
+| `PATCH` | `/api/users` | Update user status                   |
 
 </details>
 
 <details>
 <summary><strong>🛡️ Admin User Management</strong></summary>
 
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|---------|
-| `GET` | `/api/admin-users` | List admin users | super_admin only |
-| `POST` | `/api/admin-users` | Create new admin user | super_admin only |
-| `PUT` | `/api/admin-users/[id]` | Update admin user | super_admin only |
-| `DELETE` | `/api/admin-users/[id]` | Delete admin user | super_admin only |
+| Method   | Endpoint                | Description           | Access           |
+| -------- | ----------------------- | --------------------- | ---------------- |
+| `GET`    | `/api/admin-users`      | List admin users      | super_admin only |
+| `POST`   | `/api/admin-users`      | Create new admin user | super_admin only |
+| `PUT`    | `/api/admin-users/[id]` | Update admin user     | super_admin only |
+| `DELETE` | `/api/admin-users/[id]` | Delete admin user     | super_admin only |
 
 </details>
 
@@ -253,24 +291,31 @@ npm run start    # Start production server
 <div align="center">
 
 ### 🔐 Login Page
+
 ![Login](public/ssc/login.png)
 
-### 📊 Dashboard 
-![Dashboard](public/ssc/ana.png)
+### 📊 Dashboard
+
+![Dashboard](public/ssc/dash.png)
 
 ### 👥 User Management
+
 ![Users](public/ssc/user.png)
 
 ### 📋 Reports Management
+
 ![Reports](public/ssc/report.png)
 
 ### 📄 Report Details
+
 ![Report Details](public/ssc/report_detail.png)
 
 ### 🗺️ Hotspots Management
+
 ![Hotspots](public/ssc/ana.png)
 
 ### 📈 Analytics Dashboard
+
 ![Analytics](public/ssc/syslog.png)
 
 </div>
