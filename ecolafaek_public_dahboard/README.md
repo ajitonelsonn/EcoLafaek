@@ -5,14 +5,44 @@
   <span style="font-size: 36px; font-weight: bold; margin: 0 20px;">
 </p>
 
+<div align="center">
+  <img src="https://img.shields.io/badge/TiDB_AgentX_Hackathon_2025-🏆_PUBLIC_DASHBOARD-FF6B35?style=for-the-badge&logoColor=white" alt="TiDB Hackathon 2025" />
+</div>
+
 <p align="center" style="margin-top: 10px;">
-  <img src="https://img.shields.io/badge/waste--management-4CAF50?style=for-the-badge&logo=leaf" alt="Waste Management" />
   <img src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js" alt="Next.js 15" />
   <img src="https://img.shields.io/badge/TypeScript-5.0+-blue?style=for-the-badge&logo=typescript" alt="TypeScript" />
   <img src="https://img.shields.io/badge/TailwindCSS-3.0+-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS" />
   <img src="https://img.shields.io/badge/Amazon_Bedrock-AI-orange?style=for-the-badge&logo=amazon-aws" alt="Amazon Bedrock" />
-  <img src="https://img.shields.io/badge/TiDB-Vector_DB-purple?style=for-the-badge&logo=database" alt="TiDB Vector DB" />
+  <img src="https://img.shields.io/badge/TiDB_Cloud-Vector_Database-FF6B35?style=for-the-badge&logo=tidb" alt="TiDB Vector DB" />
 </p>
+
+## 🏆 TiDB Vector Database Showcase
+
+This Next.js dashboard demonstrates **TiDB Cloud's advanced vector database capabilities** for the TiDB AgentX Hackathon 2025. It features:
+
+### 🧠 Vector-Powered Features:
+
+- **Similarity Search**: Find similar waste reports using `VEC_COSINE_DISTANCE()` on 1024-dimensional embeddings
+- **Pattern Recognition**: AI-powered clustering using Amazon Titan embeddings stored in TiDB
+- **Real-time Analytics**: Lightning-fast queries across thousands of vector embeddings
+- **Semantic Search**: Natural language queries powered by TiDB's vector capabilities
+
+### 🗃️ Direct TiDB Integration:
+
+```javascript
+// Real vector similarity search in TiDB
+const similarReports = await pool.execute(
+  `
+  SELECT r.*, ar.confidence_score,
+         VEC_COSINE_DISTANCE(ar.image_embedding, ?) as similarity
+  FROM reports r 
+  JOIN analysis_results ar ON r.report_id = ar.report_id
+  ORDER BY similarity ASC LIMIT 10
+`,
+  [queryVector]
+);
+```
 
 A comprehensive public web dashboard for visualizing and analyzing waste management data across Timor-Leste. This dashboard provides government officials and citizens with real-time insights into waste distribution, hotspots, and trends powered by advanced AI vector search using Amazon Bedrock Titan models and TiDB vector database.
 
@@ -25,9 +55,6 @@ A comprehensive public web dashboard for visualizing and analyzing waste managem
 - **🌡️ Severity Heatmaps**: Identify critical areas requiring urgent intervention with color-coded intensity maps
 - **📉 Trend Analysis**: Track waste reporting patterns over time with detailed temporal analytics
 - **🏆 Community Leaderboard**: Recognize and motivate top contributors with filtering and ranking systems
-- **⚡ Smart Caching**: Intelligent result caching system with parameter-based cache invalidation
-- **🎨 Modern UI/UX**: Glassmorphism design, smooth animations, and responsive layouts optimized for all devices
-- **🔐 Secure API Layer**: Comprehensive error handling, input validation, and connection pool management
 
 ## 🖥️ Live Demo
 
