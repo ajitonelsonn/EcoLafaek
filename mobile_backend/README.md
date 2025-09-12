@@ -6,35 +6,45 @@
   <span style="font-size: 36px; font-weight: bold; margin: 0 20px;">
 </p>
 
+<div align="center">
+  <img src="https://img.shields.io/badge/TiDB_AgentX_Hackathon_2025-🏆_BACKEND_API-FF6B35?style=for-the-badge&logoColor=white" alt="TiDB Hackathon 2025" />
+</div>
+
 <!-- Technology Stack Badges -->
 <p align="center">
   <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI" />
   <img src="https://img.shields.io/badge/Amazon_Nova_Pro-FF9900?style=for-the-badge&logo=amazonwebservices" alt="Amazon Nova Pro" />
   <img src="https://img.shields.io/badge/Titan_Embed_Image-FF9900?style=for-the-badge&logo=amazonwebservices" alt="Titan Embed Image" />
   <img src="https://img.shields.io/badge/Python-3,8+-blue?style=for-the-badge&logo=python" alt="Python 3.8+" />
-  <img src="https://img.shields.io/badge/TiDB-FF6B35?style=for-the-badge&logo=tidb" alt="TiDB" />
-  <img src="https://img.shields.io/badge/TiDB_Vector-FF6B35?style=for-the-badge&logo=tidb" alt="TiDB Vector" />
+  <img src="https://img.shields.io/badge/TiDB_Cloud-FF6B35?style=for-the-badge&logo=tidb" alt="TiDB Cloud" />
+  <img src="https://img.shields.io/badge/Vector_Database-POWERED-FF6B35?style=for-the-badge&logo=tidb" alt="TiDB Vector" />
   <img src="https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3" alt="AWS S3" />
 </p>
 
+## 🏆 TiDB AgentX Hackathon 2025 - AI Vector Backend
+
+This FastAPI backend showcases **TiDB Cloud's cutting-edge vector database capabilities** combined with Amazon Bedrock AI models to create an intelligent environmental monitoring system for the TiDB AgentX Hackathon 2025.
+
+### 🧠 Core TiDB Vector Innovation:
+
+- **Amazon Bedrock Integration**: Generate 1024-dimensional vectors using Titan Embed Image v1
+- **Vector Storage**: Store embeddings directly in TiDB's `VECTOR(1024)` columns
+- **Multi-Modal AI**: Combine image analysis with spatial embeddings for comprehensive insights
+
 ## 🌱 Project Overview
 
-This is a powerful backend service for an environmental waste monitoring system in Timor-Leste. Named after the crocodile ("Lafaek") which is considered sacred in Timorese culture, this project aims to protect the natural environment through community-driven waste reporting and AI-powered analysis using Amazon Nova Pro.
-
-**Live API :** [https://ecolafaek.xyz/health](https://ecolafaek.com/health)  
-**Public Dashboard:** [https://www.ecolafaek.com/](https://www.ecolafaek.com/)  
-**Mobile App Download:** [https://www.ecolafaek.com/download](https://www.ecolafaek.com/download)
+This is a sophisticated backend service that powers our environmental waste reporting system. This project aims to protect the natural environment through community-based waste reporting and AI-powered analysis using Amazon Nova Pro.
 
 ## 🤖 AI-Powered Environmental Monitoring
 
 EcoLafaek demonstrates the transformative potential of Amazon Nova Pro for environmental monitoring and civic engagement in developing regions.
 
-**Test Credentials for Judges In Mobile App:**
+## 🏆 For TiDB AgentX Hackathon Judges
 
-```
-Username: usertest
-Password: 1234abcd
-```
+### 🧪 **Testing Guide for our App:**
+
+**1.Mobile App Download:** [https://www.ecolafaek.com/download](https://www.ecolafaek.com/download)
+**2.Login with:** usertest/1234abcd
 
 ## 🗄️ TiDB Database Implementation
 
@@ -88,7 +98,7 @@ HAVING report_count >= 3;
 
 ### TiDB Features We Leverage
 
-#### 1. Vector Storage and Search
+#### 1. Vector Storage
 
 ```python
 # Store embeddings in TiDB
@@ -153,24 +163,12 @@ connection = mysql.connector.connect(
 )
 ```
 
-### Performance Optimizations
-
-#### Query Optimization
-
-```sql
--- Optimized hotspot detection with proper indexing
-CREATE INDEX idx_reports_location ON reports(latitude, longitude);
-CREATE INDEX idx_analysis_severity ON analysis_results(severity_score, created_at);
-CREATE INDEX idx_reports_date ON reports(report_date);
-```
-
 ### TiDB Benefits
 
 1. **Unified Data Platform**: Store both traditional waste report data and AI vector embeddings in one system
 2. **Real-time Processing**: Handle concurrent report submissions from mobile app users
-3. **Scalable Analytics**: Grow from local Timor-Leste deployment to regional environmental monitoring
-4. **Cost-Effective**: Distributed architecture eliminates need for separate vector database
-5. **Developer Friendly**: MySQL compatibility speeds development and deployment
+3. **Cost-Effective**: Distributed architecture eliminates need for separate vector database
+4. **Developer Friendly**: MySQL compatibility speeds development and deployment
 
 ## 🧠 Amazon Nova Pro Implementation
 
@@ -264,19 +262,6 @@ def invoke_titan_embed_text(text: str) -> Optional[List[float]]:
     return response.json().get('embedding', [])
 ```
 
-#### TiDB Vector Storage
-
-All embeddings are stored in TiDB using VECTOR(1024) columns for future analysis:
-
-```sql
-CREATE TABLE analysis_results (
-    -- ... other columns ...
-    image_embedding VECTOR(1024),     -- Content-based embeddings
-    location_embedding VECTOR(1024),  -- Location-based embeddings
-    -- ... other columns ...
-);
-```
-
 #### Location-Enhanced Embeddings
 
 We create rich location embeddings that include:
@@ -361,24 +346,6 @@ Return your answer as a JSON object with the following structure:
 }
 """
 ```
-
-## 🚀 Key Features
-
-### 🧠 AI-Powered Analysis
-
-- **Amazon Nova Pro Integration**: Advanced multimodal AI for waste image analysis with bearer token authentication
-- **Two-Phase Analysis**: Initial waste detection followed by detailed analysis for confirmed waste
-- **Intelligent Classification**: Distinguishes between actual waste and everyday objects to reduce false positives
-- **Severity Assessment**: 1-10 scale severity scoring with priority levels (low, medium, high, critical)
-- **Environmental Impact Evaluation**: Detailed assessment of environmental risks and safety concerns
-
-### 🔍 Vector Embeddings & Data Storage
-
-- **Amazon Titan Embed Image v1**: Multimodal embeddings for both image content and text descriptions
-- **TiDB Vector Storage**: 1024-dimensional embeddings stored in TiDB for future analysis
-- **Content Embeddings**: Rich text descriptions from Nova Pro analysis converted to vectors
-- **Location Embeddings**: Geographic context embeddings with Timor-Leste regional awareness
-- **Future-Ready**: Vector data prepared for potential search and analysis capabilities
 
 ## 📱 Application Workflow
 
@@ -478,17 +445,6 @@ Each report includes:
 - Estimated volume
 - Analysis notes with recommended actions
 
-## 🌍 Real-World Impact
-
-EcoLafaek addresses waste management challenges in Timor-Leste:
-
-1. **Limited Municipal Resources**: AI-powered prioritization helps focus cleanup efforts
-2. **Civic Engagement**: Community participation through accessible mobile reporting
-3. **Data-Driven Policy**: Aggregated statistics inform government decisions
-4. **Environmental Protection**: Early identification of hazardous waste
-5. **Public Health**: Identification of disease vector breeding grounds
-6. **Education**: Raising awareness through accessible information
-
 ## 🔧 Technical Implementation
 
 ### Core Architecture
@@ -502,21 +458,12 @@ EcoLafaek addresses waste management challenges in Timor-Leste:
 5. **Bearer Token Authentication** for Bedrock API access
 6. **MySQL Connector** for TiDB database connections
 
-### Database Schema Features
-
-- **Vector Columns**: `VECTOR(1024)` for image and location embeddings
-- **Geospatial Queries**: Haversine formula for distance calculations
-- **Hotspot Management**: Automatic clustering and association tables
-- **User Authentication**: Secure password storage and email verification
-- **Report Lifecycle**: Complete workflow from submission to analysis
-
 ### AI/ML Pipeline
 
 1. **Image Processing**: Base64 encoding with MIME type detection
 2. **Nova Pro Analysis**: Two-phase detection and classification
 3. **Embedding Generation**: Parallel processing for content and location vectors
 4. **Vector Storage**: TiDB integration with automatic indexing
-5. **Similarity Search**: Cosine distance calculations for pattern matching
 
 ### Environment Variables
 
@@ -569,77 +516,6 @@ Our complete EcoLafaek ecosystem is publicly accessible for demonstration purpos
 - **Health Check Endpoint:** [https://ecolafaek.xyz/health](https://ecolafaek.xyz/health)
 - **Public Dashboard:** [https://www.ecolafaek.com/](https://www.ecolafaek.com/)
 - **Mobile App Download:** [https://www.ecolafaek.com/download](https://www.ecolafaek.com/download)
-
-### 🧪 Test Credentials
-
-For hackathon judges and testers, use these credentials:
-
-```
-Username: usertest
-Password: 1234abcd
-```
-
-You can use these credentials in:
-
-- The mobile app to create and submit waste reports
-- Direct API calls as shown below
-
-### 🔍 Example API Calls
-
-**Authentication:**
-
-```bash
-curl -X POST https://ecolafaek.xyz/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"usertest","password":"1234abcd"}'
-```
-
-**Test Nova Pro Analysis:**
-
-```bash
-curl -X GET "https://ecolafaek.xyz/api/test/nova?image_url=https://example.com/waste-image.jpg" \
-  -H "Authorization: Bearer your_token_here"
-```
-
-**List User Reports:**
-
-```bash
-curl -X GET "https://ecolafaek.xyz/api/reports?page=1&per_page=10" \
-  -H "Authorization: Bearer your_token_here"
-```
-
-**Get Report Details:**
-
-```bash
-curl -X GET "https://ecolafaek.xyz/api/reports/12345" \
-  -H "Authorization: Bearer your_token_here"
-```
-
-**Dashboard Statistics:**
-
-```bash
-curl -X GET "https://ecolafaek.xyz/api/dashboard/stats" \
-  -H "Authorization: Bearer your_token_here"
-```
-
-**Get Hotspots:**
-
-```bash
-curl -X GET "https://ecolafaek.xyz/api/hotspots?lat=-8.55&lon=125.58&radius=5" \
-  -H "Authorization: Bearer your_token_here"
-```
-
-Replace `your_token_here` with the token received from the login response.
-
----
-
-## 📞 Support
-
-For technical support or questions:
-
-- Create an issue in this repository
-- Contact: [ecolafaek@gmail.com](mailto:support@ecolafaek.com)
-- Documentation: [https://docs.ecolafaek.com](https://docs.ecolafaek.com)
 
 ---
 
