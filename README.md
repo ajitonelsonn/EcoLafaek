@@ -6,12 +6,56 @@
 </p>
 
 <div align="center">
+  <img src="https://img.shields.io/badge/TiDB_AgentX_Hackathon_2025-FF6B35?style=for-the-badge&logoColor=white" alt="TiDB Hackathon 2025" />
+</div>
+
+<div align="center">
   <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter" />
   <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" />
   <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
   <img src="https://img.shields.io/badge/Amazon_Bedrock-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="Amazon Bedrock" />
-  <img src="https://img.shields.io/badge/TiDB-FF6B35?style=for-the-badge&logo=tidb&logoColor=white" alt="TiDB" />
+  <img src="https://img.shields.io/badge/
+  AWS_S3-569A31?style=for-the-badge&logo=amazons3-232F3E?style=for-the-badge&l
+  ogo=amazon-aws&logoColor=white" alt="S3" />
+  <img src="https://img.shields.io/badge/TiDB_Cloud-FF6B35?style=for-the-badge&logo=tidb&logoColor=white" alt="TiDB Cloud" />
+  <img src="https://img.shields.io/badge/Vector_Database-ENABLED-success?style=for-the-badge" alt="Vector Database" />
 </div>
+
+---
+
+## 🏆 For TiDB AgentX Hackathon 2025 Judges
+
+### 🚀 Judge Quick Start
+
+**🎯 Immediate Testing:**
+
+- **📱 [Download Mobile App](https://ecolafaek.com/download)** - Login: `usertest` / `1234abcd`
+- **🌐 [Live Public Dashboard](https://ecolafaek.com)** - No login required
+- **⚡ [API Health Check](https://ecolafaek.xyz/health)** - Backend status
+
+### 📚 Complete Documentation Access
+
+| Component               | Documentation Link                                                       |
+| ----------------------- | ------------------------------------------------------------------------ |
+| 📱 **Mobile App**       | [→ `./ecolafaek`](./ecolafaek/README.md)                                 |
+| 🌐 **Public Dashboard** | [→ `./ecolafaek_public_dahboard`](./ecolafaek_public_dahboard/README.md) |
+| ⚡ **Backend API**      | [→ `./mobile_backend`](./mobile_backend/README.md)                       |
+| 🗄️ **Database Schema**  | [→ `./database`](./database/README.md)                                   |
+| 🛡️ **Admin Panel**      | [→ `./ecolafaek_admin_panel`](./ecolafaek_admin_panel/README.md)         |
+
+## 🏆 TiDB AgentX Hackathon 2025 Submission
+
+**EcoLafaek showcases TiDB Cloud's cutting-edge vector database capabilities** to solve real-world environmental challenges in Timor-Leste. Our system leverages **1024-dimensional vector embeddings** stored directly in TiDB to power AI-driven waste similarity search, hotspot detection, and multi-application analytics.
+
+### 🎯 TiDB Innovation Highlights:
+
+- **Vector Database**: Storing 1024-dimensional embeddings from Amazon Titan Embed Image v1 in `VECTOR(1024)` columns
+- **Similarity Search**: Real-time cosine distance calculations using `VEC_COSINE_DISTANCE()` function
+- **Multi-App Architecture**: Single TiDB instance serving 3 applications simultaneously
+- **Hybrid Data Types**: Vector + JSON + Spatial + Traditional SQL in unified queries
+- **Production Scale**: Live system serving real users in Timor-Leste
+
+---
 
 ## 🌟 About EcoLafaek
 
@@ -22,57 +66,15 @@ Timor-Leste faces significant waste management challenges, [with Dili producing 
 ### 🎯 Project Inspiration
 
 Living in Timor-Leste, seeing the daily struggle with waste management inspired this solution. Every day, Dili produces over 300 tons of waste, but more than 100 tons go uncollected. During the rainy season, this waste blocks drainage systems and causes serious flooding in neighborhoods. The project combines the power of AI with community spirit to create meaningful environmental impact. Based on research from the [JICA survey](https://www.jica.go.jp/english/overseas/easttimor/data/__icsFiles/afieldfile/2024/11/30/Dili_SWM_Presentation_Material_English_2.pdf), community engagement in waste reporting can significantly improve the situation.
+![garbage in TL](/docs/image/dili_waste.png)
 
 ## 🏗️ Project Architecture
 
 EcoLafaek consists of five integrated components:
 
-```mermaid
-graph TB
-    subgraph "🏠 EcoLafaek Ecosystem"
-        subgraph "📱 Mobile Application"
-            MOBILE[Flutter Mobile App<br/>Citizen Reporting Interface]
-        end
+![ecolfaek_ecodydtem](Diagram/ecolafaek_ecosystem.gif)
 
-        subgraph "🌐 Public Dashboard"
-            WEB[Next.js Public Dashboard<br/>Analytics & Visualization]
-        end
-
-        subgraph "🛡️ Admin Panel"
-            ADMIN[Next.js Admin Panel<br/>Administrative Interface]
-        end
-
-        subgraph "⚡ Backend Services"
-            API[FastAPI Backend<br/>AI Processing & Data Management]
-        end
-
-        subgraph "🗄️ Data Layer"
-            DB[(TiDB Cloud<br/>Vector Database & Storage)]
-        end
-    end
-
-    subgraph "🤖 AI Services"
-        BEDROCK[Amazon Bedrock<br/>Nova Pro + Titan Models]
-        S3[AWS S3<br/>Image Storage]
-    end
-
-    MOBILE --> API
-    WEB --> DB
-    ADMIN --> DB
-    API --> DB
-    API --> BEDROCK
-    API --> S3
-    WEB --> BEDROCK
-
-    style MOBILE fill:#4CAF50,stroke:#2E7D32,color:white
-    style WEB fill:#2196F3,stroke:#1976D2,color:white
-    style ADMIN fill:#FF6B6B,stroke:#E53E3E,color:white
-    style API fill:#FF9800,stroke:#F57C00,color:white
-    style DB fill:#9C27B0,stroke:#7B1FA2,color:white
-    style BEDROCK fill:#FF5722,stroke:#D84315,color:white
-```
-
-## [ 📱 Mobile Application ](./ecolafaek/README.md)
+## [ 📱 Mobile Application - Click for full Documentation](./ecolafaek/README.md)
 
 **Location**: [`/ecolafaek`](./ecolafaek/README.md)
 
@@ -87,20 +89,7 @@ A Flutter-based cross-platform mobile app that empowers citizens to report waste
 - 📈 **Personal Stats**: Track environmental impact and contribution metrics
 - 🏆 **Achievement System**: Community recognition for active contributors
 
-### Technology Stack:
-
-- **Framework**: Flutter with Provider state management
-- **Maps**: OpenStreetMap integration
-- **Authentication**: JWT token-based system
-- **Image Processing**: Camera integration with AWS S3 upload
-
-**Test Credentials for Judges:**
-
-- **[Click to Download APP](https://ecolafaek.com/download)**
-  - Username: `usertest`
-  - Password: `1234abcd`
-
-## [ 🌐 Public Dashboard](./ecolafaek_public_dahboard/README.md)
+## [ 🌐 Public Dashboard - Click for full Documentation](./ecolafaek_public_dahboard/README.md)
 
 **Location**: [`/ecolafaek_public_dahboard`](./ecolafaek_public_dahboard/README.md)
 
@@ -115,19 +104,9 @@ A Next.js web dashboard providing comprehensive analytics and visualization for 
 - 🏆 **Community Leaderboard**: Recognition system for top contributors
 - 📱 **Responsive Design**: Optimized for all devices and screen sizes
 
-### Technology Stack:
-
-- **Framework**: Next.js 15 with TypeScript and built-in API routes
-- **Backend**: Next.js API routes (Node.js) - independent backend system
-- **Database**: Direct TiDB Cloud connection for data and vector operations
-- **AI Integration**: Direct Amazon Bedrock integration for Titan embeddings
-- **Styling**: Tailwind CSS with glassmorphism design
-- **Maps**: Leaflet with custom clustering algorithms
-- **Charts**: Chart.js and Tremor for interactive visualizations
-
 **Live Demo**: [ecolafaek.com](https://ecolafaek.com)
 
-## [ 🛡️ Admin Panel](./ecolafaek_admin_panel/README.md)
+## [ 🛡️ Admin Panel - Click for full Documentation](./ecolafaek_admin_panel/README.md)
 
 **Location**: [`/ecolafaek_admin_panel`](./ecolafaek_admin_panel/README.md)
 
@@ -147,24 +126,9 @@ A comprehensive Next.js administrative interface for managing the EcoLafaek syst
 - 🔍 **System Monitoring**: Activity logs and system health tracking
 - ⚙️ **Settings Management**: Comprehensive system configuration options
 
-### Technology Stack:
-
-- **Framework**: Next.js 15 with TypeScript and built-in API routes
-- **Styling**: Tailwind CSS with shadcn/ui components for modern design
-- **Database**: Direct TiDB Cloud connection with SSL security
-- **Authentication**: JWT with HTTP-only secure cookies
-- **UI Components**: Radix UI primitives for accessibility
-- **Icons**: Lucide React for consistent iconography
-
-### Default Admin Access:
-
-- **Username**: `admin`
-- **Password**: `admin123` (change immediately after first login)
-- **Role**: `super_admin`
-
 **Local Development**: Currently running in development environment only
 
-## [ ⚡ Backend Services](./mobile_backend/README.md)
+## [ ⚡ Backend Services - Click for full Documentation](./mobile_backend/README.md)
 
 **Location**: [`/mobile_backend`](./mobile_backend/README.md)
 
@@ -179,14 +143,6 @@ A FastAPI-powered backend service handling AI processing, data management, and A
 - 📧 **Email Verification**: OTP-based account verification
 - ⚡ **Async Processing**: Queue-based architecture for scalability
 
-### Technology Stack:
-
-- **Framework**: FastAPI with async support
-- **AI Models**: Amazon Bedrock Nova Pro v1.0 + Titan Embed Image v1
-- **Database**: TiDB Cloud with vector search capabilities
-- **Storage**: AWS S3 for image management
-- **Deployment**: AWS Lightsail with NGINX and SSL
-
 ### AI Processing Pipeline:
 
 1. **Phase 1**: Initial waste detection using Nova Pro
@@ -196,9 +152,7 @@ A FastAPI-powered backend service handling AI processing, data management, and A
 
 **Check API Health**: [ecolafaek.xyz](https://ecolafaek.xyz/health)
 
-## 🗄️ Database Schema
-
-**Location**: [`/database`](./database/README.md)
+## [🗄️ Database Schema - Click for full Documentation](./database/README.md)
 
 A comprehensive TiDB Cloud database design optimized for environmental monitoring with vector search capabilities.
 
@@ -220,75 +174,15 @@ A comprehensive TiDB Cloud database design optimized for environmental monitorin
 
 ## 🚀 Getting Started
 
-### Prerequisites
+**For detailed setup instructions, please refer to individual component documentation above.**
 
-- Flutter SDK (3.13.0+)
-- Node.js (16+)
-- Python (3.8+)
-- TiDB Cloud account
-- Amazon Bedrock access
-- AWS S3 bucket
-
-### Quick Setup
-
-1. **Clone the repository:**
-
-   ```bash
-   git clone https://github.com/ajitonelsonn/EcoLafaek.git
-   cd EcoLafaek
-   ```
-
-2. **Mobile App Setup:**
-
-   ```bash
-   cd ecolafaek
-   flutter pub get
-   flutter run
-   ```
-
-3. **Backend Setup:**
-
-   ```bash
-   cd mobile_backend
-   pip install -r requirements.txt
-   uvicorn main:app --reload
-   ```
-
-4. **Dashboard Setup:**
-
-   ```bash
-   cd ecolafaek_public_dahboard
-   npm install
-   npm run dev
-   ```
-
-5. **Admin Panel Setup:**
-
-   ```bash
-   cd ecolafaek_admin_panel
-   npm install
-   cp example.env.example .env.local
-   npm run dev
-   ```
-
-6. **Configure Environment Variables:**
-   - Set up TiDB Cloud connection
-   - Configure Amazon Bedrock credentials
-   - Set up AWS S3 bucket
-   - Configure email service for OTP
+Key requirements: Flutter SDK, Node.js, Python 3.8+, TiDB Cloud, Amazon Bedrock, and AWS S3.
 
 ## 🌍 Live Demo System
 
 - **API Health Check**: [ecolafaek.xyz/health](https://ecolafaek.xyz/health)
 - **Public Dashboard**: [ecolafaek.com](https://ecolafaek.com)
 - **Mobile App Download**: [ecolafaek.com/download](https://ecolafaek.com/download)
-
-### Test Credentials for Mobile App
-
-For evaluation and testing purposes:
-
-- **Username**: `usertest`
-- **Password**: `1234abcd`
 
 ## 🏆 Impact and Recognition
 
@@ -299,12 +193,6 @@ EcoLafaek addresses critical environmental challenges in Timor-Leste through:
 3. **Data-Driven Decisions**: Providing actionable insights for government and NGO interventions
 4. **Public Health Improvement**: Early identification of hazardous waste and disease vector breeding grounds
 5. **Environmental Protection**: Systematic monitoring and response to waste-related environmental threats
-
-## 📞 Support & Contact
-
-- **Email**: [ecolafaek@gmail.com](mailto:ecolafaek@gmail.com)
-- **GitHub Issues**: [Create an Issue](https://github.com/ajitonelsonn/EcoLafaek/issues)
-- **Project Documentation**: Individual component READMEs for detailed technical information
 
 ---
 
