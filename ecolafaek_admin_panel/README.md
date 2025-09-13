@@ -320,7 +320,7 @@ npm run start    # Start production server
 
 </div>
 
----
+!['tais'](../docs/image/tais.png)
 
 <div align="center">
   <p><strong>Built with ❤️ for Timor-Leste</strong></p>

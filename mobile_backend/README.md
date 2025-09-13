@@ -517,7 +517,7 @@ Our complete EcoLafaek ecosystem is publicly accessible for demonstration purpos
 - **Public Dashboard:** [https://www.ecolafaek.com/](https://www.ecolafaek.com/)
 - **Mobile App Download:** [https://www.ecolafaek.com/download](https://www.ecolafaek.com/download)
 
----
+!['tais'](../docs/image/tais.png)
 
 <div align="center">
   <p>Built with ❤️ for Timor-Leste</p>

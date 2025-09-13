@@ -256,7 +256,7 @@ To review and test the app, judges can easily [download the mobile app](https://
 | -------- | -------- |
 | usertest | 1234abcd |
 
----
+!['tais'](../docs/image/tais.png)
 
 <div align="center">
   <p>Built with ❤️ in Timor-Leste</p>

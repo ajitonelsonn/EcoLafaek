@@ -194,7 +194,7 @@ EcoLafaek addresses critical environmental challenges in Timor-Leste through:
 4. **Public Health Improvement**: Early identification of hazardous waste and disease vector breeding grounds
 5. **Environmental Protection**: Systematic monitoring and response to waste-related environmental threats
 
----
+!['tais'](docs/image/tais.png)
 
 <div align="center">
   <p><strong>Built with ❤️ for Timor-Leste</strong></p>

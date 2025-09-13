@@ -434,6 +434,8 @@ The database schema is optimized for storing structured data from Amazon Bedrock
    - Read-optimized reporting tables for analytics
    - Partitioning strategy for historical data
 
-<div align="center">
-  <p>Built with ❤️ for Timor-Leste</p>
-</div>
+!['tais'](../docs/image/tais.png)
+
+   <div align="center">
+     <p>Built with ❤️ for Timor-Leste</p>
+   </div>
