@@ -14,9 +14,7 @@
   <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" />
   <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
   <img src="https://img.shields.io/badge/Amazon_Bedrock-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="Amazon Bedrock" />
-  <img src="https://img.shields.io/badge/
-  AWS_S3-569A31?style=for-the-badge&logo=amazons3-232F3E?style=for-the-badge&l
-  ogo=amazon-aws&logoColor=white" alt="S3" />
+  <img src="https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="S3" />
   <img src="https://img.shields.io/badge/TiDB_Cloud-FF6B35?style=for-the-badge&logo=tidb&logoColor=white" alt="TiDB Cloud" />
   <img src="https://img.shields.io/badge/Vector_Database-ENABLED-success?style=for-the-badge" alt="Vector Database" />
 </div>
