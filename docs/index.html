@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ecolafaek Documentation - Coming Soon</title>
+    <title>EcoLafaek AI Assistant - Interactive Help Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
       * {
         margin: 0;
@@ -11,138 +14,283 @@
         box-sizing: border-box;
       }
 
+      :root {
+        --primary-green: #10b981;
+        --secondary-green: #059669;
+        --light-green: #d1fae5;
+        --dark-green: #064e3b;
+        --gradient-primary: linear-gradient(135deg, #10b981, #059669);
+        --gradient-bg: linear-gradient(135deg, #ecfdf5, #f0fdf4, #dcfce7);
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --white: #ffffff;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+      }
+
       body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #2d5a3d, #4a7c59, #2d5a3d);
-        color: white;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: var(--gradient-bg);
+        color: var(--text-primary);
         min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+
+      .hero-section {
+        padding: 4rem 2rem 4rem;
+        text-align: center;
+        position: relative;
         overflow: hidden;
       }
 
-      .container {
-        text-align: center;
-        max-width: 600px;
-        padding: 2rem;
+      .hero-container {
+        max-width: 1200px;
+        margin: 0 auto;
         position: relative;
         z-index: 2;
       }
 
-      .logo {
-        font-size: 3rem;
-        font-weight: 700;
-        color: #7dd87f;
-        margin-bottom: 1rem;
-        text-shadow: 0 2px 10px rgba(125, 216, 127, 0.3);
-        animation: glow 2s ease-in-out infinite alternate;
-      }
-
-      @keyframes glow {
-        from {
-          text-shadow: 0 2px 10px rgba(125, 216, 127, 0.3);
-        }
-        to {
-          text-shadow: 0 2px 20px rgba(125, 216, 127, 0.6);
-        }
-      }
-
-      .subtitle {
-        font-size: 1.5rem;
-        color: #a8e6a1;
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--light-green);
+        color: var(--dark-green);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 600;
         margin-bottom: 2rem;
-        font-weight: 300;
+        animation: fadeInUp 0.6s ease-out;
       }
 
-      .coming-soon {
-        font-size: 2.5rem;
-        color: #ffffff;
+      .hero-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 700;
+        color: var(--text-primary);
         margin-bottom: 1.5rem;
-        font-weight: 600;
-        animation: fadeInUp 1s ease-out;
+        line-height: 1.1;
+        animation: fadeInUp 0.6s ease-out 0.2s both;
       }
 
-      .description {
-        font-size: 1.1rem;
-        color: #c8f7c5;
-        margin-bottom: 2.5rem;
-        line-height: 1.6;
-        animation: fadeInUp 1s ease-out 0.3s both;
+      .hero-subtitle {
+        font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+        color: var(--text-secondary);
+        margin-bottom: 3rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        animation: fadeInUp 0.6s ease-out 0.4s both;
       }
 
-      .main-site-link {
-        display: inline-block;
-        background: linear-gradient(45deg, #5cb85c, #7dd87f);
+      .chat-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem 4rem;
+        position: relative;
+        z-index: 2;
+      }
+
+      .chat-container {
+        background: var(--white);
+        border-radius: 24px;
+        box-shadow: var(--shadow-xl);
+        overflow: hidden;
+        border: 1px solid rgba(16, 185, 129, 0.1);
+        animation: fadeInUp 0.6s ease-out 0.6s both;
+      }
+
+      .chat-header {
+        background: var(--gradient-primary);
         color: white;
-        padding: 15px 30px;
-        text-decoration: none;
-        border-radius: 30px;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .chat-header h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .chat-header p {
+        opacity: 0.9;
         font-size: 1.1rem;
-        font-weight: 600;
+      }
+
+      .chat-iframe-container {
+        position: relative;
+        width: 100%;
+        height: 700px;
+        background: #f9fafb;
+      }
+
+      .chat-iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        background: white;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin: 4rem 0;
+      }
+
+      .feature-card {
+        background: var(--white);
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid rgba(16, 185, 129, 0.1);
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        animation: fadeInUp 1s ease-out 0.6s both;
       }
 
-      .main-site-link:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        background: linear-gradient(45deg, #4a9f4a, #6bc46d);
+      .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
       }
 
-      .decorative-elements {
+      .feature-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--light-green);
+        color: var(--primary-green);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .feature-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .feature-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      .cta-section {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--gradient-primary);
+        color: white;
+        margin-top: 4rem;
+      }
+
+      .cta-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+
+      .cta-description {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: var(--white);
+        color: var(--primary-green);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+
+      .decorative-bg {
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        right: 0;
+        bottom: 0;
         pointer-events: none;
         z-index: 1;
       }
 
-      .leaf {
+      .floating-element {
         position: absolute;
-        width: 20px;
-        height: 20px;
-        background: rgba(125, 216, 127, 0.1);
-        border-radius: 0 100% 0 100%;
+        width: 60px;
+        height: 60px;
+        background: rgba(16, 185, 129, 0.1);
+        border-radius: 50%;
         animation: float 6s ease-in-out infinite;
       }
 
-      .leaf:nth-child(1) {
+      .floating-element:nth-child(1) {
         top: 20%;
         left: 10%;
         animation-delay: 0s;
       }
-      .leaf:nth-child(2) {
-        top: 70%;
-        left: 20%;
+
+      .floating-element:nth-child(2) {
+        top: 60%;
+        right: 15%;
         animation-delay: 2s;
       }
-      .leaf:nth-child(3) {
-        top: 30%;
-        right: 15%;
+
+      .floating-element:nth-child(3) {
+        bottom: 30%;
+        left: 20%;
         animation-delay: 4s;
-      }
-      .leaf:nth-child(4) {
-        bottom: 20%;
-        right: 25%;
-        animation-delay: 1s;
-      }
-      .leaf:nth-child(5) {
-        bottom: 60%;
-        left: 5%;
-        animation-delay: 3s;
       }
 
       @keyframes float {
-        0%,
-        100% {
+        0%, 100% {
           transform: translateY(0px) rotate(0deg);
+          opacity: 0.6;
         }
         50% {
-          transform: translateY(-20px) rotate(10deg);
+          transform: translateY(-20px) rotate(180deg);
+          opacity: 0.8;
         }
       }
 
@@ -158,45 +306,157 @@
       }
 
       @media (max-width: 768px) {
-        .logo {
-          font-size: 2.5rem;
+        .hero-section {
+          padding: 3rem 1rem 2rem;
         }
-        .coming-soon {
-          font-size: 2rem;
+
+        .chat-section {
+          padding: 0 1rem 2rem;
         }
-        .subtitle {
-          font-size: 1.2rem;
+
+        .chat-header {
+          padding: 1.5rem;
         }
-        .description {
-          font-size: 1rem;
+
+        .chat-iframe-container {
+          height: 600px;
         }
-        .container {
-          padding: 1rem;
+
+        .feature-grid {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          margin: 2rem 0;
+        }
+
+        .cta-section {
+          padding: 3rem 1rem;
+        }
+
+        .cta-buttons {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .btn {
+          width: 100%;
+          max-width: 300px;
+          justify-content: center;
         }
       }
     </style>
+    </style>
   </head>
   <body>
-    <div class="decorative-elements">
-      <div class="leaf"></div>
-      <div class="leaf"></div>
-      <div class="leaf"></div>
-      <div class="leaf"></div>
-      <div class="leaf"></div>
-    </div>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="decorative-bg">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+      </div>
+      
+      <div class="hero-container">
+        <div class="hero-badge">
+          🤖 AI-Powered Assistant • TiDB AgentX Hackathon 2025
+        </div>
+        
+        <h1 class="hero-title">
+          EcoLafaek Documentation
+        </h1>
+        
+        <p class="hero-subtitle">
+          Coming Soon! While we prepare comprehensive documentation, 
+          you can chat with our AI assistant to get instant help about EcoLafaek's 
+          waste monitoring system and learn how to use the platform.
+        </p>
+      </div>
+    </section>
 
-    <div class="container">
-      <h1 class="logo">Ecolafaek</h1>
-      <p class="subtitle">Documentation</p>
-      <h2 class="coming-soon">Coming Soon</h2>
-      <p class="description">
-        We're working hard to bring you comprehensive documentation for
-        Ecolafaek. Our team is crafting detailed guides and resources to help
-        you get the most out of our platform.
+    <!-- AI Chat Section -->
+    <section class="chat-section">
+      <div class="chat-container">
+        <div class="chat-header">
+          <h2>🌱 Try Our AI Assistant Now!</h2>
+          <p>Documentation is coming soon, but you can already chat with our intelligent assistant about EcoLafaek features, waste management, and platform functionality!</p>
+        </div>
+        
+        <div class="chat-iframe-container">
+          <iframe
+            src="https://udify.app/chatbot/32hT244mUDTTgJki"
+            class="chat-iframe"
+            allow="microphone">
+          </iframe>
+        </div>
+      </div>
+      
+      <!-- Feature Grid -->
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <h3 class="feature-title">Instant Answers</h3>
+          <p class="feature-description">
+            Get immediate responses about EcoLafaek features, mobile app usage, dashboard navigation, and waste management best practices.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <h3 class="feature-title">AI-Powered Help</h3>
+          <p class="feature-description">
+            Our intelligent assistant understands context and provides personalized guidance based on your specific questions and needs.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🌍</div>
+          <h3 class="feature-title">Timor-Leste Focus</h3>
+          <p class="feature-description">
+            Specialized knowledge about environmental challenges in Timor-Leste and how EcoLafaek addresses local waste management issues.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <h3 class="feature-title">Feature Explorer</h3>
+          <p class="feature-description">
+            Discover hidden features, learn advanced techniques, and maximize your impact with EcoLafaek's comprehensive toolset.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3 class="feature-title">Multi-Platform Help</h3>
+          <p class="feature-description">
+            Get assistance with the mobile app, public dashboard, admin panel, and understand how all components work together.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🚀</div>
+          <h3 class="feature-title">Available Now</h3>
+          <p class="feature-description">
+            While documentation is coming soon, our AI assistant is ready to help! Get immediate answers and guidance about EcoLafaek features.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="cta-section">
+      <h2 class="cta-title">Documentation Coming Soon!</h2>
+      <p class="cta-description">
+        While we prepare comprehensive guides, try our AI assistant above for instant help, 
+        or explore the live EcoLafaek platform to start making an environmental impact today.
       </p>
-      <a href="http://www.ecolafaek.com" class="main-site-link" target="_blank">
-        Visit Main Site
-      </a>
-    </div>
+      
+      <div class="cta-buttons">
+        <a href="https://ecolafaek.com/download" class="btn btn-primary">
+          📱 Download Mobile App
+        </a>
+        <a href="https://ecolafaek.com" class="btn btn-secondary">
+          🌐 Visit Dashboard
+        </a>
+      </div>
+    </section>
   </body>
 </html>
