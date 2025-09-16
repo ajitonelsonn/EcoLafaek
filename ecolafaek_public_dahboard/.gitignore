@@ -39,9 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-seeit.txt
 
 
 #to do
 pages/privacy-policy.js
 pages/terms-of-service.js
+
+seeit.txt

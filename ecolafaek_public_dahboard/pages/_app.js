@@ -2,6 +2,7 @@
 import "@/styles/globals.css";
 import "@/styles/modern-dashboard.css";
 import { SWRConfig } from "swr";
+import ChatBubble from "@/components/ChatBubble";
 
 export default function App({ Component, pageProps }) {
   return (
@@ -14,6 +15,7 @@ export default function App({ Component, pageProps }) {
       }}
     >
       <Component {...pageProps} />
+      <ChatBubble />
     </SWRConfig>
   );
 }
