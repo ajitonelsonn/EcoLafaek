@@ -406,12 +406,32 @@ export default function Layout({ children }) {
                     </Link>
                   </li>
                   <li>
-                    <Link
+                    <a
+                      href="https://docs.ecolafaek.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-600 hover:text-green-600 flex items-center gap-1"
+                    >
+                      Documentation
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-gray-700 font-medium mb-3">Developers</h3>
+                <ul className="space-y-2 text-sm">
+                  <li>
+                    <a
                       href="/code-repository"
-                      className="text-gray-600 hover:text-green-600"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-600 hover:text-green-600 flex items-center gap-1"
                     >
                       Code Repository
-                    </Link>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
                   </li>
                 </ul>
               </div>
