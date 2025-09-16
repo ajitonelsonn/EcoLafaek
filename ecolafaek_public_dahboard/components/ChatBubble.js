@@ -66,7 +66,7 @@ const ChatBubble = () => {
       
       const botMessage = {
         id: messages.length + 2,
-        text: data.reply,
+        text: data.reply || "Sorry, I didn't receive a proper response.",
         sender: 'bot',
         timestamp: new Date()
       };
@@ -75,7 +75,6 @@ const ChatBubble = () => {
       setHistory(prev => [...prev, { role: "user", content: inputMessage }, { role: "assistant", content: data.reply }]);
 
     } catch (error) {
-      console.error('Chat error:', error);
       const errorMessage = {
         id: messages.length + 2,
         text: "Sorry, I'm having trouble connecting right now. Please try again later.",
@@ -97,6 +96,40 @@ const ChatBubble = () => {
 
   const formatTime = (timestamp) => {
     return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatMessage = (text) => {
+    if (!text) return '';
+    
+    try {
+      // Escape HTML first to prevent XSS
+      let escaped = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+      
+      // Apply markdown-like formatting
+      let formatted = escaped
+        // Bold text: **text** -> <strong>text</strong>
+        .replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>')
+        // Bullet points: - text -> • text  
+        .replace(/^- (.+)$/gm, '<div class="flex items-start mb-1"><span class="mr-2">•</span><span>$1</span></div>')
+        // Numbered lists: 1. text -> 1. text
+        .replace(/^(\d+)\. (.+)$/gm, '<div class="flex items-start mb-1"><span class="mr-2 font-semibold">$1.</span><span>$2</span></div>')
+        // Links: [text](url) -> <a>text</a>
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 underline hover:text-blue-800" target="_blank" rel="noopener noreferrer">$1</a>')
+        // Code: `text` -> <code>text</code>
+        .replace(/`([^`]+)`/g, '<code class="bg-gray-200 text-gray-800 px-1 py-0.5 rounded text-xs font-mono">$1</code>')
+        // Line breaks
+        .replace(/\n\n/g, '<br/><br/>')
+        .replace(/\n/g, '<br/>');
+      
+      return formatted;
+    } catch (error) {
+      return text; // Return original text if formatting fails
+    }
   };
 
   return (
@@ -164,7 +197,14 @@ const ChatBubble = () => {
                       : 'bg-gray-100 text-gray-800 rounded-bl-none'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                  {message.sender === 'bot' ? (
+                    <div 
+                      className="text-sm leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: formatMessage(message.text) }}
+                    />
+                  ) : (
+                    <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                  )}
                   <p className={`text-xs mt-1 ${
                     message.sender === 'user' ? 'text-green-100' : 'text-gray-500'
                   }`}>
@@ -194,7 +234,7 @@ const ChatBubble = () => {
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 placeholder="Ask about EcoLafaek..."
                 className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                 disabled={isLoading}
