@@ -51,6 +51,7 @@ A comprehensive public web dashboard for visualizing and analyzing waste managem
 - **🗺️ Interactive Geospatial Map**: Visualize waste reports, severity levels, and hotspots across regions with clustering and filtering
 - **📊 Real-time Analytics Dashboard**: Monitor key waste management metrics with customizable date ranges and trend analysis
 - **🔍 Advanced Vector Search**: AI-powered semantic search, similar reports finder, and pattern analysis using Amazon Bedrock
+- **💬 AI Chat Helper**: Interactive chat assistant powered by Moonshot AI to help users understand EcoLafaek features and waste management
 - **📈 Waste Type Distribution**: Analyze proportions of different waste categories with interactive charts and breakdowns
 - **🌡️ Severity Heatmaps**: Identify critical areas requiring urgent intervention with color-coded intensity maps
 - **📉 Trend Analysis**: Track waste reporting patterns over time with detailed temporal analytics
@@ -74,11 +75,13 @@ flowchart TB
         MAPS[🗺️ Interactive Maps]
         CHARTS[📊 Analytics]
         VECTOR[🔍 Vector Search]
+        CHAT[💬 AI Chat Helper]
     end
 
     subgraph "AI Processing Layer"
         BEDROCK[🧠 Amazon Bedrock]
         TITAN[🎯 Titan Embed Image v1]
+        MOONSHOT[🌙 Moonshot AI]
     end
 
     subgraph "🚀 TiDB Database"
@@ -97,8 +100,10 @@ flowchart TB
     COMP --> MAPS
     COMP --> CHARTS
     COMP --> VECTOR
+    COMP --> CHAT
 
     VECTOR --> BEDROCK
+    CHAT --> MOONSHOT
     BEDROCK --> TITAN
     TITAN --> VECTORS
 
@@ -115,9 +120,9 @@ flowchart TB
     classDef frontend fill:#00BCD4,stroke:#0097A7,stroke-width:2px,color:white
     classDef viz fill:#795548,stroke:#5D4037,stroke-width:2px,color:white
 
-    class BEDROCK,TITAN ai
+    class BEDROCK,TITAN,MOONSHOT ai
     class TIDB,VECTORS database
-    class NEXT,COMP,MAPS,CHARTS,VECTOR frontend
+    class NEXT,COMP,MAPS,CHARTS,VECTOR,CHAT frontend
     class LEAFLET,TREMOR,CHARTJS viz
 ```
 
@@ -202,6 +207,7 @@ graph TB
 
 - **AI Platform**: Amazon Bedrock (us-east-1 region)
 - **Vector Embeddings**: Titan Embed Image v1 model for semantic search
+- **Chat Assistant**: Moonshot AI integration for interactive user support and FAQ assistance
 - **Semantic Analysis**: Advanced similarity matching using TiDB's VEC_COSINE_DISTANCE with VEC_FROM_TEXT conversion
 - **Pattern Recognition**: Enhanced AI-powered clustering algorithms with:
   - Smart similarity threshold adjustment (0.2 → 0.5 for better matching)
@@ -264,6 +270,9 @@ graph TB
    AWS_ACCESS_KEY_ID=your_aws_key
    AWS_SECRET_ACCESS_KEY=your_aws_secret
 
+   # Moonshot AI Configuration
+   MOONSHOT_API_KEY=your_moonshot_api_key
+
    # Application Settings
    NODE_ENV=development
    NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -289,7 +298,8 @@ ecolafaek_public_dashboard/
 │   ├── 🎨 ui/                 # Base UI components (buttons, modals, etc.)
 │   ├── 📊 charts/             # Custom chart components
 │   ├── 🗺️ maps/               # Map-related components
-│   └── 📱 layout/             # Layout and navigation components
+│   ├── 📱 layout/             # Layout and navigation components
+│   └── 💬 ChatBubble.js       # AI chat assistant component
 ├── 📁 pages/                  # Next.js pages and API routes
 │   ├── 🔌 api/               # Backend API endpoints
 │   │   ├── vector-search/    # Vector search APIs
@@ -300,7 +310,8 @@ ecolafaek_public_dashboard/
 │   │   │   └── utils/        # Shared API utilities
 │   │   ├── reports/          # Report management APIs
 │   │   ├── analytics/        # Dashboard analytics APIs
-│   │   └── leaderboard/      # Community leaderboard APIs
+│   │   ├── leaderboard/      # Community leaderboard APIs
+│   │   └── 💬 chat.js        # Moonshot AI chat endpoint
 │   ├── 🏠 index.js           # Homepage with dashboard overview
 │   ├── 📊 analytics.js       # Detailed analytics page
 │   ├── 🗺️ map.js             # Interactive waste map
@@ -308,7 +319,7 @@ ecolafaek_public_dashboard/
 │   ├── 📄 reports/[id].js    # Individual report page with similar reports modal
 │   ├── 🏆 leaderboard.js     # Community contributors ranking
 │   ├── ℹ️ about.js           # About page with project info
-│   └── 📄 _app.js            # Next.js app configuration
+│   └── 📄 _app.js            # Next.js app configuration with chat integration
 ├── 📁 lib/                   # Utility libraries and helpers
 │   ├── 🔧 utils.js          # General utility functions
 │   ├── 🌐 api.js            # API client configurations
@@ -317,6 +328,8 @@ ecolafaek_public_dashboard/
 ├── 📁 public/                # Static assets
 │   ├── 🖼️ images/           # Images and icons
 │   ├── 📸 ss/               # Screenshots for documentation
+│   ├── 💬 data_chat/        # FAQ data for chat assistant
+│   │   └── ecolafaek.md     # Comprehensive EcoLafaek information
 │   ├── 🎨 app_logo.png      # Application logo
 │   └── 📄 favicon.ico       # Website favicon
 ├── 📁 styles/                # Styling configuration
@@ -373,6 +386,19 @@ Powered by Amazon Bedrock and TiDB vector database:
 - **Batch Analysis**: Process multiple reports simultaneously for comprehensive trend analysis
 
 ![Waste Map](public/scs/SimilirReportDetails.png)
+
+### 💬 AI Chat Helper
+
+Interactive chat assistant powered by Moonshot AI featuring:
+
+- **EcoLafaek Helper Persona**: Knowledgeable assistant specialized in waste management and platform guidance
+- **FAQ Integration**: Comprehensive knowledge base from markdown documentation
+- **Real-time Responses**: Instant answers using Moonshot's kimi-k2-turbo-preview model
+- **Context-Aware**: Maintains conversation history for better user experience
+- **Floating UI**: Accessible chat bubble positioned on the right side of all pages
+- **Expandable Interface**: Toggle between compact and full-screen chat modes
+
+![Chat Helper](public/scs/chat-helper.png)
 
 ### 🌡️ Hotspot Analysis
 

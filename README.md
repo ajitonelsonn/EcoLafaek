@@ -23,6 +23,10 @@
 
 ## 🏆 For TiDB AgentX Hackathon 2025 Judges
 
+**TiDB Cloud Account Email:** 8997ajito@gmail.com
+**Cluster name:** EcoLafaek
+**Database name:** db_ecolafaek
+
 ### 🚀 Judge Quick Start
 
 **🎯 Immediate Testing:**
@@ -98,6 +102,7 @@ A Next.js web dashboard providing comprehensive analytics and visualization for 
 - 🗺️ **Geospatial Visualization**: Interactive maps with waste distribution analysis
 - 📊 **Real-time Analytics**: Comprehensive statistics and trend analysis
 - 🔍 **Vector Search**: AI-powered semantic search and pattern recognition
+- 💬 **AI Chat Helper**: Interactive assistant powered by Moonshot AI for user guidance and FAQ support
 - 🌡️ **Hotspot Analysis**: Automated identification of high-priority areas
 - 🏆 **Community Leaderboard**: Recognition system for top contributors
 - 📱 **Responsive Design**: Optimized for all devices and screen sizes
