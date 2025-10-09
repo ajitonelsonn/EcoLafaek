@@ -1,5 +1,4 @@
-const FASTAPI_BASE_URL =
-  process.env.FASTAPI_BASE_URL || "http://localhost:8000";
+const FASTAPI_BASE_URL = process.env.FASTAPI_BASE_URL;
 
 // Chat function using FastAPI AgentCore backend
 async function chat(messages, sessionId = null) {
