@@ -68,6 +68,14 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
   double? _latitude;
   double? _longitude;
   String? _locationName;
+  double? _locationAccuracy;
+  int _locationAttempts = 0;
+  static const int maxLocationAttempts = 3;
+  
+  // Current device location (blue dot)
+  double? _currentLatitude;
+  double? _currentLongitude;
+  
   
   // Map controller
   final MapController _mapController = MapController();
@@ -109,11 +117,12 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
     super.dispose();
   }
 
-  // Get current location
+  // Get current location with improved accuracy
   Future<void> _getCurrentLocation() async {
     setState(() {
       _isLocating = true;
       _errorMessage = null;
+      _locationAttempts = 0;
     });
     
     try {
@@ -194,37 +203,44 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
         return;
       }
 
-      // Get current position with timeout
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 15),
-      );
+      // Try enhanced location acquisition with fallback strategies
+      Position? bestPosition = await _getLocationWithFallbacks();
       
-      // Get address from coordinates
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        position.latitude,
-        position.longitude,
-      );
-      
-      // Format address
-      final placemark = placemarks.first;
-      final address = [
-        placemark.street,
-        placemark.subLocality,
-        placemark.locality,
-        placemark.administrativeArea,
-      ].where((element) => element != null && element.isNotEmpty).join(', ');
-      
-      setState(() {
-        _latitude = position.latitude;
-        _longitude = position.longitude;
-        _locationName = address;
-        _isLocating = false;
-      });
-      
-      // If map controller is available, move to current location
-      if (_mapController != null && _currentStep == 1) {
-        _mapController.move(LatLng(_latitude!, _longitude!), 15);
+      if (bestPosition != null) {
+        // Get address from coordinates
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          bestPosition.latitude,
+          bestPosition.longitude,
+        );
+        
+        // Format address
+        final placemark = placemarks.first;
+        final address = [
+          placemark.street,
+          placemark.subLocality,
+          placemark.locality,
+          placemark.administrativeArea,
+        ].where((element) => element != null && element.isNotEmpty).join(', ');
+        
+        setState(() {
+          _latitude = bestPosition.latitude;
+          _longitude = bestPosition.longitude;
+          _locationName = address;
+          _locationAccuracy = bestPosition.accuracy;
+          _currentLatitude = bestPosition.latitude;
+          _currentLongitude = bestPosition.longitude;
+          _isLocating = false;
+        });
+        
+        // If map controller is available, move to current location
+        if (_mapController != null && _currentStep == 1) {
+          _mapController.move(LatLng(_latitude!, _longitude!), 15);
+        }
+      } else {
+        setState(() {
+          _isLocating = false;
+          _errorMessage = 'Unable to get location. Please ensure GPS is enabled and you are in an open area with good signal.';
+        });
       }
       
     } catch (e) {
@@ -236,7 +252,208 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
     }
   }
 
-  // Refresh location with 5-second delay for better accuracy
+  // Try multiple location acquisition attempts with different accuracy levels
+  Future<Position?> _getBestLocationWithMultipleAttempts() async {
+    Position? bestPosition;
+    double bestAccuracy = double.infinity;
+    
+    // List of location accuracy settings to try (from most to least accurate)
+    final accuracyLevels = [
+      LocationAccuracy.best,
+      LocationAccuracy.high,
+      LocationAccuracy.medium,
+      LocationAccuracy.low,
+    ];
+    
+    for (int attempt = 0; attempt < maxLocationAttempts && attempt < accuracyLevels.length; attempt++) {
+      setState(() {
+        _locationAttempts = attempt + 1;
+      });
+      
+      try {
+        print('Location attempt ${attempt + 1} with accuracy: ${accuracyLevels[attempt]}');
+        
+        // Get position with current accuracy level and timeout
+        final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: accuracyLevels[attempt],
+          timeLimit: Duration(seconds: attempt == 0 ? 20 : 15), // More time for first attempt
+        );
+        
+        print('Got position: lat=${position.latitude}, lng=${position.longitude}, accuracy=${position.accuracy}m');
+        
+        // Check if this position is better than previous ones
+        if (position.accuracy < bestAccuracy) {
+          bestPosition = position;
+          bestAccuracy = position.accuracy;
+          
+          // If accuracy is good enough (< 20 meters), use this position
+          if (position.accuracy < 20.0) {
+            print('Good accuracy achieved: ${position.accuracy}m');
+            break;
+          }
+        }
+        
+        // Wait a bit between attempts for GPS to stabilize
+        if (attempt < maxLocationAttempts - 1 && attempt < accuracyLevels.length - 1) {
+          await Future.delayed(const Duration(seconds: 3));
+        }
+        
+      } catch (e) {
+        print('Location attempt ${attempt + 1} failed: $e');
+        
+        // For timeout errors, try the next accuracy level
+        if (e.toString().contains('timeout') || e.toString().contains('time')) {
+          continue;
+        }
+        
+        // For other errors on first attempt, rethrow
+        if (attempt == 0) {
+          rethrow;
+        }
+      }
+    }
+    
+    return bestPosition;
+  }
+
+  // Validate location accuracy and provide feedback
+  String _getLocationAccuracyStatus() {
+    if (_locationAccuracy == null) {
+      return 'Location accuracy unknown';
+    }
+    
+    if (_locationAccuracy! <= 5.0) {
+      return 'Excellent accuracy (±${_locationAccuracy!.toStringAsFixed(1)}m)';
+    } else if (_locationAccuracy! <= 15.0) {
+      return 'Good accuracy (±${_locationAccuracy!.toStringAsFixed(1)}m)';
+    } else if (_locationAccuracy! <= 50.0) {
+      return 'Fair accuracy (±${_locationAccuracy!.toStringAsFixed(1)}m)';
+    } else {
+      return 'Poor accuracy (±${_locationAccuracy!.toStringAsFixed(1)}m)';
+    }
+  }
+  
+  // Get accuracy color indicator
+  Color _getLocationAccuracyColor() {
+    if (_locationAccuracy == null) {
+      return Colors.grey;
+    }
+    
+    if (_locationAccuracy! <= 5.0) {
+      return Colors.green;
+    } else if (_locationAccuracy! <= 15.0) {
+      return Colors.lightGreen;
+    } else if (_locationAccuracy! <= 50.0) {
+      return Colors.orange;
+    } else {
+      return Colors.red;
+    }
+  }
+  
+  // Check if location is acceptable for reporting
+  bool _isLocationAcceptable() {
+    return _locationAccuracy != null && _locationAccuracy! <= 100.0; // Accept up to 100m accuracy
+  }
+  
+  // Fallback location method using last known position
+  Future<Position?> _getLastKnownPosition() async {
+    try {
+      final lastPosition = await Geolocator.getLastKnownPosition();
+      if (lastPosition != null) {
+        // Check if the last known position is recent (within 1 hour)
+        final now = DateTime.now();
+        final positionTime = lastPosition.timestamp ?? now;
+        final timeDifference = now.difference(positionTime);
+        
+        if (timeDifference.inHours < 1) {
+          print('Using last known position from ${timeDifference.inMinutes} minutes ago');
+          return lastPosition;
+        }
+      }
+    } catch (e) {
+      print('Failed to get last known position: $e');
+    }
+    return null;
+  }
+  
+  // Enhanced location acquisition with fallback strategies
+  Future<Position?> _getLocationWithFallbacks() async {
+    // Strategy 1: Try multiple attempts with different accuracy levels
+    Position? position = await _getBestLocationWithMultipleAttempts();
+    
+    if (position != null && position.accuracy <= 100.0) {
+      return position;
+    }
+    
+    // Strategy 2: If no good position, try last known position
+    if (position == null) {
+      print('No current position available, trying last known position...');
+      position = await _getLastKnownPosition();
+    }
+    
+    // Strategy 3: If still no position, try with reduced accuracy and longer timeout
+    if (position == null) {
+      print('Trying fallback location with reduced accuracy...');
+      try {
+        position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.lowest,
+          timeLimit: const Duration(seconds: 30),
+        );
+      } catch (e) {
+        print('Fallback location failed: $e');
+      }
+    }
+    
+    return position;
+  }
+  
+  // Show dialog for location accuracy confirmation
+  Future<bool> _showLocationAccuracyDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Location Accuracy Warning'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Your current location accuracy is ${_getLocationAccuracyStatus().toLowerCase()}.',
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'For best results, we recommend:',
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              '• Moving to an open area\n• Ensuring GPS is enabled\n• Trying to refresh your location',
+              style: TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Do you want to proceed with the current location or try to improve it?',
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Improve Location'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Proceed Anyway'),
+          ),
+        ],
+      ),
+    );
+    
+    return result ?? false;
+  }
+  
+
+  // Refresh location with enhanced accuracy
   Future<void> _refreshLocationWithDelay() async {
     setState(() {
       _isLocating = true;
@@ -244,10 +461,10 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
     });
 
     try {
-      // Wait 5 seconds for better GPS accuracy
-      await Future.delayed(const Duration(seconds: 5));
+      // Wait 3 seconds for GPS to warm up
+      await Future.delayed(const Duration(seconds: 3));
       
-      // Get current location with high accuracy
+      // Get current location with enhanced accuracy
       await _getCurrentLocation();
     } catch (e) {
       setState(() {
@@ -335,6 +552,15 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
       return;
     }
     
+    // Check location accuracy before proceeding from location step
+    if (_currentStep == 1 && !_isLocationAcceptable()) {
+      // Show dialog asking user if they want to proceed with poor accuracy
+      final shouldProceed = await _showLocationAccuracyDialog();
+      if (!shouldProceed) {
+        return;
+      }
+    }
+    
     // For step 2 (details), description is now optional so no validation needed
     
     // Move to next step
@@ -392,6 +618,14 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
         _errorMessage = 'Please take a photo and allow location access';
       });
       return;
+    }
+    
+    // Final location accuracy check before submission
+    if (!_isLocationAcceptable()) {
+      final shouldProceed = await _showLocationAccuracyDialog();
+      if (!shouldProceed) {
+        return;
+      }
     }
     
     setState(() {
@@ -934,6 +1168,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
                       ),
                       MarkerLayer(
                         markers: [
+                          // Report location marker (red pin)
                           Marker(
                             width: 40.0,
                             height: 40.0,
@@ -944,6 +1179,36 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
                               size: 40,
                             ),
                           ),
+                          
+                          // Current location marker (blue dot)
+                          if (_currentLatitude != null && _currentLongitude != null)
+                            Marker(
+                              width: 24.0,
+                              height: 24.0,
+                              point: LatLng(_currentLatitude!, _currentLongitude!),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 3,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.blue.withOpacity(0.3),
+                                      blurRadius: 6,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.my_location,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ],
@@ -1067,6 +1332,32 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
                           ],
                         ),
                       
+                      // Location accuracy indicator
+                      if (_locationAccuracy != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.gps_fixed,
+                                color: _getLocationAccuracyColor(),
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                _getLocationAccuracyStatus(),
+                                style: TextStyle(
+                                  color: _getLocationAccuracyColor(),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      
+                      
+                      
                       const SizedBox(height: 16),
                       
                       // Refresh location button
@@ -1084,7 +1375,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
                                 ),
                               )
                             : const Icon(Icons.my_location),
-                          label: Text(_isLocating ? 'Getting Current Location...' : 'Get My Current Location'),
+                          label: Text(_isLocating ? 'Getting Current Location...' : 'Refresh Location'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: primaryColor,
                             side: BorderSide(color: primaryColor),
@@ -1096,11 +1387,83 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
                         ),
                       ),
                       
+                      
+                      
+                      // Quick location tips for poor accuracy
+                      if (_locationAccuracy != null && _locationAccuracy! > 30.0)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade50,
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: Colors.blue.shade200),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.tips_and_updates, color: Colors.blue.shade700, size: 16),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Tips for better location accuracy:',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.blue.shade700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '• Move to an open area away from buildings\n• Make sure GPS/Location is enabled\n• Wait a moment for GPS to stabilize\n• Try refreshing your location',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.blue.shade700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      
                       const SizedBox(height: 8),
                       
-                      // Note text
+                      // Warning for poor accuracy
+                      if (_locationAccuracy != null && _locationAccuracy! > 50.0)
+                        Container(
+                          margin: const EdgeInsets.only(top: 8),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade50,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: Colors.orange.shade200),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.warning_amber, color: Colors.orange.shade700, size: 16),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  'Location accuracy is low. Consider moving to an open area for better GPS signal.',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.orange.shade700,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      
+                      const SizedBox(height: 8),
+                      
+                      // Map legend\n                      if (_currentLatitude != null && _currentLongitude != null)\n                        Container(\n                          padding: const EdgeInsets.all(8),\n                          decoration: BoxDecoration(\n                            color: Colors.blue.shade50,\n                            borderRadius: BorderRadius.circular(6),\n                            border: Border.all(color: Colors.blue.shade200),\n                          ),\n                          child: Row(\n                            mainAxisSize: MainAxisSize.min,\n                            children: [\n                              Container(\n                                width: 16,\n                                height: 16,\n                                decoration: BoxDecoration(\n                                  color: Colors.blue,\n                                  shape: BoxShape.circle,\n                                  border: Border.all(\n                                    color: Colors.white,\n                                    width: 2,\n                                  ),\n                                ),\n                                child: const Icon(\n                                  Icons.my_location,\n                                  color: Colors.white,\n                                  size: 8,\n                                ),\n                              ),\n                              const SizedBox(width: 6),\n                              Text(\n                                'Blue dot = Your current position',\n                                style: TextStyle(\n                                  fontSize: 11,\n                                  color: Colors.blue.shade700,\n                                  fontWeight: FontWeight.w500,\n                                ),\n                              ),\n                            ],\n                          ),\n                        ),\n                      \n                      const SizedBox(height: 8),\n                      \n                      // Note text
                       Text(
-                        'Note: Your current location is used to identify where the waste is located',
+                        'Note: Red pin shows where the waste report will be submitted',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 12,
