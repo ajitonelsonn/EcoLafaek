@@ -11,11 +11,10 @@ import {
   Menu,
   X,
   ExternalLink,
-  Sun,
   Trophy,
   Download,
   Search,
-  Mail,
+  Sparkles,
 } from "lucide-react";
 
 export default function Layout({ children }) {
@@ -47,6 +46,13 @@ export default function Layout({ children }) {
       name: "Leaderboard",
       href: "/leaderboard",
       icon: <Trophy className="w-5 h-5" />,
+    },
+    {
+      name: "Chat With",
+      href: "/agentcore-chat",
+      icon: <Sparkles className="w-5 h-5" />,
+      badge: "AI",
+      special: true,
     },
     {
       name: "Download App",
@@ -152,6 +158,8 @@ export default function Layout({ children }) {
                       ? isScrolled
                         ? "bg-green-600 text-white hover:bg-green-700"
                         : "bg-green-50 text-green-700 hover:bg-green-100"
+                      : item.special
+                      ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
                       : isActiveRoute(item.href)
                       ? isScrolled
                         ? "bg-green-50 text-green-700"
@@ -164,35 +172,12 @@ export default function Layout({ children }) {
                   {item.icon}
                   <span>{item.name}</span>
                   {item.badge && (
-                    <span className="ml-1 px-1.5 py-0.5 text-xs font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full">
+                    <span className="ml-1 px-1.5 py-0.5 text-xs font-bold bg-yellow-400 text-gray-900 rounded-full">
                       {item.badge}
                     </span>
                   )}
                 </Link>
               ))}
-
-              <div className="ml-3 border-l border-green-600 pl-3 py-2">
-                <div
-                  className={`inline-flex rounded-lg ${
-                    isScrolled
-                      ? "bg-gray-100 text-gray-700"
-                      : "bg-green-600 text-green-100"
-                  }`}
-                >
-                  <Link
-                    href="/about"
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium hover:underline"
-                  >
-                    About
-                  </Link>
-                  <Link
-                    href="/contact"
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium hover:underline"
-                  >
-                    Contact
-                  </Link>
-                </div>
-              </div>
             </div>
 
             {/* Mobile menu button */}
@@ -234,6 +219,8 @@ export default function Layout({ children }) {
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg text-base font-medium ${
                       item.highlight
                         ? "bg-green-600 text-white"
+                        : item.special
+                        ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
                         : isActiveRoute(item.href)
                         ? "bg-green-50 text-green-700"
                         : "text-gray-700 hover:bg-gray-50"
@@ -243,40 +230,12 @@ export default function Layout({ children }) {
                     {item.icon}
                     <span>{item.name}</span>
                     {item.badge && (
-                      <span className="ml-auto px-1.5 py-0.5 text-xs font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full">
+                      <span className="ml-auto px-1.5 py-0.5 text-xs font-bold bg-yellow-400 text-gray-900 rounded-full">
                         {item.badge}
                       </span>
                     )}
                   </Link>
                 ))}
-                <div className="pt-4 pb-2 border-t border-gray-200">
-                  <div className="flex flex-col gap-1">
-                    <Link
-                      href="/about"
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <ExternalLink className="w-5 h-5" />
-                      About
-                    </Link>
-                    <Link
-                      href="/contact"
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <Mail className="w-5 h-5" />
-                      Contact
-                    </Link>
-                    <Link
-                      href="/help"
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <Sun className="w-5 h-5" />
-                      Help
-                    </Link>
-                  </div>
-                </div>
               </div>
             </div>
           </>
