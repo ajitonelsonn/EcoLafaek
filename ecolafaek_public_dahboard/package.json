@@ -12,6 +12,7 @@
     "@tremor/react": "^3.18.7",
     "axios": "^1.8.3",
     "chart.js": "^4.4.8",
+    "jspdf": "^3.0.3",
     "leaflet": "^1.9.4",
     "lottie-web": "^5.12.2",
     "lucide-react": "^0.482.0",

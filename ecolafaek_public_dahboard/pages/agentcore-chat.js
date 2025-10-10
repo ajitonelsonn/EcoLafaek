@@ -17,6 +17,7 @@ import {
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Script from "next/script";
+import { jsPDF } from "jspdf";
 
 export default function AgentCoreChat() {
   const router = useRouter();
@@ -200,17 +201,103 @@ export default function AgentCoreChat() {
   };
 
   const exportChat = () => {
-    const chatText = messages
-      .map((msg) => `${msg.role.toUpperCase()}: ${msg.content}`)
-      .join("\n\n");
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    const maxWidth = pageWidth - 2 * margin;
+    let yPosition = 20;
 
-    const blob = new Blob([chatText], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `ecolafaek-chat-${sessionId}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+    // Add header with logo and title
+    doc.setFillColor(16, 185, 129); // Emerald color
+    doc.rect(0, 0, pageWidth, 40, "F");
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont("helvetica", "bold");
+    doc.text("EcoLafaek AI Assistant", pageWidth / 2, 20, { align: "center" });
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("Chat Export", pageWidth / 2, 30, { align: "center" });
+
+    yPosition = 50;
+
+    // Add metadata
+    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(9);
+    const exportDate = new Date().toLocaleString();
+    doc.text(`Exported: ${exportDate}`, margin, yPosition);
+    doc.text(`Session: ${sessionId}`, margin, yPosition + 5);
+
+    yPosition += 20;
+
+    // Add messages
+    messages.forEach((msg, index) => {
+      // Check if we need a new page
+      if (yPosition > pageHeight - 40) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Message header (User/Assistant)
+      if (msg.role === "user") {
+        doc.setFillColor(239, 246, 255); // Light blue
+        doc.setTextColor(37, 99, 235); // Blue
+      } else {
+        doc.setFillColor(236, 253, 245); // Light green
+        doc.setTextColor(16, 185, 129); // Emerald
+      }
+
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      const roleText = msg.role === "user" ? "You" : "AI Assistant";
+      doc.text(roleText, margin, yPosition);
+
+      yPosition += 7;
+
+      // Message content
+      doc.setTextColor(50, 50, 50);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+
+      // Clean and wrap text
+      const cleanContent = msg.content
+        .replace(/[*#`]/g, "") // Remove markdown
+        .replace(/\n{3,}/g, "\n\n"); // Reduce multiple newlines
+
+      const lines = doc.splitTextToSize(cleanContent, maxWidth - 10);
+
+      // Add background box
+      const boxHeight = lines.length * 5 + 10;
+      doc.roundedRect(margin, yPosition - 3, maxWidth, boxHeight, 3, 3, "F");
+
+      doc.setTextColor(30, 30, 30);
+      doc.text(lines, margin + 5, yPosition + 2);
+
+      yPosition += boxHeight + 10;
+
+      // Add separator line
+      if (index < messages.length - 1) {
+        doc.setDrawColor(200, 200, 200);
+        doc.line(margin, yPosition, pageWidth - margin, yPosition);
+        yPosition += 10;
+      }
+    });
+
+    // Add footer on last page
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    doc.text(
+      "Powered by AWS Bedrock AgentCore",
+      pageWidth / 2,
+      pageHeight - 10,
+      { align: "center" }
+    );
+
+    // Save the PDF
+    const fileName = `ecolafaek-chat-${new Date().toISOString().split("T")[0]}.pdf`;
+    doc.save(fileName);
   };
 
   const formatMessage = (text) => {
