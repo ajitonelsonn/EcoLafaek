@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["localhost"],
+    domains: ["localhost", "ecolafaek.s3.us-east-1.amazonaws.com"],
   },
   // Disable ESLint during build for now to focus on TypeScript issues
   eslint: {

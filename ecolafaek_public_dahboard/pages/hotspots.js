@@ -633,7 +633,7 @@ export default function PublicHotspotsPage() {
                       {reports.length > 5 && (
                         <div className="mt-4 text-center">
                           <Link
-                            href="/reports"
+                            href={`/hotspot-reports?hotspot_id=${selectedHotspot.hotspot_id}`}
                             className="text-sm text-red-600 hover:text-red-800 font-medium"
                           >
                             View all {reports.length} reports
