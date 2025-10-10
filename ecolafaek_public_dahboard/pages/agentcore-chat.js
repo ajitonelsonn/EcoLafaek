@@ -213,13 +213,14 @@ export default function AgentCoreChat() {
               </button>
 
               <div className="flex items-center gap-4">
-                <div className="relative">
+                <div className="relative w-14 h-14">
                   <Image
                     src="/app_logo.png"
                     alt="EcoLafaek Logo"
                     width={56}
                     height={56}
-                    className="rounded-2xl shadow-md"
+                    className="rounded-2xl shadow-md object-cover"
+                    style={{ width: 'auto', height: 'auto' }}
                   />
                   <div className="absolute -bottom-1 -right-1 bg-emerald-500 rounded-full p-1.5 shadow-lg">
                     <Bot size={14} className="text-white" />

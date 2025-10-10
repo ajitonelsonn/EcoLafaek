@@ -134,6 +134,7 @@ export default function Layout({ children }) {
                     src="/app_logo.png"
                     alt="Ecolafaek Logo"
                     fill
+                    sizes="40px"
                     style={{ objectFit: "contain" }}
                   />
                 </div>
@@ -269,6 +270,7 @@ export default function Layout({ children }) {
                     src="/app_logo.png"
                     alt="Ecolafaek Logo"
                     fill
+                    sizes="40px"
                     style={{ objectFit: "contain" }}
                   />
                 </div>
