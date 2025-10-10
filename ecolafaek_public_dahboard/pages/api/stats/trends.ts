@@ -13,9 +13,10 @@ export default async function handler(
   }
 
   try {
-    // Get parameters
+    // Get parameters - days is now optional, null means all time
     const period = parseRequestQuery(req, "period", "daily");
-    const days = parseIntParam(req, "days", 30);
+    const daysParam = req.query.days;
+    const days = daysParam ? parseIntParam(req, "days", 30) : null;
 
     // Build date format and group by clause based on period
     let groupBy: string;
@@ -29,63 +30,71 @@ export default async function handler(
       groupBy = "DATE(r.report_date)";
     }
 
-    // Calculate the date from X days ago
-    const daysAgo = new Date();
-    daysAgo.setDate(daysAgo.getDate() - days);
+    // Build WHERE clause based on whether days is specified
+    let whereClause = "";
+    let queryValues: any[] = [];
+
+    if (days !== null) {
+      // Calculate the date from X days ago
+      const daysAgo = new Date();
+      daysAgo.setDate(daysAgo.getDate() - days);
+      whereClause = "WHERE r.report_date >= ?";
+      queryValues = [daysAgo];
+    }
 
     // Get report counts by period
     const reportTrendsQuery = `
-      SELECT 
+      SELECT
           ${groupBy} as period,
           COUNT(r.report_id) as report_count,
           AVG(a.severity_score) as avg_severity
       FROM reports r
       LEFT JOIN analysis_results a ON r.report_id = a.report_id
-      WHERE r.report_date >= ?
+      ${whereClause}
       GROUP BY period
       ORDER BY period
     `;
 
     const reportTrends = await executeQuery<any[]>({
       query: reportTrendsQuery,
-      values: [daysAgo],
+      values: queryValues,
     });
 
     // Get waste type trends
     const wasteTypeTrendsQuery = `
-      SELECT 
+      SELECT
           ${groupBy} as period,
           w.name as waste_type,
           COUNT(r.report_id) as count
       FROM reports r
       JOIN analysis_results a ON r.report_id = a.report_id
       JOIN waste_types w ON a.waste_type_id = w.waste_type_id
-      WHERE r.report_date >= ?
+      ${whereClause}
       GROUP BY period, waste_type
       ORDER BY period, count DESC
     `;
 
     const wasteTypeTrends = await executeQuery<any[]>({
       query: wasteTypeTrendsQuery,
-      values: [daysAgo],
+      values: queryValues,
     });
 
     // Get priority level trends
     const priorityTrendsQuery = `
-      SELECT 
+      SELECT
           ${groupBy} as period,
           a.priority_level,
           COUNT(r.report_id) as count
       FROM reports r
       JOIN analysis_results a ON r.report_id = a.report_id
-      WHERE r.report_date >= ?
+      ${whereClause}
       GROUP BY period, a.priority_level
       ORDER BY period, count DESC
     `;
 
     const priorityTrends = await executeQuery<any[]>({
       query: priorityTrendsQuery,
-      values: [daysAgo],
+      values: queryValues,
     });
 
     // Format the average severity to 2 decimal places where applicable

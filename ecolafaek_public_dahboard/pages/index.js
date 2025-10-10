@@ -117,7 +117,7 @@ export default function ModernDashboard() {
     trendData,
     isLoading: trendLoading,
     refresh: refreshTrends,
-  } = useTrends(selectedTrend, 30);
+  } = useTrends(selectedTrend);
 
 
   // Mark as loaded after initial data fetch
@@ -324,7 +324,7 @@ export default function ModernDashboard() {
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bgClass} ${textClass}`}
                       >
-                        {key === "reports" ? "Last 30 days" : ""}
+                        {key === "reports" ? "All Time" : ""}
                         {key === "hotspots" ? "Active" : ""}
                         {key === "severity" ? "Scale 1-10" : ""}
                         {key === "types" ? "Categories" : ""}

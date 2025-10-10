@@ -13,19 +13,19 @@ export default async function handler(
   }
 
   try {
-    // Get total reports count
+    // Get total reports count (all time)
     const totalReportsResult = await executeQuery<{ total_reports: number }[]>({
       query:
-        "SELECT COUNT(*) as total_reports FROM reports WHERE report_date >= CURDATE() - INTERVAL 30 DAY",
+        "SELECT COUNT(*) as total_reports FROM reports",
     });
     const total_reports = totalReportsResult[0].total_reports;
 
-    // Get reports by status
+    // Get reports by status (all time)
     const statusCountsResult = await executeQuery<
       { status: string; count: number }[]
     >({
       query:
-        "SELECT status, COUNT(*) as count FROM reports WHERE report_date >= CURDATE() - INTERVAL 30 DAY GROUP BY status",
+        "SELECT status, COUNT(*) as count FROM reports GROUP BY status",
     });
     const status_counts: Record<string, number> = {};
     statusCountsResult.forEach((row) => {
@@ -73,46 +73,23 @@ export default async function handler(
     });
     const hotspot_count = hotspotCountResult[0].hotspot_count;
 
-    // Get stats by day for the past 30 days
-    const today = new Date();
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(today.getDate() - 30);
-
-    const formattedThirtyDaysAgo = formatDate(thirtyDaysAgo);
-
+    // Get all daily report stats (all time)
     const dailyReportsResult = await executeQuery<
       { date: Date; count: number }[]
     >({
       query: `
-        SELECT DATE(report_date) as date, COUNT(*) as count 
-        FROM reports 
-        WHERE report_date >= ? 
-        GROUP BY DATE(report_date) 
+        SELECT DATE(report_date) as date, COUNT(*) as count
+        FROM reports
+        GROUP BY DATE(report_date)
         ORDER BY date
       `,
-      values: [formattedThirtyDaysAgo],
     });
 
-    // Format daily reports and fill in missing dates
-    const daily_reports: DailyReport[] = [];
-
-    // Create a map of date -> count
-    const dailyReportsMap: Record<string, number> = {};
-    dailyReportsResult.forEach((row) => {
-      const dateStr = formatDate(row.date);
-      dailyReportsMap[dateStr] = row.count;
-    });
-
-    // Fill in missing dates
-    const current = new Date(thirtyDaysAgo);
-    while (current <= today) {
-      const dateStr = formatDate(current);
-      daily_reports.push({
-        date: dateStr,
-        count: dailyReportsMap[dateStr] || 0,
-      });
-      current.setDate(current.getDate() + 1);
-    }
+    // Format daily reports (no filling in missing dates for all-time data)
+    const daily_reports: DailyReport[] = dailyReportsResult.map((row) => ({
+      date: formatDate(row.date),
+      count: row.count,
+    }));
 
     res.status(200).json({
       total_reports,

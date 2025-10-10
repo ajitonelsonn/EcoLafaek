@@ -24,15 +24,18 @@ export default async function handler(
     // Add condition that latitude and longitude are not null
     conditions.unshift("r.latitude IS NOT NULL AND r.longitude IS NOT NULL");
 
-    // Get days parameter and build date condition
-    const days = parseIntParam(req, "days", 30);
-    if (days > 0) {
-      const daysAgo = new Date();
-      daysAgo.setDate(daysAgo.getDate() - days);
+    // Get days parameter and build date condition (optional - no default, null means all time)
+    const daysParam = req.query.days;
+    if (daysParam) {
+      const days = parseIntParam(req, "days", 30);
+      if (days > 0) {
+        const daysAgo = new Date();
+        daysAgo.setDate(daysAgo.getDate() - days);
 
-      // Add date condition
-      conditions.push("r.report_date >= ?");
-      params.push(daysAgo);
+        // Add date condition
+        conditions.push("r.report_date >= ?");
+        params.push(daysAgo);
+      }
     }
 
     // Build where clause

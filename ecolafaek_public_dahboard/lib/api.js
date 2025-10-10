@@ -195,9 +195,11 @@ export function useHotspotReports(hotspotId) {
   };
 }
 
-// Hook for trends
-export function useTrends(period = "daily", days = 30) {
-  const url = `/stats/trends?period=${period}&days=${days}`;
+// Hook for trends - days is optional, omitting it fetches all-time data
+export function useTrends(period = "daily", days = null) {
+  const url = days
+    ? `/stats/trends?period=${period}&days=${days}`
+    : `/stats/trends?period=${period}`;
 
   const { data, error, isValidating, mutate } = useSWR(url, fetcher, {
     revalidateOnFocus: false,
