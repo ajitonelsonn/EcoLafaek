@@ -12,9 +12,11 @@ import {
   Zap,
   Home,
   Bot,
+  Shield,
 } from "lucide-react";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import Script from "next/script";
 
 export default function AgentCoreChat() {
   const router = useRouter();
@@ -22,6 +24,7 @@ export default function AgentCoreChat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sessionId] = useState(`web_${Date.now()}`);
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -87,20 +90,31 @@ export default function AgentCoreChat() {
     setLoading(true);
 
     try {
+      // Get reCAPTCHA token
+      if (!window.grecaptcha) {
+        throw new Error("reCAPTCHA not loaded");
+      }
+
+      const recaptchaToken = await window.grecaptcha.execute(
+        process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+        { action: "chat" }
+      );
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [...messages, userMessage],
           session_id: sessionId,
+          recaptcha_token: recaptchaToken,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `HTTP ${response.status}`);
+      }
 
       setMessages((prev) => [
         ...prev,
@@ -111,12 +125,21 @@ export default function AgentCoreChat() {
       ]);
     } catch (error) {
       console.error("Error:", error);
+      let errorMessage = "❌ Error: Could not connect to AgentCore. Please try again.";
+
+      if (error.message === "reCAPTCHA not loaded") {
+        errorMessage = "❌ Security verification not loaded. Please refresh the page.";
+      } else if (error.message.includes("reCAPTCHA verification failed")) {
+        errorMessage = "❌ Security verification failed. You may be a bot. Please try again.";
+      } else if (error.message.includes("Missing reCAPTCHA token")) {
+        errorMessage = "❌ Security verification missing. Please refresh the page.";
+      }
+
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content:
-            "❌ Error: Could not connect to AgentCore. Please try again.",
+          content: errorMessage,
         },
       ]);
     } finally {
@@ -195,9 +218,17 @@ export default function AgentCoreChat() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
-      {/* Modern Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40 backdrop-blur-md bg-opacity-95">
+    <>
+      {/* Load reCAPTCHA v3 */}
+      <Script
+        src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
+        strategy="lazyOnload"
+        onLoad={() => setRecaptchaLoaded(true)}
+      />
+
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+        {/* Modern Header */}
+        <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40 backdrop-blur-md bg-opacity-95">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center gap-6">
@@ -471,16 +502,23 @@ export default function AgentCoreChat() {
               <span className="hidden sm:inline">Send</span>
             </button>
           </div>
-          <div className="flex items-center justify-center gap-2 mt-3">
+          <div className="flex items-center justify-center gap-4 mt-3">
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
               <p className="text-xs text-gray-600 font-medium">
                 Powered by Amazon Bedrock AgentCore
               </p>
             </div>
+            <div className="flex items-center gap-1.5">
+              <Shield size={12} className="text-blue-600" />
+              <p className="text-xs text-gray-600 font-medium">
+                Protected by reCAPTCHA
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
