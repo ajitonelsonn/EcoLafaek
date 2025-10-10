@@ -25,6 +25,7 @@ export default function AgentCoreChat() {
   const [loading, setLoading] = useState(false);
   const [sessionId] = useState(`web_${Date.now()}`);
   const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const [isVerified, setIsVerified] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -39,6 +40,7 @@ export default function AgentCoreChat() {
   useEffect(() => {
     window.onRecaptchaSuccess = (token) => {
       setRecaptchaToken(token);
+      setIsVerified(true); // Allow access to chat
     };
 
     return () => {
@@ -95,18 +97,6 @@ export default function AgentCoreChat() {
     const textToSend = messageText || input;
     if (!textToSend.trim() || loading) return;
 
-    // Check if reCAPTCHA token exists (v2 requires user to solve challenge first)
-    if (!recaptchaToken) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "❌ Please complete the reCAPTCHA verification first.",
-        },
-      ]);
-      return;
-    }
-
     const userMessage = { role: "user", content: textToSend };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
@@ -128,12 +118,6 @@ export default function AgentCoreChat() {
 
       if (!response.ok) {
         throw new Error(data.error || `HTTP ${response.status}`);
-      }
-
-      // Reset reCAPTCHA after successful submission
-      setRecaptchaToken(null);
-      if (window.grecaptcha) {
-        window.grecaptcha.reset();
       }
 
       setMessages((prev) => [
@@ -247,6 +231,51 @@ export default function AgentCoreChat() {
       />
 
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+        {/* Show reCAPTCHA verification screen if not verified */}
+        {!isVerified ? (
+          <div className="min-h-screen flex items-center justify-center p-4">
+            <div className="max-w-md w-full">
+              <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-200">
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center justify-center p-4 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl mb-6 shadow-lg">
+                    <Shield size={48} className="text-white" />
+                  </div>
+                  <h2 className="text-3xl font-bold text-gray-900 mb-3">
+                    Security Verification
+                  </h2>
+                  <p className="text-gray-600 leading-relaxed">
+                    Please complete the verification below to access the EcoLafaek AI Assistant
+                  </p>
+                </div>
+
+                {/* reCAPTCHA Widget */}
+                <div className="flex justify-center mb-6">
+                  <div
+                    className="g-recaptcha"
+                    data-sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                    data-callback="onRecaptchaSuccess"
+                  ></div>
+                </div>
+
+                <div className="text-center text-sm text-gray-500">
+                  <p className="flex items-center justify-center gap-2">
+                    <Shield size={14} className="text-emerald-600" />
+                    Protected by Google reCAPTCHA
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => router.push("/")}
+                className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 bg-white hover:bg-gray-50 text-gray-700 rounded-xl transition-all border border-gray-200 font-medium"
+              >
+                <Home size={18} />
+                Back to Home
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
         {/* Modern Header */}
         <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40 backdrop-blur-md bg-opacity-95">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -500,15 +529,6 @@ export default function AgentCoreChat() {
       {/* Input Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl backdrop-blur-md bg-opacity-98 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          {/* reCAPTCHA v2 Widget */}
-          <div className="flex justify-center mb-4">
-            <div
-              className="g-recaptcha"
-              data-sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
-              data-callback="onRecaptchaSuccess"
-            ></div>
-          </div>
-
           <div className="flex gap-3">
             <div className="flex-1 relative">
               <textarea
@@ -518,12 +538,12 @@ export default function AgentCoreChat() {
                 placeholder="Ask me anything about waste data, trends, statistics..."
                 className="w-full px-6 py-4 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none text-base shadow-sm hover:border-gray-400 transition-all"
                 rows={1}
-                disabled={loading || !recaptchaToken}
+                disabled={loading}
               />
             </div>
             <button
               onClick={() => sendMessage()}
-              disabled={loading || !input.trim() || !recaptchaToken}
+              disabled={loading || !input.trim()}
               className="px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white rounded-2xl transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg font-semibold"
               aria-label="Send message"
             >
@@ -539,14 +559,16 @@ export default function AgentCoreChat() {
               </p>
             </div>
             <div className="flex items-center gap-1.5">
-              <Shield size={12} className="text-blue-600" />
+              <Shield size={12} className="text-emerald-600" />
               <p className="text-xs text-gray-600 font-medium">
-                Protected by reCAPTCHA
+                Verified Session
               </p>
             </div>
           </div>
         </div>
       </div>
+      </>
+        )}
       </div>
     </>
   );
