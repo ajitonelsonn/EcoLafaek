@@ -15,7 +15,7 @@ import {
   Shield,
 } from "lucide-react";
 import { useRouter } from "next/router";
-import Image from "next/image";
+import NextImage from "next/image";
 import Script from "next/script";
 import { jsPDF } from "jspdf";
 
@@ -27,6 +27,7 @@ export default function AgentCoreChat() {
   const [sessionId] = useState(`web_${Date.now()}`);
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [isVerified, setIsVerified] = useState(false);
+  const [tokenUsed, setTokenUsed] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -42,7 +43,7 @@ export default function AgentCoreChat() {
     const verificationData = localStorage.getItem("recaptcha_verification");
     if (verificationData) {
       try {
-        const { token, timestamp } = JSON.parse(verificationData);
+        const { token, timestamp, used } = JSON.parse(verificationData);
         const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
         const now = Date.now();
 
@@ -50,12 +51,12 @@ export default function AgentCoreChat() {
         if (now - timestamp < fiveMinutes) {
           setRecaptchaToken(token);
           setIsVerified(true);
+          setTokenUsed(used || false);
         } else {
           // Expired, remove old verification
           localStorage.removeItem("recaptcha_verification");
         }
       } catch (error) {
-        console.error("Error parsing verification data:", error);
         localStorage.removeItem("recaptcha_verification");
       }
     }
@@ -138,20 +139,40 @@ export default function AgentCoreChat() {
     setLoading(true);
 
     try {
+      // Only send reCAPTCHA token on first message
+      const requestBody = {
+        messages: [...messages, userMessage],
+        session_id: sessionId,
+      };
+
+      // Only include token if it hasn't been used yet
+      if (!tokenUsed && recaptchaToken) {
+        requestBody.recaptcha_token = recaptchaToken;
+      }
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [...messages, userMessage],
-          session_id: sessionId,
-          recaptcha_token: recaptchaToken,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.error || `HTTP ${response.status}`);
+      }
+
+      // Mark token as used after first successful request
+      if (!tokenUsed && recaptchaToken) {
+        setTokenUsed(true);
+
+        // Update localStorage with used flag
+        const verificationData = {
+          token: recaptchaToken,
+          timestamp: Date.now(),
+          used: true
+        };
+        localStorage.setItem('recaptcha_verification', JSON.stringify(verificationData));
       }
 
       setMessages((prev) => [
@@ -162,7 +183,6 @@ export default function AgentCoreChat() {
         },
       ]);
     } catch (error) {
-      console.error("Error:", error);
       let errorMessage =
         "❌ Error: Could not connect to AgentCore. Please try again.";
 
@@ -200,8 +220,28 @@ export default function AgentCoreChat() {
     setMessages([]);
   };
 
-  const exportChat = () => {
-    const doc = new jsPDF();
+  const exportChat = async () => {
+    // Show confirmation dialog
+    const confirmed = window.confirm(
+      `Export Chat to PDF?\n\n` +
+      `This will download your conversation with ${messages.length} messages.\n` +
+      `${messages.filter(m => m.content.includes('![')).length > 0 ? 'Charts and images will be included.\n' : ''}` +
+      `\nDo you want to continue?`
+    );
+
+    if (!confirmed) {
+      return; // User clicked "No" or "Cancel"
+    }
+
+    // Show loading state
+    const exportButton = document.querySelector('[aria-label="Export chat"]');
+    if (exportButton) {
+      exportButton.disabled = true;
+      exportButton.textContent = 'Exporting...';
+    }
+
+    try {
+      const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 20;
@@ -232,8 +272,41 @@ export default function AgentCoreChat() {
 
     yPosition += 20;
 
+    // Helper function to load image via proxy (to avoid CORS issues)
+    const loadImage = async (url) => {
+      return new Promise(async (resolve, reject) => {
+        try {
+          // Use our proxy API to fetch the image
+          const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
+          const response = await fetch(proxyUrl);
+
+          if (!response.ok) {
+            throw new Error(`Failed to load image: ${response.status}`);
+          }
+
+          const blob = await response.blob();
+          const objectUrl = URL.createObjectURL(blob);
+
+          const img = new Image();
+          img.onload = () => {
+            URL.revokeObjectURL(objectUrl);
+            resolve(img);
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            reject(new Error('Failed to load image'));
+          };
+          img.src = objectUrl;
+        } catch (error) {
+          reject(error);
+        }
+      });
+    };
+
     // Add messages
-    messages.forEach((msg, index) => {
+    for (let index = 0; index < messages.length; index++) {
+      const msg = messages[index];
+
       // Check if we need a new page
       if (yPosition > pageHeight - 40) {
         doc.addPage();
@@ -256,26 +329,109 @@ export default function AgentCoreChat() {
 
       yPosition += 7;
 
-      // Message content
-      doc.setTextColor(50, 50, 50);
+      // Process content: extract images and text
+      const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+      let content = msg.content;
+      const images = [];
+      let match;
+
+      while ((match = imageRegex.exec(msg.content)) !== null) {
+        images.push({
+          alt: match[1],
+          url: match[2],
+          fullMatch: match[0],
+        });
+      }
+
+      // Remove image markdown from content
+      content = content.replace(imageRegex, "[Image: $1]");
+
+      // Format markdown text
+      const formattedContent = content
+        .replace(/\*\*([^*]+)\*\*/g, "$1") // Bold
+        .replace(/`([^`]+)`/g, "$1") // Code
+        .replace(/^#{1,6}\s+(.+)$/gm, "$1") // Headers
+        .replace(/\n{3,}/g, "\n\n"); // Reduce multiple newlines
+
+      // Split into lines and process bullets
+      const contentLines = formattedContent.split("\n");
+      const processedLines = [];
+
+      contentLines.forEach((line) => {
+        if (line.trim().startsWith("- ")) {
+          processedLines.push("  • " + line.substring(2));
+        } else if (/^\d+\.\s/.test(line.trim())) {
+          processedLines.push("  " + line.trim());
+        } else {
+          processedLines.push(line);
+        }
+      });
+
+      const finalContent = processedLines.join("\n");
+
+      // Add text content
+      doc.setTextColor(30, 30, 30);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
 
-      // Clean and wrap text
-      const cleanContent = msg.content
-        .replace(/[*#`]/g, "") // Remove markdown
-        .replace(/\n{3,}/g, "\n\n"); // Reduce multiple newlines
-
-      const lines = doc.splitTextToSize(cleanContent, maxWidth - 10);
-
-      // Add background box
+      const lines = doc.splitTextToSize(finalContent, maxWidth - 10);
       const boxHeight = lines.length * 5 + 10;
+
+      // Add background box for text
+      doc.setFillColor(msg.role === "user" ? 239 : 236, msg.role === "user" ? 246 : 253, msg.role === "user" ? 255 : 245);
       doc.roundedRect(margin, yPosition - 3, maxWidth, boxHeight, 3, 3, "F");
 
-      doc.setTextColor(30, 30, 30);
       doc.text(lines, margin + 5, yPosition + 2);
+      yPosition += boxHeight + 5;
 
-      yPosition += boxHeight + 10;
+      // Add images if any
+      for (const img of images) {
+        try {
+          // Check if we need a new page for image
+          if (yPosition > pageHeight - 80) {
+            doc.addPage();
+            yPosition = 20;
+          }
+
+          // Add image label
+          doc.setFontSize(9);
+          doc.setTextColor(100, 100, 100);
+          doc.setFont("helvetica", "italic");
+          doc.text(`[Chart] ${img.alt || "Visualization"}`, margin + 5, yPosition);
+          yPosition += 7;
+
+          // Try to load and add the image
+          const loadedImg = await loadImage(img.url);
+
+          const imgWidth = maxWidth - 10;
+          const imgHeight = (loadedImg.height / loadedImg.width) * imgWidth;
+
+          // Check if image fits on page
+          if (yPosition + imgHeight > pageHeight - 20) {
+            doc.addPage();
+            yPosition = 20;
+          }
+
+          // Convert image to base64 and add to PDF
+          const canvas = document.createElement('canvas');
+          canvas.width = loadedImg.width;
+          canvas.height = loadedImg.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(loadedImg, 0, 0);
+          const imgData = canvas.toDataURL('image/png');
+
+          doc.addImage(imgData, "PNG", margin + 5, yPosition, imgWidth, imgHeight);
+          yPosition += imgHeight + 10;
+        } catch (error) {
+          // If image fails to load, add a placeholder
+          doc.setFontSize(9);
+          doc.setTextColor(150, 150, 150);
+          doc.text(`[Image unavailable: ${img.url}]`, margin + 5, yPosition);
+          yPosition += 7;
+        }
+      }
+
+      yPosition += 5;
 
       // Add separator line
       if (index < messages.length - 1) {
@@ -283,7 +439,7 @@ export default function AgentCoreChat() {
         doc.line(margin, yPosition, pageWidth - margin, yPosition);
         yPosition += 10;
       }
-    });
+    }
 
     // Add footer on last page
     doc.setFontSize(8);
@@ -295,9 +451,24 @@ export default function AgentCoreChat() {
       { align: "center" }
     );
 
-    // Save the PDF
-    const fileName = `ecolafaek-chat-${new Date().toISOString().split("T")[0]}.pdf`;
-    doc.save(fileName);
+      // Save the PDF
+      const fileName = `ecolafaek-chat-${new Date().toISOString().split("T")[0]}.pdf`;
+      doc.save(fileName);
+
+      // Show success notification
+      alert('PDF exported successfully!');
+
+    } catch (error) {
+      // Show error notification
+      alert('Failed to export PDF. Please try again.');
+    } finally {
+      // Reset button state
+      const exportButton = document.querySelector('[aria-label="Export chat"]');
+      if (exportButton) {
+        exportButton.disabled = false;
+        exportButton.textContent = 'Export';
+      }
+    }
   };
 
   const formatMessage = (text) => {
@@ -415,7 +586,7 @@ export default function AgentCoreChat() {
 
                     <div className="flex items-center gap-4">
                       <div className="relative w-14 h-14">
-                        <Image
+                        <NextImage
                           src="/app_logo.png"
                           alt="EcoLafaek Logo"
                           width={56}
@@ -443,6 +614,7 @@ export default function AgentCoreChat() {
                       <button
                         onClick={exportChat}
                         className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all flex items-center gap-2 font-semibold text-sm"
+                        aria-label="Export chat"
                       >
                         <Download size={16} />
                         Export

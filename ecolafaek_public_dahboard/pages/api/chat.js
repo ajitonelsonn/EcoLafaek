@@ -81,6 +81,20 @@ async function verifyRecaptcha(token, remoteIp) {
   }
 }
 
+// In-memory session store for verified sessions (5 minute expiry)
+const verifiedSessions = new Map();
+
+function cleanExpiredSessions() {
+  const now = Date.now();
+  const fiveMinutes = 5 * 60 * 1000;
+
+  for (const [sessionId, timestamp] of verifiedSessions.entries()) {
+    if (now - timestamp > fiveMinutes) {
+      verifiedSessions.delete(sessionId);
+    }
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
@@ -95,27 +109,39 @@ export default async function handler(req, res) {
       });
     }
 
-    // Verify reCAPTCHA token
-    if (!recaptcha_token) {
-      return res.status(400).json({
-        error: "Missing reCAPTCHA token",
-      });
-    }
+    // Clean expired sessions periodically
+    cleanExpiredSessions();
 
-    // Get client IP address
-    const clientIp =
-      req.headers["x-forwarded-for"] ||
-      req.headers["x-real-ip"] ||
-      req.connection.remoteAddress;
+    // Check if session is already verified
+    const isSessionVerified = verifiedSessions.has(session_id);
 
-    const recaptchaResult = await verifyRecaptcha(recaptcha_token, clientIp);
-    if (!recaptchaResult.success) {
-      console.warn("reCAPTCHA verification failed:", recaptchaResult);
-      return res.status(403).json({
-        error: "reCAPTCHA verification failed. Please try again.",
-        details: recaptchaResult.error,
-      });
+    if (!isSessionVerified) {
+      // First message from this session - verify reCAPTCHA
+      if (!recaptcha_token) {
+        return res.status(400).json({
+          error: "Missing reCAPTCHA token",
+        });
+      }
+
+      // Get client IP address
+      const clientIp =
+        req.headers["x-forwarded-for"] ||
+        req.headers["x-real-ip"] ||
+        req.connection.remoteAddress;
+
+      const recaptchaResult = await verifyRecaptcha(recaptcha_token, clientIp);
+      if (!recaptchaResult.success) {
+        console.warn("reCAPTCHA verification failed:", recaptchaResult);
+        return res.status(403).json({
+          error: "reCAPTCHA verification failed. Please try again.",
+          details: recaptchaResult.error,
+        });
+      }
+
+      // Store verified session with timestamp
+      verifiedSessions.set(session_id, Date.now());
     }
+    // else: Session already verified, skip reCAPTCHA check
 
     const result = await chat(messages, session_id);
 
