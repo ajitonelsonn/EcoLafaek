@@ -24,7 +24,7 @@ export default function AgentCoreChat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sessionId] = useState(`web_${Date.now()}`);
-  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -34,6 +34,17 @@ export default function AgentCoreChat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Set up reCAPTCHA callback function
+  useEffect(() => {
+    window.onRecaptchaSuccess = (token) => {
+      setRecaptchaToken(token);
+    };
+
+    return () => {
+      delete window.onRecaptchaSuccess;
+    };
+  }, []);
 
   // Sample queries for quick access
   const sampleQueries = [
@@ -84,30 +95,24 @@ export default function AgentCoreChat() {
     const textToSend = messageText || input;
     if (!textToSend.trim() || loading) return;
 
+    // Check if reCAPTCHA token exists (v2 requires user to solve challenge first)
+    if (!recaptchaToken) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "❌ Please complete the reCAPTCHA verification first.",
+        },
+      ]);
+      return;
+    }
+
     const userMessage = { role: "user", content: textToSend };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
 
     try {
-      // Get reCAPTCHA token - Following https://developers.google.com/recaptcha/docs/v3
-      if (!window.grecaptcha) {
-        throw new Error("reCAPTCHA not loaded");
-      }
-
-      const recaptchaToken = await new Promise((resolve, reject) => {
-        window.grecaptcha.ready(async () => {
-          try {
-            const token = await window.grecaptcha.execute(
-              process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
-              { action: "submit" }
-            );
-            resolve(token);
-          } catch (error) {
-            reject(error);
-          }
-        });
-      });
 
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -123,6 +128,12 @@ export default function AgentCoreChat() {
 
       if (!response.ok) {
         throw new Error(data.error || `HTTP ${response.status}`);
+      }
+
+      // Reset reCAPTCHA after successful submission
+      setRecaptchaToken(null);
+      if (window.grecaptcha) {
+        window.grecaptcha.reset();
       }
 
       setMessages((prev) => [
@@ -228,14 +239,11 @@ export default function AgentCoreChat() {
 
   return (
     <>
-      {/* Load reCAPTCHA v3 - Following https://developers.google.com/recaptcha/docs/display */}
+      {/* Load reCAPTCHA v2 - Following https://developers.google.com/recaptcha/docs/display */}
       <Script
-        src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
-        onReady={() => {
-          window.grecaptcha.ready(() => {
-            setRecaptchaLoaded(true);
-          });
-        }}
+        src="https://www.google.com/recaptcha/api.js"
+        async
+        defer
       />
 
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
@@ -492,6 +500,15 @@ export default function AgentCoreChat() {
       {/* Input Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl backdrop-blur-md bg-opacity-98 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          {/* reCAPTCHA v2 Widget */}
+          <div className="flex justify-center mb-4">
+            <div
+              className="g-recaptcha"
+              data-sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+              data-callback="onRecaptchaSuccess"
+            ></div>
+          </div>
+
           <div className="flex gap-3">
             <div className="flex-1 relative">
               <textarea
@@ -501,12 +518,12 @@ export default function AgentCoreChat() {
                 placeholder="Ask me anything about waste data, trends, statistics..."
                 className="w-full px-6 py-4 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none text-base shadow-sm hover:border-gray-400 transition-all"
                 rows={1}
-                disabled={loading}
+                disabled={loading || !recaptchaToken}
               />
             </div>
             <button
               onClick={() => sendMessage()}
-              disabled={loading || !input.trim()}
+              disabled={loading || !input.trim() || !recaptchaToken}
               className="px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white rounded-2xl transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg font-semibold"
               aria-label="Send message"
             >

@@ -31,7 +31,7 @@ async function chat(messages, sessionId = null) {
   }
 }
 
-// Verify reCAPTCHA token - Following https://developers.google.com/recaptcha/docs/verify
+// Verify reCAPTCHA v2 token - Following https://developers.google.com/recaptcha/docs/verify
 async function verifyRecaptcha(token, remoteIp) {
   const secretKey = process.env.RECAPTCHA_SECRET_KEY;
 
@@ -60,22 +60,20 @@ async function verifyRecaptcha(token, remoteIp) {
 
     const data = await response.json();
 
-    // Check success, score, and action
-    if (data.success && data.score >= 0.5 && data.action === "submit") {
-      return { success: true, score: data.score };
+    // reCAPTCHA v2 only returns success/fail (no score or action)
+    if (data.success) {
+      return { success: true };
     }
 
-    console.warn("reCAPTCHA verification failed:", {
+    console.warn("reCAPTCHA v2 verification failed:", {
       success: data.success,
-      score: data.score,
-      action: data.action,
       "error-codes": data["error-codes"],
     });
 
     return {
       success: false,
       error: "Verification failed",
-      score: data.score,
+      errorCodes: data["error-codes"],
     };
   } catch (error) {
     console.error("reCAPTCHA verification error:", error);
