@@ -167,18 +167,23 @@ export default async function handler(
 
         similarRows = imageSimRows as any[];
       } catch (vecError) {
-        // Fallback to all reports without similarity scoring
-        similarRows = (allReportsRows as any[]).map((report: any) => ({
-          ...report,
-          similarity_score: Math.random() * 0.5 + 0.5, // Random score for testing
-        }));
+        // Vector calculation failed - return error instead of fake data
+        return sendError(
+          res,
+          500,
+          "Vector similarity calculation failed",
+          "VECTOR_ERROR",
+          vecError
+        );
       }
     } else {
-      // No embedding, just return other reports
-      similarRows = (allReportsRows as any[]).map((report: any) => ({
-        ...report,
-        similarity_score: Math.random() * 0.5 + 0.5, // Random score for testing
-      }));
+      // No embedding available - cannot calculate similarity
+      return sendError(
+        res,
+        400,
+        "Source report has no embedding data. Cannot calculate similarity.",
+        "NO_EMBEDDING"
+      );
     }
 
     // Get geographic proximity for context using source report coordinates

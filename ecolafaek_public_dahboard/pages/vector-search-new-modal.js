@@ -113,7 +113,7 @@ const ReportDetailsModal = ({ report, isOpen, onClose }) => {
                 <span className="text-sm text-gray-700">
                   {report.report_date
                     ? new Date(report.report_date).toLocaleDateString()
-                    : "9/1/2025"}
+                    : "No date available"}
                 </span>
               </div>
             </div>

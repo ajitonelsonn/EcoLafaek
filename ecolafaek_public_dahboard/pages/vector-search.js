@@ -243,7 +243,7 @@ const ReportDetailsModal = ({ report, isOpen, onClose }) => {
                 <span className="text-sm text-gray-700">
                   {report.report_date
                     ? new Date(report.report_date).toLocaleDateString()
-                    : "9/1/2025"}
+                    : "No date available"}
                 </span>
               </div>
             </div>
@@ -276,7 +276,7 @@ const ReportDetailsModal = ({ report, isOpen, onClose }) => {
                   {String(
                     report.full_description ||
                       report.description ||
-                      "The image shows various items such as bottles, a keyboard, and a mouse placed on a wooden desk within an indoor setting. All items appear to be in use or properly stored."
+                      "No description available"
                   )}
                 </p>
               </div>
