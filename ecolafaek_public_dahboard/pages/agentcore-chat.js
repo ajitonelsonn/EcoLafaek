@@ -90,15 +90,24 @@ export default function AgentCoreChat() {
     setLoading(true);
 
     try {
-      // Get reCAPTCHA token
+      // Get reCAPTCHA token - Following https://developers.google.com/recaptcha/docs/v3
       if (!window.grecaptcha) {
         throw new Error("reCAPTCHA not loaded");
       }
 
-      const recaptchaToken = await window.grecaptcha.execute(
-        process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
-        { action: "chat" }
-      );
+      const recaptchaToken = await new Promise((resolve, reject) => {
+        window.grecaptcha.ready(async () => {
+          try {
+            const token = await window.grecaptcha.execute(
+              process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+              { action: "submit" }
+            );
+            resolve(token);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      });
 
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -219,11 +228,14 @@ export default function AgentCoreChat() {
 
   return (
     <>
-      {/* Load reCAPTCHA v3 */}
+      {/* Load reCAPTCHA v3 - Following https://developers.google.com/recaptcha/docs/display */}
       <Script
         src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
-        strategy="lazyOnload"
-        onLoad={() => setRecaptchaLoaded(true)}
+        onReady={() => {
+          window.grecaptcha.ready(() => {
+            setRecaptchaLoaded(true);
+          });
+        }}
       />
 
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
