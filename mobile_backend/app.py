@@ -5,9 +5,10 @@ import logging
 import base64
 import requests
 import re
+import asyncio
 from io import BytesIO
 from typing import List, Dict, Optional, Any, Union
-from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, UploadFile, File, Form, Body, Header
+from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, UploadFile, File, Form, Body, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
@@ -15,6 +16,7 @@ from pydantic import BaseModel, Field, EmailStr
 import boto3
 import mysql.connector
 from mysql.connector import Error
+from dbutils.pooled_db import PooledDB
 import jwt
 import hashlib
 import random
@@ -23,8 +25,13 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
+from decimal import Decimal
 from dotenv import load_dotenv
 import numpy as np
+from bedrock_agentcore import BedrockAgentCoreApp
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 # Load environment variables
 load_dotenv(override=True)
@@ -34,38 +41,102 @@ print("DB Name:", os.getenv('DB_NAME'))
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# Initialize rate limiter
+limiter = Limiter(key_func=get_remote_address)
+
 # Initialize FastAPI app
 app = FastAPI(
     title="EcoLafaek API",
-    description="Environmental waste monitoring API for Timor-Leste powered by Tidb with Amazon Nova Pro",
+    description="Environmental waste monitoring API for Timor-Leste powered by AWS Bedrock AgentCore",
     version="1.0.0",
     docs_url=None if os.getenv("ENVIRONMENT") == "production" else "/docs",
     redoc_url=None if os.getenv("ENVIRONMENT") == "production" else "/redoc"
 )
 
-# Add CORS middleware
+# Add rate limiter state
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# CORS configuration - Restrict to known origins in production
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
     allow_headers=["*"],
+    max_age=3600,
 )
+
+# All charts are saved to S3 - no local static directory needed
+
+# Amazon Bedrock AgentCore Configuration
+agentcore_app = BedrockAgentCoreApp()
+
+# Background task to clean up old charts from S3
+import threading
+
+def cleanup_s3_charts():
+    """Delete all files in static/charts/ folder on S3 every hour"""
+    while True:
+        try:
+            # Wait 1 hour
+            time.sleep(3600)  # 3600 seconds = 1 hour
+
+            # Get S3 configuration
+            s3_bucket = os.getenv('S3_BUCKET_NAME')
+            if not s3_bucket:
+                logger.warning("S3_BUCKET_NAME not configured, skipping cleanup")
+                continue
+
+            # Initialize S3 client
+            s3_client = boto3.client(
+                's3',
+                aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+                aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+                region_name=os.getenv('AWS_REGION', 'us-east-1')
+            )
+
+            # List all objects in static/charts/
+            prefix = 'static/charts/'
+            response = s3_client.list_objects_v2(Bucket=s3_bucket, Prefix=prefix)
+
+            if 'Contents' in response:
+                # Delete all files
+                objects_to_delete = [{'Key': obj['Key']} for obj in response['Contents']]
+
+                if objects_to_delete:
+                    s3_client.delete_objects(
+                        Bucket=s3_bucket,
+                        Delete={'Objects': objects_to_delete}
+                    )
+                    logger.info(f"Cleaned up {len(objects_to_delete)} chart files from S3")
+                else:
+                    logger.info("No chart files to clean up")
+            else:
+                logger.info("No chart files found in S3")
+
+        except Exception as e:
+            logger.error(f"Error cleaning up S3 charts: {e}")
+
+# Start cleanup task in background thread
+cleanup_thread = threading.Thread(target=cleanup_s3_charts, daemon=True)
+cleanup_thread.start()
+logger.info("Started S3 charts cleanup task (runs every 1 hour)")
 
 # Amazon Bedrock configuration
 BEDROCK_MODEL_ID = os.getenv('BEDROCK_MODEL_ID', 'amazon.nova-pro-v1:0')
-BEDROCK_BEARER_TOKEN = os.getenv('AWS_BEARER_TOKEN_BEDROCK')
-BEDROCK_ENDPOINT = os.getenv('BEDROCK_ENDPOINT', 'https://bedrock-runtime.us-east-1.amazonaws.com')
+BEDROCK_REGION = os.getenv('AWS_REGION', 'us-east-1')
 
-if not BEDROCK_BEARER_TOKEN:
-    logger.critical("AWS_BEARER_TOKEN_BEDROCK environment variable not set")
-    raise ValueError("AWS_BEARER_TOKEN_BEDROCK missing")
-
-# Initialize Bedrock client with bearer token
+# Initialize Bedrock client
 try:
-    # For bearer token authentication, we'll use requests directly instead of boto3
-    bedrock_runtime = None  # We'll use direct HTTP calls
-    logger.info(f"Using Bedrock model: {BEDROCK_MODEL_ID} with bearer token authentication")
+    bedrock_runtime = boto3.client(
+        'bedrock-runtime',
+        aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+        aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+        region_name=BEDROCK_REGION
+    )
+    logger.info(f"Using Bedrock model: {BEDROCK_MODEL_ID}")
 except Exception as e:
     logger.critical(f"Bedrock configuration failed: {e}")
     raise ValueError("Failed to configure Bedrock client")
@@ -76,7 +147,7 @@ try:
         's3',
         aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
         aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
-        region_name=os.getenv('AWS_REGION')
+        region_name=BEDROCK_REGION
     )
     S3_BUCKET = os.getenv('S3_BUCKET_NAME')
 except Exception as e:
@@ -105,13 +176,25 @@ DB_CONFIG = {
 
 # Amazon Titan Embed configuration
 TITAN_EMBED_MODEL = "amazon.titan-embed-image-v1"
-embedding_enabled = bool(BEDROCK_BEARER_TOKEN)  # Use same auth as Nova Pro
+embedding_enabled = True  # Embeddings are enabled with boto3 Bedrock client
 
-# Get database connection
+# Database connection pool for better performance
+db_pool = PooledDB(
+    creator=mysql.connector,
+    maxconnections=20,  # Maximum connections in pool
+    mincached=2,  # Minimum idle connections
+    maxcached=10,  # Maximum idle connections
+    maxshared=20,  # Maximum shared connections
+    blocking=True,  # Block if no connections available
+    ping=1,  # Ping connection before using
+    **DB_CONFIG
+)
+
+# Get database connection from pool
 def get_db_connection():
-    """Create and return a database connection"""
+    """Get a database connection from the pool"""
     try:
-        connection = mysql.connector.connect(**DB_CONFIG)
+        connection = db_pool.connection()
         return connection
     except Error as e:
         logger.error(f"Database connection error: {e}")
@@ -482,31 +565,56 @@ def upload_image_to_s3(image_data, filename):
         logger.error(f"S3 upload error: {e}")
         return None
 
-def invoke_bedrock_model(prompt: str, image_data: str = None):
+# Amazon Bedrock AgentCore Waste Analysis Agent
+@agentcore_app.entrypoint
+def analyze_waste_image(payload):
     """
-    Invoke Amazon Bedrock model using bearer token authentication
-    
-    Args:
-        prompt: Text prompt for the model
-        image_data: Base64 encoded image data (optional)
-    
-    Returns:
-        Model response or None if failed
+    EcoLafaek AI Agent for analyzing waste and environmental pollution
+    Uses Amazon Bedrock/Nova for image analysis and waste categorization
     """
     try:
-        # Prepare headers with bearer token
-        headers = {
-            'Authorization': f'Bearer {BEDROCK_BEARER_TOKEN}',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-        
-        # Prepare the request body for Amazon Nova Pro
-        if image_data:
-            # Nova Pro multimodal request format
-            body = {
+        image_url = payload.get("image_url")
+        location = payload.get("location", {})
+        description = payload.get("description", "")
+        image_base64 = payload.get("image_base64", "")
+
+        # First prompt: Determine if the image contains waste/garbage
+        initial_prompt = f"""
+        Carefully examine this image and determine if it shows improper waste disposal, garbage, trash, or discarded materials in the environment.
+
+        Location: Latitude {location.get('lat')}, Longitude {location.get('lng')}
+        User Description: {description}
+
+        Only classify as waste/garbage if:
+        1. The items are clearly disposed of improperly in an outdoor environment (on streets, in water bodies, forests, etc.)
+        2. The items are trash/waste accumulated in trash cans, landfills, or garbage dumps
+        3. The items are clearly abandoned, broken, or dumped illegally
+
+        Do NOT classify as waste/garbage if:
+        1. The items are in normal use in their intended environment (e.g., electronics on a desk)
+        2. The items appear to be organized, clean, and in use
+        3. The items are products being displayed or used normally
+        4. The image shows an indoor setting with normal household/office items
+        5. The items are properly stored or displayed
+
+        Return your answer as a JSON object with the following structure:
+        {{
+          "contains_waste": true/false,
+          "confidence": 0-100,
+          "reasoning": "brief explanation",
+          "short_description": "concise description (max 8 words)",
+          "full_description": "detailed description of what you see in the image (2-3 sentences)"
+        }}
+        """
+
+        # Call Bedrock Nova for initial waste detection
+        response = bedrock_runtime.invoke_model(
+            modelId=BEDROCK_MODEL_ID,
+            contentType="application/json",
+            accept="application/json",
+            body=json.dumps({
                 "inferenceConfig": {
-                    "max_new_tokens": 2000,
+                    "max_new_tokens": 1000,
                     "temperature": 0.1,
                     "top_p": 0.9
                 },
@@ -515,25 +623,127 @@ def invoke_bedrock_model(prompt: str, image_data: str = None):
                         "role": "user",
                         "content": [
                             {
-                                "text": prompt
+                                "text": initial_prompt
                             },
                             {
                                 "image": {
                                     "format": "jpeg",
                                     "source": {
-                                        "bytes": image_data
+                                        "bytes": image_base64
                                     }
                                 }
                             }
                         ]
                     }
                 ]
-            }
+            })
+        )
+
+        # Parse response
+        result = json.loads(response['body'].read())
+
+        # Extract text from Nova Pro response format
+        if 'output' in result and 'message' in result['output']:
+            message = result['output']['message']
+            if 'content' in message and len(message['content']) > 0:
+                initial_response = message['content'][0].get('text', '')
+            else:
+                logger.error("No content found in Bedrock response message")
+                initial_response = None
         else:
-            # Text-only request
-            body = {
+            logger.error(f"Unexpected Bedrock response format: {result}")
+            initial_response = None
+
+        if not initial_response:
+            return {
+                "success": False,
+                "error": "analysis_failed",
+                "message": "Failed to analyze image"
+            }
+
+        # Extract JSON from response
+        json_match = re.search(r'\{.*\}', initial_response, re.DOTALL)
+        if json_match:
+            waste_check = json.loads(json_match.group())
+        else:
+            waste_check = {
+                "contains_waste": False,
+                "confidence": 75,
+                "reasoning": "Failed to parse response",
+                "short_description": "Unable to determine content",
+                "full_description": "Unable to generate a detailed description."
+            }
+
+        # Get short and full descriptions
+        short_description = waste_check.get("short_description", "")
+        if len(short_description.split()) > 8:
+            short_description = " ".join(short_description.split()[:8])
+
+        full_description = waste_check.get("full_description", "")
+        if not full_description:
+            full_description = f"{waste_check.get('reasoning', 'No details available.')} {short_description}"
+
+        # If the image doesn't contain waste, return minimal analysis
+        if not waste_check.get("contains_waste", False):
+            return {
+                "success": True,
+                "analysis": {
+                    "waste_type": "Not Garbage",
+                    "severity_score": 1,
+                    "priority_level": "low",
+                    "environmental_impact": "None - not waste material",
+                    "estimated_volume": "0",
+                    "safety_concerns": "None",
+                    "analysis_notes": f"This image does not appear to contain waste material. {waste_check.get('reasoning', '')}",
+                    "waste_detection_confidence": waste_check.get("confidence", 90),
+                    "short_description": short_description or "Not garbage",
+                    "full_description": full_description
+                },
+                "model_used": BEDROCK_MODEL_ID,
+                "processed_at": datetime.now().isoformat()
+            }
+
+        # If image contains waste, proceed with detailed analysis
+        detailed_prompt = """
+        Analyze the waste/garbage in this image.
+
+        Please determine:
+        1. The main type of waste visible (e.g., Plastic, Paper, Glass, Metal, Organic, Electronic, Construction, Mixed)
+        2. Severity assessment (scale 1-10, where 10 is most severe)
+        3. Priority level (low, medium, high, critical)
+        4. Environmental impact assessment
+        5. Estimated volume
+        6. Any safety concerns
+        7. Full description of the waste scenario (2-3 sentences, detailed)
+
+        Consider these factors for severity and priority:
+        - Quantity/volume of waste
+        - Hazard level of materials
+        - Proximity to water sources or sensitive areas
+        - Access to residential areas
+        - Biodegradability and longevity of waste
+
+        Structure your response as a JSON object with the following fields:
+        - waste_type: Main type of waste
+        - severity_score: Numeric score from 1-10
+        - priority_level: "low", "medium", "high", or "critical"
+        - environmental_impact: Brief description of environmental impact
+        - estimated_volume: Estimated volume in cubic meters
+        - safety_concerns: Any safety concerns identified
+        - analysis_notes: Detailed analysis and recommendations
+        - full_description: Detailed description of the waste scenario (2-3 sentences)
+
+        Keep your analysis focused, practical, and action-oriented.
+        """
+
+        # Call Bedrock Nova for detailed analysis
+        response = bedrock_runtime.invoke_model(
+            modelId=BEDROCK_MODEL_ID,
+            contentType="application/json",
+            accept="application/json",
+            body=json.dumps({
                 "inferenceConfig": {
-                    "max_new_tokens": 2000,
+                    "max_new_tokens": 1500,
                     "temperature": 0.1,
                     "top_p": 0.9
                 },
@@ -542,304 +752,202 @@ def invoke_bedrock_model(prompt: str, image_data: str = None):
                         "role": "user",
                         "content": [
                             {
-                                "text": prompt
+                                "text": detailed_prompt
+                            },
+                            {
+                                "image": {
+                                    "format": "jpeg",
+                                    "source": {
+                                        "bytes": image_base64
+                                    }
+                                }
                             }
                         ]
                     }
                 ]
-            }
-        
-        # Make the API request
-        url = f"{BEDROCK_ENDPOINT}/model/{BEDROCK_MODEL_ID}/converse"
-        
-        response = requests.post(
-            url,
-            headers=headers,
-            json=body,
-            timeout=60
+            })
         )
-        
-        if response.status_code != 200:
-            logger.error(f"Bedrock API error: {response.status_code} - {response.text}")
-            return None
-        
-        response_data = response.json()
-        
+
+        # Parse response
+        result = json.loads(response['body'].read())
+
         # Extract text from Nova Pro response format
-        if 'output' in response_data and 'message' in response_data['output']:
-            message = response_data['output']['message']
+        if 'output' in result and 'message' in result['output']:
+            message = result['output']['message']
             if 'content' in message and len(message['content']) > 0:
-                return message['content'][0].get('text', '')
-        
-        logger.error(f"Unexpected response format from Bedrock: {response_data}")
-        return None
-        
+                detailed_response = message['content'][0].get('text', '')
+            else:
+                detailed_response = None
+        else:
+            detailed_response = None
+
+        if not detailed_response:
+            return {
+                "success": False,
+                "error": "analysis_failed",
+                "message": "Failed to analyze waste details"
+            }
+
+        # Extract JSON from response
+        json_match = re.search(r'\{.*\}', detailed_response, re.DOTALL)
+        if json_match:
+            analysis_result = json.loads(json_match.group())
+        else:
+            analysis_result = {
+                "waste_type": "Mixed",
+                "severity_score": 5,
+                "priority_level": "medium",
+                "environmental_impact": "Unable to determine from image",
+                "estimated_volume": "Unknown",
+                "safety_concerns": "Unable to determine from image",
+                "analysis_notes": "Analysis completed with limited details",
+                "full_description": full_description
+            }
+
+        # Add the waste detection confidence and short description
+        analysis_result["waste_detection_confidence"] = waste_check.get("confidence", 100)
+        analysis_result["short_description"] = short_description or f"{analysis_result['waste_type']} waste, {analysis_result['priority_level']} priority"
+
+        # Ensure full_description exists in the result
+        if "full_description" not in analysis_result or not analysis_result["full_description"]:
+            analysis_result["full_description"] = full_description
+
+        return {
+            "success": True,
+            "analysis": analysis_result,
+            "model_used": BEDROCK_MODEL_ID,
+            "processed_at": datetime.now().isoformat()
+        }
+
     except Exception as e:
-        logger.error(f"Bedrock model invocation error: {e}")
-        return None
-# Core functionality for image analysis with Amazon Nova Pro
-async def analyze_image_with_bedrock(image_url):
+        logger.error(f"AgentCore analysis failed: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "fallback_analysis": {
+                "waste_type": "Unknown",
+                "confidence_score": 0,
+                "analysis_notes": "Analysis failed, manual review required"
+            }
+        }
+async def process_report_with_agent_async(report_id, image_url, latitude, longitude, description):
+    """Process report using AgentCore for analysis - truly async"""
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        # Download image and convert to base64 for AgentCore
+        # Run in thread pool to avoid blocking
+        import concurrent.futures
+        loop = asyncio.get_event_loop()
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            response = await loop.run_in_executor(executor, requests.get, image_url)
+        image_base64 = base64.b64encode(response.content).decode('utf-8')
+
+        # Call AgentCore agent for analysis
+        agent_payload = {
+            "image_url": image_url,
+            "image_base64": image_base64,
+            "location": {"lat": latitude, "lng": longitude},
+            "description": description
+        }
+
+        # Use AgentCore for analysis - run in thread pool to avoid blocking
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            analysis_result = await loop.run_in_executor(
+                executor, analyze_waste_image, agent_payload
+            )
+
+        cursor.close()
+        connection.close()
+
+        return analysis_result, image_base64
+
+    except Exception as e:
+        logger.error(f"AgentCore async processing failed for report {report_id}: {e}")
+        return None, None
+
+# Core functionality for image analysis with Amazon Nova Pro via AgentCore
+async def analyze_image_with_bedrock(image_url, latitude=0.0, longitude=0.0, description=""):
     """
-    Analyze a waste image using Amazon Nova Pro
-    
+    Analyze a waste image using Amazon Nova Pro via AgentCore
+
     Args:
         image_url: URL to the image
-        
+        latitude: Latitude coordinate
+        longitude: Longitude coordinate
+        description: User-provided description
+
     Returns:
-        Dictionary with analysis results
+        Tuple of (analysis_result dict, image_data base64 string)
     """
-    max_attempts = 3  # Maximum number of retry attempts
+    max_attempts = 2  # Maximum number of retry attempts
     current_attempt = 0
-    
+
     while current_attempt < max_attempts:
         try:
             current_attempt += 1
-            logger.info(f"Attempt {current_attempt} - Analyzing image from: {image_url}")
-            
+            logger.info(f"Attempt {current_attempt} - Analyzing image with AgentCore from: {image_url}")
+
             # Download the image
-            response = requests.get(image_url)
+            import concurrent.futures
+            loop = asyncio.get_event_loop()
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                response = await loop.run_in_executor(executor, requests.get, image_url)
+
             if response.status_code != 200:
                 logger.error(f"Failed to download image from {image_url}: {response.status_code}")
+                if current_attempt < max_attempts:
+                    time.sleep(2)
+                    continue
                 return None, None
-                
+
             # Log image details
             content_type = response.headers.get('Content-Type', 'Unknown')
             image_size = len(response.content)
             logger.info(f"Successfully downloaded image: Type={content_type}, Size={image_size} bytes")
-            
+
             # Convert image to base64
             image_data = base64.b64encode(response.content).decode('utf-8')
             logger.info(f"Converted image to base64 format (length: {len(image_data)} chars)")
-            
-            # First prompt: Determine if the image contains waste/garbage
-            initial_prompt = """
-            Carefully examine this image and determine if it shows improper waste disposal, garbage, trash, or discarded materials in the environment.
-            
-            Only classify as waste/garbage if:
-            1. The items are clearly disposed of improperly in an outdoor environment (on streets, in water bodies, forests, etc.)
-            2. The items are trash/waste accumulated in trash cans, landfills, or garbage dumps
-            3. The items are clearly abandoned, broken, or dumped illegally
-            
-            Do NOT classify as waste/garbage if:
-            1. The items are in normal use in their intended environment (e.g., electronics on a desk)
-            2. The items appear to be organized, clean, and in use
-            3. The items are products being displayed or used normally
-            4. The image shows an indoor setting with normal household/office items
-            5. The items are properly stored or displayed
-            
-            Return your answer as a JSON object with the following structure: 
-            {
-              "contains_waste": true/false, 
-              "confidence": 0-100, 
-              "reasoning": "brief explanation", 
-              "short_description": "concise description (max 8 words)", 
-              "full_description": "detailed description of what you see in the image (2-3 sentences)"
+
+            # Call AgentCore agent for analysis
+            agent_payload = {
+                "image_url": image_url,
+                "image_base64": image_data,
+                "location": {"lat": latitude, "lng": longitude},
+                "description": description
             }
-            """
-            
-            logger.info(f"Sending multimodal request with image to Nova Pro")
-            
-            # Make Nova Pro API request 
-            initial_response = invoke_bedrock_model(initial_prompt, image_data)
-            
-            if not initial_response:
-                logger.error(f"Nova Pro API failed for initial analysis")
+
+            # Use AgentCore for analysis - run in thread pool to avoid blocking
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                agent_result = await loop.run_in_executor(
+                    executor, analyze_waste_image, agent_payload
+                )
+
+            if not agent_result or not agent_result.get("success"):
+                logger.error(f"AgentCore analysis failed: {agent_result.get('error', 'Unknown error')}")
                 if current_attempt < max_attempts:
                     logger.info(f"Retrying... ({current_attempt}/{max_attempts})")
-                    time.sleep(2)  # Add a short delay before retrying
+                    time.sleep(2)
                     continue
                 return None, None
-                
-            logger.info(f"Received response from Nova Pro API")
-            
-            try:
-                # Extract JSON from the response
-                json_match = re.search(r'({[\s\S]*})', initial_response)
-                if json_match:
-                    waste_check = json.loads(json_match.group(1))
-                else:
-                    waste_check = json.loads(initial_response)
-                
-                # If we successfully parsed the JSON, break out of the retry loop
-                break
-                
-            except json.JSONDecodeError:
-                logger.warning(f"Failed to parse JSON from initial waste check (Attempt {current_attempt}/{max_attempts})")
-                if current_attempt < max_attempts:
-                    logger.info(f"Retrying JSON parsing... ({current_attempt}/{max_attempts})")
-                    time.sleep(2)  # Add a short delay before retrying
-                    continue
-                
-                # If we've reached max attempts, use default values
-                logger.warning("Max retry attempts reached. Defaulting to no waste detection")
-                waste_check = {
-                    "contains_waste": False, 
-                    "confidence": 75, 
-                    "reasoning": "Failed to parse response after multiple attempts, defaulting to no waste detection",
-                    "short_description": "Unable to determine content",
-                    "full_description": "Unable to generate a detailed description due to parsing issues after multiple attempts."
-                }
-                break
-        
+
+            # Extract analysis from AgentCore result
+            analysis_result = agent_result.get("analysis", {})
+            logger.info(f"AgentCore analysis complete: {analysis_result}")
+
+            return analysis_result, image_data  # Return both analysis and image data for embeddings
+
         except Exception as e:
             logger.error(f"Error in analyze_image_with_bedrock (Attempt {current_attempt}/{max_attempts}): {e}")
             if current_attempt < max_attempts:
                 logger.info(f"Retrying due to exception... ({current_attempt}/{max_attempts})")
-                time.sleep(2)  # Add a short delay before retrying
+                time.sleep(2)
                 continue
             return None, None
-    
-    # Get short description
-    short_description = waste_check.get("short_description", "")
-    if len(short_description.split()) > 8:
-        # Truncate to 8 words if needed
-        short_description = " ".join(short_description.split()[:8])
-    
-    # Get full description
-    full_description = waste_check.get("full_description", "")
-    if not full_description:
-        full_description = f"{waste_check.get('reasoning', 'No details available.')} {short_description}"
-    
-    # If the image doesn't contain waste, return minimal analysis
-    if not waste_check.get("contains_waste", False):
-        logger.info(f"Image determined not to contain waste: {waste_check.get('reasoning', 'No reason provided')}")
-        non_waste_analysis = {
-            "waste_type": "Not Garbage",
-            "severity_score": 1,
-            "priority_level": "low",
-            "environmental_impact": "None - not waste material",
-            "estimated_volume": "0",
-            "safety_concerns": "None",
-            "analysis_notes": f"This image does not appear to contain waste material. {waste_check.get('reasoning', '')}",
-            "waste_detection_confidence": waste_check.get("confidence", 90),
-            "short_description": short_description or "Not garbage",
-            "full_description": full_description
-        }
-        return non_waste_analysis, image_data
-    
-    # If image contains waste, proceed with detailed analysis
-    # Add retry mechanism for the detailed analysis as well
-    detailed_analysis_attempts = 0
-    max_detailed_attempts = 3
-    
-    while detailed_analysis_attempts < max_detailed_attempts:
-        try:
-            detailed_analysis_attempts += 1
-            logger.info(f"Detailed analysis attempt {detailed_analysis_attempts} for image containing waste")
-            
-            detailed_prompt = """
-            Analyze the waste/garbage in this image.
-            
-            Please determine:
-            1. The main type of waste visible (e.g., Plastic, Paper, Glass, Metal, Organic, Electronic, Construction, Mixed)
-            2. Severity assessment (scale 1-10, where 10 is most severe)
-            3. Priority level (low, medium, high, critical)
-            4. Environmental impact assessment
-            5. Estimated volume
-            6. Any safety concerns
-            7. Full description of the waste scenario (2-3 sentences, detailed)
-            
-            Consider these factors for severity and priority:
-            - Quantity/volume of waste
-            - Hazard level of materials
-            - Proximity to water sources or sensitive areas
-            - Access to residential areas
-            - Biodegradability and longevity of waste
-            
-            Structure your response as a JSON object with the following fields:
-            - waste_type: Main type of waste
-            - severity_score: Numeric score from 1-10
-            - priority_level: "low", "medium", "high", or "critical"
-            - environmental_impact: Brief description of environmental impact
-            - estimated_volume: Estimated volume in cubic meters
-            - safety_concerns: Any safety concerns identified
-            - analysis_notes: Detailed analysis and recommendations
-            - full_description: Detailed description of the waste scenario (2-3 sentences)
-            
-            Keep your analysis focused, practical, and action-oriented.
-            """
-            
-            logger.info(f"Sending multimodal request for detailed analysis to Nova Pro")
-            
-            # Make Nova Pro API request for detailed analysis
-            detailed_response = invoke_bedrock_model(detailed_prompt, image_data)
-            
-            if not detailed_response:
-                logger.error(f"Nova Pro API failed for detailed analysis")
-                if detailed_analysis_attempts < max_detailed_attempts:
-                    logger.info(f"Retrying detailed analysis... ({detailed_analysis_attempts}/{max_detailed_attempts})")
-                    time.sleep(2)  # Add a short delay before retrying
-                    continue
-                return None, None
-                
-            logger.info(f"Received detailed response from Nova Pro API")
-            
-            # Parse the JSON result from the response text
-            try:
-                # Find JSON content in the response (might be surrounded by text)
-                json_match = re.search(r'({[\s\S]*})', detailed_response)
-                if json_match:
-                    json_str = json_match.group(1)
-                    analysis_result = json.loads(json_str)
-                else:
-                    # If no JSON found, try to parse the entire response
-                    analysis_result = json.loads(detailed_response)
-                    
-                # If successful, break out of the retry loop
-                break
-                
-            except json.JSONDecodeError:
-                logger.warning(f"Failed to parse JSON from Nova Pro detailed response (Attempt {detailed_analysis_attempts}/{max_detailed_attempts})")
-                if detailed_analysis_attempts < max_detailed_attempts:
-                    logger.info(f"Retrying detailed JSON parsing... ({detailed_analysis_attempts}/{max_detailed_attempts})")
-                    time.sleep(2)  # Add a short delay before retrying
-                    continue
-                    
-                # If we've reached max attempts, create a structured result from the text
-                logger.warning("Max retry attempts reached. Creating structured result from text")
-                analysis_result = {
-                    "waste_type": "Mixed",  # Default to Mixed if unable to determine
-                    "severity_score": 5,    # Default to medium severity
-                    "priority_level": "medium",
-                    "environmental_impact": "Unable to determine from image after multiple attempts",
-                    "estimated_volume": "Unknown",
-                    "safety_concerns": "Unable to determine from image after multiple attempts",
-                    "analysis_notes": detailed_response[:500] + "... (truncated)",  # Use part of the response as notes
-                    "full_description": full_description  # Use the initial full description as fallback
-                }
-                break
-                
-        except Exception as e:
-            logger.error(f"Error in detailed analysis (Attempt {detailed_analysis_attempts}/{max_detailed_attempts}): {e}")
-            if detailed_analysis_attempts < max_detailed_attempts:
-                logger.info(f"Retrying detailed analysis due to exception... ({detailed_analysis_attempts}/{max_detailed_attempts})")
-                time.sleep(2)  # Add a short delay before retrying
-                continue
-                
-            # If we've reached max attempts due to exceptions, return a default analysis
-            logger.warning("Max retry attempts reached due to exceptions. Using default analysis")
-            analysis_result = {
-                "waste_type": "Unknown",
-                "severity_score": 5,
-                "priority_level": "medium",
-                "environmental_impact": "Unknown - analysis failed",
-                "estimated_volume": "Unknown",
-                "safety_concerns": "Unknown - analysis failed",
-                "analysis_notes": f"Analysis failed after {max_detailed_attempts} attempts. Error: {str(e)}",
-                "full_description": full_description
-            }
-            break
-    
-    # Add the waste detection confidence and short description
-    analysis_result["waste_detection_confidence"] = waste_check.get("confidence", 100)
-    analysis_result["short_description"] = short_description or f"{analysis_result['waste_type']} waste, {analysis_result['priority_level']} priority"
-    
-    # Ensure full_description exists in the result
-    if "full_description" not in analysis_result or not analysis_result["full_description"]:
-        analysis_result["full_description"] = full_description
-    
-    logger.info(f"Nova Pro analysis complete: {analysis_result}")
-    return analysis_result, image_data  # Return both analysis and image data for embeddings
+
+    return None, None
 def extract_volume_number(volume_str):
     """Extract numeric value from volume string like '5 cubic meters' -> 5.0"""
     try:
@@ -917,9 +1025,14 @@ async def process_report(report_id, background_tasks: BackgroundTasks):
         
         # Log the image URL we're about to analyze
         logger.info(f"Processing report {report_id} with image URL: {report['image_url']}")
-        
-        # Analyze image with Nova Pro
-        analysis_result, image_data = await analyze_image_with_bedrock(report['image_url'])
+
+        # Analyze image with Nova Pro via AgentCore
+        analysis_result, image_data = await analyze_image_with_bedrock(
+            report['image_url'],
+            report['latitude'],
+            report['longitude'],
+            report.get('description', '')
+        )
         
         if not analysis_result:
             cursor.execute(
@@ -1230,7 +1343,8 @@ async def check_existing_user(email: str = None, username: str = None):
 
 # Improved registration endpoint with better logging
 @app.post("/api/auth/register", response_model=dict)
-async def register(user_data: UserCreate):
+@limiter.limit("5/minute")  # Rate limit registration to prevent spam
+async def register(user_data: UserCreate, request: Request):
     try:
         logger.info(f"Registration attempt for username: {user_data.username}, email: {user_data.email}")
         
@@ -1527,7 +1641,8 @@ async def verify_registration(verification: OTPVerify):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/auth/login", response_model=TokenData)
-async def login(login_data: UserLogin):
+@limiter.limit("10/minute")  # Rate limit login attempts
+async def login(login_data: UserLogin, request: Request):
     try:
         # Get user by username
         connection = get_db_connection()
@@ -2075,7 +2190,8 @@ async def get_user(user_id: int, current_user_id: int = Depends(get_user_from_to
 
 # Report submission and processing
 @app.post("/api/reports", response_model=dict)
-async def submit_report(report_data: ReportCreate, background_tasks: BackgroundTasks, user_id: int = Depends(get_user_from_token)):
+@limiter.limit("20/hour")  # Rate limit report submissions
+async def submit_report(report_data: ReportCreate, background_tasks: BackgroundTasks, request: Request, user_id: int = Depends(get_user_from_token)):
     try:
         # Validate user permissions (check if user_id matches authenticated user)
         if user_id != report_data.user_id:
@@ -2929,37 +3045,25 @@ def invoke_titan_embed_text(text: str) -> Optional[List[float]]:
     """Create embedding for text using Amazon Titan Embed Image (multimodal)"""
     if not embedding_enabled or not text:
         return None
-    
+
     try:
-        # Prepare the request payload for Titan Embed Image v1 (text mode)
+        # Prepare the request payload for Titan Multimodal Embed with text input and 1024 dimensions
         payload = {
             "inputText": text,
             "embeddingConfig": {
                 "outputEmbeddingLength": 1024
             }
         }
-        
-        headers = {
-            'Authorization': f'Bearer {BEDROCK_BEARER_TOKEN}',
-            'Content-Type': 'application/json'
-        }
-        
-        # Make request to Titan Embed Image model (supports text)
-        response = requests.post(
-            f"{BEDROCK_ENDPOINT}/model/amazon.titan-embed-image-v1/invoke",
-            headers=headers,
-            json=payload,
-            timeout=30
+
+        # Use boto3 bedrock_runtime to invoke Titan Embed Image model (supports text too)
+        response = bedrock_runtime.invoke_model(
+            modelId="amazon.titan-embed-image-v1",
+            body=json.dumps(payload)
         )
-        
-        if response.status_code == 200:
-            result = response.json()
-            embedding = result.get('embedding', [])
-            return embedding if embedding else None
-        else:
-            logger.error(f"Titan embed text request failed: {response.status_code}")
-            logger.error(f"Response text: {response.text}")
-            return None
+
+        result = json.loads(response['body'].read())
+        embedding = result.get('embedding', [])
+        return embedding if embedding else None
             
     except Exception as e:
         logger.error(f"Error creating text embedding with Titan: {e}")
@@ -2971,34 +3075,23 @@ def invoke_titan_embed_image(image_data: str) -> Optional[List[float]]:
         return None
     
     try:
-        # Prepare the request payload for Titan Image Embed
+        # Prepare the request payload for Titan Image Embed with 1024 dimensions
         payload = {
             "inputImage": image_data,  # base64 encoded image
             "embeddingConfig": {
-                "outputEmbeddingLength": 1024  # Titan embed image dimensions
+                "outputEmbeddingLength": 1024
             }
         }
-        
-        headers = {
-            'Authorization': f'Bearer {BEDROCK_BEARER_TOKEN}',
-            'Content-Type': 'application/json'
-        }
-        
-        # Make request to Titan Embed Image model
-        response = requests.post(
-            f"{BEDROCK_ENDPOINT}/model/amazon.titan-embed-image-v1/invoke",
-            headers=headers,
-            json=payload,
-            timeout=30
+
+        # Use boto3 bedrock_runtime to invoke Titan Embed Image model
+        response = bedrock_runtime.invoke_model(
+            modelId="amazon.titan-embed-image-v1",
+            body=json.dumps(payload)
         )
-        
-        if response.status_code == 200:
-            result = response.json()
-            embedding = result.get('embedding', [])
-            return embedding if embedding else None
-        else:
-            logger.error(f"Titan embed image request failed: {response.status_code}")
-            return None
+
+        result = json.loads(response['body'].read())
+        embedding = result.get('embedding', [])
+        return embedding if embedding else None
             
     except Exception as e:
         logger.error(f"Error creating image embedding with Titan: {e}")
@@ -3079,8 +3172,8 @@ def create_image_content_embedding(analysis_result: dict, image_data: str = None
 @app.get("/api/test/nova", response_model=dict)
 async def test_nova_api(image_url: str, user_id: int = Depends(get_user_from_token)):
     try:
-        # Simple test endpoint to check if the Nova API integration is working
-        analysis_result, _ = await analyze_image_with_bedrock(image_url)
+        # Simple test endpoint to check if the AgentCore/Nova API integration is working
+        analysis_result, _ = await analyze_image_with_bedrock(image_url, 0.0, 0.0, "Test image")
         
         if not analysis_result:
             raise HTTPException(status_code=500, detail="Failed to analyze image")
@@ -3097,6 +3190,686 @@ async def test_nova_api(image_url: str, user_id: int = Depends(get_user_from_tok
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ==================== CHAT API WITH AGENTCORE ====================
+
+# Pydantic models for chat
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: List[ChatMessage]
+    session_id: Optional[str] = None
+
+# Database tool functions for AgentCore
+def get_waste_statistics() -> dict:
+    """Get overall waste statistics from the database"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Get total reports
+        cursor.execute("SELECT COUNT(*) as total FROM reports")
+        total_reports = cursor.fetchone()['total']
+
+        # Get reports by status
+        cursor.execute("""
+            SELECT status, COUNT(*) as count
+            FROM reports
+            GROUP BY status
+        """)
+        status_counts = cursor.fetchall()
+
+        # Get reports by waste type
+        cursor.execute("""
+            SELECT wt.name, COUNT(*) as count
+            FROM analysis_results ar
+            JOIN waste_types wt ON ar.waste_type_id = wt.waste_type_id
+            GROUP BY wt.name
+            ORDER BY count DESC
+            LIMIT 10
+        """)
+        waste_type_counts = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return {
+            "total_reports": total_reports,
+            "status_breakdown": status_counts,
+            "top_waste_types": waste_type_counts
+        }
+    except Exception as e:
+        logger.error(f"Error getting waste statistics: {e}")
+        return {"error": str(e)}
+
+def search_reports_by_location(district: str = None, limit: int = 10) -> dict:
+    """Search waste reports by location"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        if district:
+            cursor.execute("""
+                SELECT r.report_id, r.latitude, r.longitude, r.report_date,
+                       r.description, r.status, r.address_text,
+                       ar.severity_score, ar.priority_level, wt.name as waste_type
+                FROM reports r
+                LEFT JOIN analysis_results ar ON r.report_id = ar.report_id
+                LEFT JOIN waste_types wt ON ar.waste_type_id = wt.waste_type_id
+                WHERE r.address_text LIKE %s
+                ORDER BY r.report_date DESC
+                LIMIT %s
+            """, (f'%{district}%', limit))
+        else:
+            cursor.execute("""
+                SELECT r.report_id, r.latitude, r.longitude, r.report_date,
+                       r.description, r.status, r.address_text,
+                       ar.severity_score, ar.priority_level, wt.name as waste_type
+                FROM reports r
+                LEFT JOIN analysis_results ar ON r.report_id = ar.report_id
+                LEFT JOIN waste_types wt ON ar.waste_type_id = wt.waste_type_id
+                ORDER BY r.report_date DESC
+                LIMIT %s
+            """, (limit,))
+
+        reports = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        # Convert Decimal and date/datetime objects to JSON-serializable types
+        for report in reports:
+            if 'latitude' in report and report['latitude'] is not None:
+                report['latitude'] = float(report['latitude'])
+            if 'longitude' in report and report['longitude'] is not None:
+                report['longitude'] = float(report['longitude'])
+            if 'severity_score' in report and report['severity_score'] is not None:
+                report['severity_score'] = float(report['severity_score'])
+            if 'report_date' in report and report['report_date'] is not None:
+                report['report_date'] = report['report_date'].isoformat()
+
+        return {"reports": reports, "count": len(reports)}
+    except Exception as e:
+        logger.error(f"Error searching reports: {e}")
+        return {"error": str(e)}
+
+def get_hotspot_information(limit: int = 10) -> dict:
+    """Get information about waste hotspots"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT h.hotspot_id, h.name, h.center_latitude, h.center_longitude,
+                   h.total_reports, h.average_severity, h.status, h.first_reported, h.last_reported
+            FROM hotspots h
+            WHERE h.status = 'active'
+            ORDER BY h.average_severity DESC, h.total_reports DESC
+            LIMIT %s
+        """, (limit,))
+
+        hotspots = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        # Convert Decimal and date objects to JSON-serializable types
+        for hotspot in hotspots:
+            if 'center_latitude' in hotspot and hotspot['center_latitude'] is not None:
+                hotspot['center_latitude'] = float(hotspot['center_latitude'])
+            if 'center_longitude' in hotspot and hotspot['center_longitude'] is not None:
+                hotspot['center_longitude'] = float(hotspot['center_longitude'])
+            if 'average_severity' in hotspot and hotspot['average_severity'] is not None:
+                hotspot['average_severity'] = float(hotspot['average_severity'])
+            if 'first_reported' in hotspot and hotspot['first_reported'] is not None:
+                hotspot['first_reported'] = hotspot['first_reported'].isoformat()
+            if 'last_reported' in hotspot and hotspot['last_reported'] is not None:
+                hotspot['last_reported'] = hotspot['last_reported'].isoformat()
+
+        return {"hotspots": hotspots, "count": len(hotspots)}
+    except Exception as e:
+        logger.error(f"Error getting hotspots: {e}")
+        return {"error": str(e)}
+
+def get_waste_types_info() -> dict:
+    """Get information about waste types and categories"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT waste_type_id, name, description, hazard_level, recyclable
+            FROM waste_types
+            ORDER BY name
+        """)
+
+        waste_types = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        return {"waste_types": waste_types, "count": len(waste_types)}
+    except Exception as e:
+        logger.error(f"Error getting waste types: {e}")
+        return {"error": str(e)}
+
+def execute_sql_query(sql_query: str) -> dict:
+    """Execute a READ-ONLY SQL query and return results"""
+    try:
+        # Security: Only allow SELECT statements
+        query_upper = sql_query.strip().upper()
+        if not query_upper.startswith('SELECT'):
+            return {"error": "Only SELECT queries are allowed for security reasons"}
+
+        # Block dangerous keywords
+        dangerous_keywords = ['DROP', 'DELETE', 'UPDATE', 'INSERT', 'ALTER', 'CREATE', 'TRUNCATE', 'EXEC', 'EXECUTE']
+        for keyword in dangerous_keywords:
+            if keyword in query_upper:
+                return {"error": f"Query contains forbidden keyword: {keyword}"}
+
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Execute the query with a limit to prevent large result sets
+        if 'LIMIT' not in query_upper:
+            sql_query = sql_query.rstrip(';') + ' LIMIT 100'
+
+        cursor.execute(sql_query)
+        results = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        # Convert non-serializable types
+        for row in results:
+            for key, value in row.items():
+                if hasattr(value, 'isoformat'):  # datetime/date
+                    row[key] = value.isoformat()
+                elif isinstance(value, type(Decimal('0'))):  # Decimal
+                    row[key] = float(value)
+
+        return {
+            "success": True,
+            "rows": results,
+            "count": len(results),
+            "query": sql_query
+        }
+    except Exception as e:
+        error_msg = str(e)
+        logger.error(f"Error executing SQL query: {error_msg}")
+
+        # Provide helpful error messages for common issues
+        helpful_hint = ""
+        if "Unknown column" in error_msg and "hotspot_id" in error_msg:
+            helpful_hint = " HINT: reports table does not have hotspot_id. Use the hotspot_reports junction table to join reports and hotspots."
+        elif "Unknown column" in error_msg:
+            helpful_hint = " HINT: Check the column names in the schema. Make sure you're using the correct table aliases."
+        elif "table" in error_msg.lower() and "doesn't exist" in error_msg.lower():
+            helpful_hint = " HINT: Check the table name spelling and ensure you're only using public tables."
+
+        return {
+            "error": error_msg + helpful_hint,
+            "success": False,
+            "query_attempted": sql_query
+        }
+
+@app.post("/api/chat")
+@limiter.limit("30/minute")  # Rate limit: 30 requests per minute per IP
+async def chat_with_agentcore(chat_request: ChatRequest, request: Request, x_api_key: str = Header(None, alias="X-API-Key")):
+    """Chat endpoint using AgentCore with database tools - Requires API Key"""
+    # Verify API key
+    expected_api_key = os.getenv('API_SECRET_KEY')
+    if not x_api_key or x_api_key != expected_api_key:
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorized: Invalid or missing API key"
+        )
+
+    try:
+        # Generate session ID if not provided
+        session_id = chat_request.session_id or f"chat_{datetime.now().timestamp()}"
+
+        # Get the last user message
+        user_message = chat_request.messages[-1].content if chat_request.messages else ""
+
+        # Build conversation context
+        conversation_history = "\n".join([
+            f"{msg.role}: {msg.content}" for msg in chat_request.messages[:-1]
+        ])
+
+        # Load schema information
+        from schema_based_chat import PUBLIC_SCHEMA
+
+        # Enhanced prompt with schema and SQL tool
+        enhanced_prompt = f"""You are EcoLafaek AI Assistant, helping users understand waste management data in Timor-Leste.
+
+You have access to TWO tools:
+
+1. **execute_sql_query**: Query the waste management database for statistics, reports, hotspots, waste types
+2. **get_ecolafaek_info**: Fetch current information about EcoLafaek platform from the website
+
+{PUBLIC_SCHEMA}
+
+## WHEN TO USE WHICH TOOL:
+
+**Use execute_sql_query for:**
+- "How many reports?", "What waste types?", "Which areas have garbage?"
+- Statistics, counts, trends, data analysis
+- Hotspot information, report details
+
+**Use get_ecolafaek_info for:**
+- "What is EcoLafaek?", "How does it work?", "Tell me about EcoLafaek"
+- "How to contact?", "Download app", "Who created this?"
+- Platform features, mission, technology stack
+- Topics: 'about', 'contact', 'download', 'code-repository'
+
+**IMPORTANT: When presenting web scraping results:**
+1. Summarize in 3-5 key points (not full text dump)
+2. Use bullet points for readability
+3. Keep responses under 300 words
+4. Focus on what user asked, not everything
+
+## HOW TO ANSWER QUESTIONS:
+1. Analyze the user's question
+2. Choose the appropriate tool
+3. For database questions: Generate SQL SELECT query
+4. For platform questions: Fetch from website with appropriate topic
+5. Present results in clear, formatted markdown
+
+## EXAMPLES:
+User: "How many reports are there?"
+SQL: SELECT COUNT(*) as total FROM reports
+
+User: "What are the top waste types?"
+SQL: SELECT wt.name, COUNT(*) as count FROM analysis_results ar JOIN waste_types wt ON ar.waste_type_id = wt.waste_type_id GROUP BY wt.name ORDER BY count DESC LIMIT 5
+
+User: "Which areas have most garbage?" or "Where are problem areas?"
+SQL: SELECT name, total_reports, average_severity FROM hotspots ORDER BY total_reports DESC LIMIT 10
+Note: Use hotspots table for location-based questions - it aggregates reports by area
+
+User: "Show active hotspots"
+SQL: SELECT name, total_reports, average_severity, last_reported FROM hotspots WHERE status = 'active' ORDER BY average_severity DESC LIMIT 10
+
+User: "What is EcoLafaek?"
+Tool: get_ecolafaek_info(topic='about')
+Response format:
+"**EcoLafaek** is an AI-powered waste management system for Timor-Leste.
+
+**Key Features:**
+• Mobile app for reporting waste with photos
+• AI analysis using Amazon Nova-Pro
+• Real-time dashboard with maps
+• Community engagement through gamification
+
+**Impact Goal:** 5,000+ reports, 100+ hotspots identified in first year.
+
+📱 Download: https://ajitonelson.itch.io/ecolafaek
+📧 Contact: ecolafaek@gmail.com"
+
+**WORKFLOW FOR CHART/VISUALIZATION REQUESTS:**
+
+When user asks for "chart", "graph", "visualize", "show distribution", "plot", "make a chart", etc:
+YOU MUST ALWAYS call BOTH tools in sequence:
+1. First call execute_sql_query to get the data
+2. Then IMMEDIATELY call generate_visualization with that data transformed correctly
+3. Format response with markdown image and summary
+
+**CRITICAL**: If user asks for "chart for all reports" or similar, default to showing waste type distribution.
+
+Example:
+User: "make a chart for all report" or "show chart"
+Step 1: execute_sql_query("SELECT waste_type, COUNT(*) as count FROM reports GROUP BY waste_type ORDER BY count DESC")
+Step 2: generate_visualization with data transformed: extract labels from 'waste_type' column and values from 'count' column
+Step 3: Response with ![Chart](url) + text summary
+
+**WORKFLOW FOR MAP REQUESTS:**
+
+When user asks for "map", "show on map", "hotspots map", etc:
+YOU MUST transform SQL results into the correct format:
+1. First call execute_sql_query to get locations (with latitude, longitude, name, count fields)
+2. Then call create_map_visualization with locations array transformed correctly
+3. Each location must have: {{lat: <latitude>, lng: <longitude>, name: <name>, count: <count>}}
+
+Example:
+User: "Show hotspots map"
+Step 1: execute_sql_query("SELECT name, center_latitude, center_longitude, total_reports FROM hotspots")
+Step 2: Transform SQL results - for each row, create: {{lat: center_latitude, lng: center_longitude, name: name, count: total_reports}}
+Step 3: create_map_visualization with the transformed locations array
+Step 4: Response with ![Map](url) + text summary
+
+**You MUST transform SQL results to the correct tool input format!**
+
+**CRITICAL: YOU MUST CALL generate_visualization OR create_map_visualization TOOL!**
+
+When user asks for charts, trends, or visualizations:
+1. Call execute_sql_query to get data
+2. YOU MUST call generate_visualization with the data to create the actual chart
+3. Use the REAL image_url returned by the tool in your response
+4. NEVER use example URLs - only use the actual URL returned by the tool!
+
+When user asks for maps:
+1. Call execute_sql_query to get locations
+2. YOU MUST call create_map_visualization with locations array
+3. Use the REAL map_url returned by the tool
+4. NEVER use example URLs - only use the actual URL returned by the tool!
+
+**Response format after tools return:**
+- For PNG/JPG images: Embed as ![Description](ACTUAL_URL_FROM_TOOL)
+- For HTML maps (.html files): Show as clickable link: [Click here to view the interactive map](ACTUAL_URL_FROM_TOOL)
+- Always provide text summary
+- The URLs from tools are complete - use them exactly as returned
+- Check the file extension: .png/.jpg = embed image, .html = show link
+
+IMPORTANT RULES:
+- NEVER query: users, user_verifications, api_keys (private data)
+- Only SELECT queries (no INSERT/UPDATE/DELETE)
+- Always use LIMIT (max 100)
+- Format results with markdown tables/lists
+- Be conversational and helpful
+
+Conversation history:
+{conversation_history}
+
+User question: {user_message}"""
+
+        logger.info(f"Chat request for session {session_id}: {user_message[:100]}")
+
+        # Try to use Amazon Nova Pro with tool calling
+        try:
+            # Import web scraping tool
+            from web_scraper_tool import fetch_webpage_content, get_ecolafaek_info
+
+            # Import AgentCore tools (optional - will use fallback if not available)
+            try:
+                from agentcore_tools import (
+                    scrape_webpage_with_browser,
+                    generate_visualization,
+                    create_map_visualization,
+                    AGENTCORE_AVAILABLE
+                )
+            except ImportError:
+                AGENTCORE_AVAILABLE = False
+                logger.info("AgentCore tools not available - using basic tools only")
+
+            # Prepare tool definitions for SQL execution and web scraping
+            tools = [
+                {
+                    "toolSpec": {
+                        "name": "execute_sql_query",
+                        "description": "Execute a READ-ONLY SQL SELECT query on the EcoLafaek database. Only SELECT statements are allowed. The database contains public waste management data including reports, waste_types, hotspots, analysis_results, and locations tables. Always use LIMIT to restrict results. Use this for waste data questions.",
+                        "inputSchema": {
+                            "json": {
+                                "type": "object",
+                                "properties": {
+                                    "sql_query": {
+                                        "type": "string",
+                                        "description": "The SQL SELECT query to execute. Must be a valid MySQL SELECT statement with LIMIT clause."
+                                    }
+                                },
+                                "required": ["sql_query"]
+                            }
+                        }
+                    }
+                },
+                {
+                    "toolSpec": {
+                        "name": "get_ecolafaek_info",
+                        "description": "Get current information about the EcoLafaek platform by fetching from the official website. Use this when users ask 'What is EcoLafaek?', 'How does it work?', 'Contact info', 'How to download app', etc. Returns fresh, up-to-date information.",
+                        "inputSchema": {
+                            "json": {
+                                "type": "object",
+                                "properties": {
+                                    "topic": {
+                                        "type": "string",
+                                        "description": "What information to fetch: 'about' (general info, mission, how it works), 'contact' (email, support), 'download' (app download links, installation), 'code-repository' (GitHub, source code), or 'general' (default)",
+                                        "enum": ["about", "contact", "download", "code-repository", "general", "app"]
+                                    }
+                                },
+                                "required": ["topic"]
+                            }
+                        }
+                    }
+                }
+            ]
+
+            # Add AgentCore tools if available
+            if AGENTCORE_AVAILABLE:
+                tools.extend([
+                    {
+                        "toolSpec": {
+                            "name": "generate_visualization",
+                            "description": "Generate charts and graphs from data. Use when user asks for 'chart', 'graph', 'visualize', 'show distribution'. Supports bar charts, line graphs, pie charts. Takes data with labels and values.",
+                            "inputSchema": {
+                                "json": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "description": "Data to visualize. Format: {labels: [...], values: [...], title: '...', xlabel: '...', ylabel: '...'}"
+                                        },
+                                        "chart_type": {
+                                            "type": "string",
+                                            "description": "Type of chart: 'bar', 'line', 'pie'",
+                                            "enum": ["bar", "line", "pie"]
+                                        }
+                                    },
+                                    "required": ["data", "chart_type"]
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "toolSpec": {
+                            "name": "create_map_visualization",
+                            "description": "Create geographic map of hotspots. Use when user asks for 'map', 'show on map', 'geographic visualization'. Takes locations with lat, lng, name, count.",
+                            "inputSchema": {
+                                "json": {
+                                    "type": "object",
+                                    "properties": {
+                                        "locations": {
+                                            "type": "array",
+                                            "description": "Array of location objects with lat, lng, name, count fields",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "lat": {
+                                                        "type": "number",
+                                                        "description": "Latitude coordinate"
+                                                    },
+                                                    "lng": {
+                                                        "type": "number",
+                                                        "description": "Longitude coordinate"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "description": "Location name or address"
+                                                    },
+                                                    "count": {
+                                                        "type": "number",
+                                                        "description": "Number of reports at this location"
+                                                    }
+                                                },
+                                                "required": ["lat", "lng"]
+                                            }
+                                        }
+                                    },
+                                    "required": ["locations"]
+                                }
+                            }
+                        }
+                    }
+                ])
+                logger.info("AgentCore visualization tools enabled")
+
+            # Build messages for Nova (filter out system messages, only user/assistant allowed)
+            messages = [
+                {"role": msg.role, "content": [{"text": msg.content}]}
+                for msg in chat_request.messages
+                if msg.role in ["user", "assistant"]
+            ]
+
+            # Call Bedrock with Nova Pro and tool use
+            response = bedrock_runtime.converse(
+                modelId="amazon.nova-pro-v1:0",
+                messages=messages,
+                toolConfig={"tools": tools},
+                system=[{"text": enhanced_prompt}]
+            )
+
+            # Handle tool use if Nova requests it - support multiple rounds
+            output = response['output']
+            if 'message' in output:
+                message_content = output['message']['content']
+
+                # Loop to allow multiple rounds of tool calling
+                max_tool_rounds = 5
+                tool_round = 0
+
+                while any(item.get('toolUse') for item in message_content) and tool_round < max_tool_rounds:
+                    tool_round += 1
+                    logger.info(f"AI requested tool use (round {tool_round})")
+                    tool_results = []
+
+                    for item in message_content:
+                        if 'toolUse' in item:
+                            tool_use = item['toolUse']
+                            tool_name = tool_use['name']
+                            tool_input = tool_use.get('input', {})
+                            logger.info(f"Tool called: {tool_name} with input: {str(tool_input)[:200]}")
+
+                            # Execute the appropriate tool
+                            if tool_name == "execute_sql_query":
+                                sql_query = tool_input.get('sql_query', '')
+                                result = execute_sql_query(sql_query)
+                            elif tool_name == "get_ecolafaek_info":
+                                topic = tool_input.get('topic', 'general')
+                                result = get_ecolafaek_info(topic)
+                            elif tool_name == "generate_visualization" and AGENTCORE_AVAILABLE:
+                                data = tool_input.get('data', {})
+                                chart_type = tool_input.get('chart_type', 'bar')
+                                result = generate_visualization(data, chart_type)
+                                logger.info(f"Visualization result: {result}")
+                            elif tool_name == "create_map_visualization" and AGENTCORE_AVAILABLE:
+                                locations = tool_input.get('locations', [])
+                                result = create_map_visualization(locations)
+                            else:
+                                result = {"error": f"Unknown or unavailable tool: {tool_name}"}
+
+                            tool_results.append({
+                                "toolResult": {
+                                    "toolUseId": tool_use['toolUseId'],
+                                    "content": [{"json": result}]
+                                }
+                            })
+
+                    # Send tool results back to Nova
+                    # Filter out empty text blocks from AI message (prevents ValidationException)
+                    ai_message = output['message'].copy()
+                    ai_message['content'] = [
+                        item for item in ai_message['content']
+                        if not (item.get('text') is not None and item.get('text').strip() == '')
+                    ]
+                    messages.append(ai_message)
+                    messages.append({"role": "user", "content": tool_results})
+
+                    # Get next response (might be more tool calls or final answer)
+                    response = bedrock_runtime.converse(
+                        modelId="amazon.nova-pro-v1:0",
+                        messages=messages,
+                        toolConfig={"tools": tools},
+                        system=[{"text": enhanced_prompt}]
+                    )
+
+                    output = response['output']
+                    message_content = output['message']['content']
+
+                # After all tool rounds, extract final text response
+                reply_text = None
+                for item in message_content:
+                    if 'text' in item and item['text'].strip():
+                        reply_text = item['text']
+                        break
+
+                if not reply_text:
+                    logger.error(f"No text in final response after {tool_round} rounds: {message_content}")
+                    reply_text = "I apologize, but I couldn't generate a proper response."
+            else:
+                reply_text = "I apologize, but I couldn't process your request."
+
+            # Remove <thinking> tags from Nova's response
+            import re
+            reply_text = re.sub(r'<thinking>.*?</thinking>', '', reply_text, flags=re.DOTALL)
+            reply_text = reply_text.strip()
+
+            logger.info(f"Chat response for session {session_id}: {reply_text[:100]}")
+
+            return {
+                "reply": reply_text,
+                "session_id": session_id,
+                "timestamp": datetime.now().isoformat()
+            }
+
+        except Exception as bedrock_error:
+            logger.error(f"Bedrock Nova error: {bedrock_error}")
+
+            # Fallback: Use keyword-based responses
+            reply_text = handle_chat_fallback(user_message)
+
+            return {
+                "reply": reply_text,
+                "session_id": session_id,
+                "timestamp": datetime.now().isoformat(),
+                "mode": "fallback"
+            }
+
+    except Exception as e:
+        import traceback
+        logger.error(f"Chat API error: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+def handle_chat_fallback(user_message: str) -> str:
+    """Fallback handler when AgentCore is not available"""
+    user_message_lower = user_message.lower()
+
+    # Simple keyword-based responses
+    if any(word in user_message_lower for word in ['statistic', 'total', 'how many', 'count']):
+        stats = get_waste_statistics()
+        if 'error' not in stats:
+            return f"""**📊 EcoLafaek Statistics**
+
+**Total Reports:** {stats['total_reports']}
+
+**Reports by Status:**
+{chr(10).join([f"- {s['status']}: {s['count']}" for s in stats['status_breakdown']])}
+
+**Top Waste Types:**
+{chr(10).join([f"- {w['name']}: {w['count']} reports" for w in stats['top_waste_types'][:5]])}"""
+
+    elif any(word in user_message_lower for word in ['hotspot', 'problem area', 'worst']):
+        hotspots = get_hotspot_information(5)
+        if 'error' not in hotspots and hotspots['count'] > 0:
+            return f"""**🔥 Active Waste Hotspots**
+
+Found {hotspots['count']} active hotspots:
+
+{chr(10).join([f"- **{h['name']}**: {h['total_reports']} reports (Severity: {h['average_severity']:.1f})" for h in hotspots['hotspots']])}"""
+
+    elif any(word in user_message_lower for word in ['waste type', 'category', 'categories']):
+        waste_types = get_waste_types_info()
+        if 'error' not in waste_types:
+            return f"""**🗑️ Waste Categories**
+
+{chr(10).join([f"- **{w['name']}** ({w['hazard_level']} hazard): {w['description']}" for w in waste_types['waste_types'][:8]])}"""
+
+    else:
+        return """👋 Hello! I'm EcoLafaek AI Assistant.
+
+I can help you with:
+- 📊 **Statistics**: Ask about total reports and trends
+- 🗺️ **Locations**: Search reports by district
+- 🔥 **Hotspots**: Find problem areas
+- 🗑️ **Waste Types**: Learn about waste categories
+
+What would you like to know?"""
+
 @app.exception_handler(404)
 async def custom_404_handler(request: requests, exc: HTTPException):
     return JSONResponse(
@@ -3111,6 +3884,5 @@ async def custom_404_handler(request: requests, exc: HTTPException):
 
 # Run the app
 if __name__ == "__main__":
-    import uvicorn
-    port = int(os.getenv("PORT", "8000"))
-    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
+    # Always use AgentCore when deployed - it handles both local and cloud environments
+    agentcore_app.run()
