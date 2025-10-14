@@ -26,7 +26,7 @@ import {
   Cell,
   ResponsiveContainer
 } from 'recharts'
-import { 
+import {
   TrendingUp,
   Users,
   AlertTriangle,
@@ -34,8 +34,14 @@ import {
   Activity,
   Loader2,
   BarChart3,
-  PieChart as PieChartIcon
+  PieChart as PieChartIcon,
+  Download,
+  FileDown,
+  Printer,
+  RefreshCw
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { exportToCSV, exportToJSON } from '@/lib/export'
 
 interface AnalyticsData {
   overview: {
@@ -120,87 +126,136 @@ export default function AnalyticsPage() {
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="mb-8">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">Analytics & Statistics</h1>
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
+                    Analytics & Statistics
+                  </h1>
                   <p className="text-gray-600">
                     Comprehensive analytics and insights for the EcoLafaek platform
                   </p>
                 </div>
-                <Select value={timeRange} onValueChange={setTimeRange}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="3months">Last 3 months</SelectItem>
-                    <SelectItem value="6months">Last 6 months</SelectItem>
-                    <SelectItem value="12months">Last 12 months</SelectItem>
-                    <SelectItem value="all">All time</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={fetchAnalytics}
+                    disabled={loading}
+                  >
+                    <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                    Refresh
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => data && exportToCSV([data.overview], 'analytics_overview')}
+                    disabled={!data}
+                  >
+                    <FileDown className="h-4 w-4 mr-2" />
+                    Export CSV
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => data && exportToJSON(data, 'analytics_full_report')}
+                    disabled={!data}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export JSON
+                  </Button>
+                  <Select value={timeRange} onValueChange={setTimeRange}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="3months">Last 3 months</SelectItem>
+                      <SelectItem value="6months">Last 6 months</SelectItem>
+                      <SelectItem value="12months">Last 12 months</SelectItem>
+                      <SelectItem value="all">All time</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
             {/* Overview Cards */}
             {data?.overview && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
-                <Card>
+                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-blue-100">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium text-blue-900">Total Users</CardTitle>
+                    <div className="p-2 bg-blue-500 rounded-lg">
+                      <Users className="h-4 w-4 text-white" />
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{data.overview.total_users.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-blue-900">{data.overview.total_users.toLocaleString()}</div>
+                    <p className="text-xs text-blue-600 mt-1">Registered citizens</p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-green-50 to-green-100">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Reports</CardTitle>
-                    <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium text-green-900">Total Reports</CardTitle>
+                    <div className="p-2 bg-green-500 rounded-lg">
+                      <BarChart3 className="h-4 w-4 text-white" />
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{data.overview.total_reports.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-green-900">{data.overview.total_reports.toLocaleString()}</div>
+                    <p className="text-xs text-green-600 mt-1">All submissions</p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-50 to-purple-100">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Hotspots</CardTitle>
-                    <Target className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium text-purple-900">Total Hotspots</CardTitle>
+                    <div className="p-2 bg-purple-500 rounded-lg">
+                      <Target className="h-4 w-4 text-white" />
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{data.overview.total_hotspots}</div>
+                    <div className="text-2xl font-bold text-purple-900">{data.overview.total_hotspots}</div>
+                    <p className="text-xs text-purple-600 mt-1">Identified areas</p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-red-50 to-red-100">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Active Hotspots</CardTitle>
-                    <AlertTriangle className="h-4 w-4 text-red-500" />
+                    <CardTitle className="text-sm font-medium text-red-900">Active Hotspots</CardTitle>
+                    <div className="p-2 bg-red-500 rounded-lg">
+                      <AlertTriangle className="h-4 w-4 text-white" />
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-red-600">{data.overview.active_hotspots}</div>
+                    <div className="text-2xl font-bold text-red-900">{data.overview.active_hotspots}</div>
+                    <p className="text-xs text-red-600 mt-1">Needs attention</p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-emerald-50 to-emerald-100">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Reports Today</CardTitle>
-                    <TrendingUp className="h-4 w-4 text-green-500" />
+                    <CardTitle className="text-sm font-medium text-emerald-900">Reports Today</CardTitle>
+                    <div className="p-2 bg-emerald-500 rounded-lg">
+                      <TrendingUp className="h-4 w-4 text-white" />
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{data.overview.reports_today}</div>
+                    <div className="text-2xl font-bold text-emerald-900">{data.overview.reports_today}</div>
+                    <p className="text-xs text-emerald-600 mt-1">New today</p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-indigo-50 to-indigo-100">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">New Users This Month</CardTitle>
-                    <Activity className="h-4 w-4 text-blue-500" />
+                    <CardTitle className="text-sm font-medium text-indigo-900">New Users</CardTitle>
+                    <div className="p-2 bg-indigo-500 rounded-lg">
+                      <Activity className="h-4 w-4 text-white" />
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-blue-600">{data.overview.users_this_month}</div>
+                    <div className="text-2xl font-bold text-indigo-900">{data.overview.users_this_month}</div>
+                    <p className="text-xs text-indigo-600 mt-1">This month</p>
                   </CardContent>
                 </Card>
               </div>
@@ -210,27 +265,55 @@ export default function AnalyticsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               {/* Reports by Month */}
               {data?.reports_by_month && (
-                <Card>
+                <Card className="border-0 shadow-lg">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BarChart3 className="h-5 w-5" />
-                      Reports Trend
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2">
+                        <div className="p-2 bg-blue-500 rounded-lg">
+                          <BarChart3 className="h-5 w-5 text-white" />
+                        </div>
+                        Reports Trend
+                      </CardTitle>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => exportToCSV(data.reports_by_month, 'reports_by_month')}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">Monthly report submissions over time</p>
                   </CardHeader>
                   <CardContent>
                     <ResponsiveContainer width="100%" height={300}>
                       <LineChart data={data.reports_by_month}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis />
-                        <Tooltip />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                        <XAxis
+                          dataKey="month"
+                          tick={{ fill: '#6b7280', fontSize: 12 }}
+                          tickLine={{ stroke: '#e5e7eb' }}
+                        />
+                        <YAxis
+                          tick={{ fill: '#6b7280', fontSize: 12 }}
+                          tickLine={{ stroke: '#e5e7eb' }}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: '#fff',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                          }}
+                        />
                         <Legend />
-                        <Line 
-                          type="monotone" 
-                          dataKey="count" 
-                          stroke="#8884d8" 
-                          strokeWidth={2}
+                        <Line
+                          type="monotone"
+                          dataKey="count"
+                          stroke="#3b82f6"
+                          strokeWidth={3}
                           name="Reports"
+                          dot={{ fill: '#3b82f6', r: 5 }}
+                          activeDot={{ r: 7 }}
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -240,12 +323,24 @@ export default function AnalyticsPage() {
 
               {/* Reports by Status */}
               {data?.reports_by_status && (
-                <Card>
+                <Card className="border-0 shadow-lg">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <PieChartIcon className="h-5 w-5" />
-                      Reports by Status
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2">
+                        <div className="p-2 bg-green-500 rounded-lg">
+                          <PieChartIcon className="h-5 w-5 text-white" />
+                        </div>
+                        Reports by Status
+                      </CardTitle>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => exportToCSV(data.reports_by_status, 'reports_by_status')}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">Distribution of report statuses</p>
                   </CardHeader>
                   <CardContent>
                     <ResponsiveContainer width="100%" height={300}>
@@ -255,8 +350,8 @@ export default function AnalyticsPage() {
                           cx="50%"
                           cy="50%"
                           labelLine={false}
-                          label={(props: any) => `${props.status} (${Number(props.percentage || 0).toFixed(1)}%)`} // eslint-disable-line @typescript-eslint/no-explicit-any
-                          outerRadius={80}
+                          label={(props: any) => `${props.status} (${Number(props.percentage || 0).toFixed(1)}%)`}
+                          outerRadius={90}
                           fill="#8884d8"
                           dataKey="count"
                         >
@@ -264,7 +359,14 @@ export default function AnalyticsPage() {
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: '#fff',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                          }}
+                        />
                       </PieChart>
                     </ResponsiveContainer>
                   </CardContent>
@@ -273,22 +375,49 @@ export default function AnalyticsPage() {
 
               {/* Reports by Waste Type */}
               {data?.reports_by_waste_type && (
-                <Card>
+                <Card className="border-0 shadow-lg">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BarChart3 className="h-5 w-5" />
-                      Reports by Waste Type
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2">
+                        <div className="p-2 bg-amber-500 rounded-lg">
+                          <BarChart3 className="h-5 w-5 text-white" />
+                        </div>
+                        Reports by Waste Type
+                      </CardTitle>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => exportToCSV(data.reports_by_waste_type, 'reports_by_waste_type')}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">Top waste categories reported</p>
                   </CardHeader>
                   <CardContent>
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={data.reports_by_waste_type}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="waste_type" />
-                        <YAxis />
-                        <Tooltip />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                        <XAxis
+                          dataKey="waste_type"
+                          tick={{ fill: '#6b7280', fontSize: 11 }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={80}
+                        />
+                        <YAxis
+                          tick={{ fill: '#6b7280', fontSize: 12 }}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: '#fff',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                          }}
+                        />
                         <Legend />
-                        <Bar dataKey="count" fill="#82ca9d" name="Reports" />
+                        <Bar dataKey="count" fill="#10b981" name="Reports" radius={[8, 8, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </CardContent>
@@ -297,27 +426,53 @@ export default function AnalyticsPage() {
 
               {/* User Registration Trend */}
               {data?.user_registration_trend && (
-                <Card>
+                <Card className="border-0 shadow-lg">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5" />
-                      User Registration Trend
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2">
+                        <div className="p-2 bg-purple-500 rounded-lg">
+                          <TrendingUp className="h-5 w-5 text-white" />
+                        </div>
+                        User Registration Trend
+                      </CardTitle>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => exportToCSV(data.user_registration_trend, 'user_registration_trend')}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">New user sign-ups over time</p>
                   </CardHeader>
                   <CardContent>
                     <ResponsiveContainer width="100%" height={300}>
                       <LineChart data={data.user_registration_trend}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis />
-                        <Tooltip />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                        <XAxis
+                          dataKey="month"
+                          tick={{ fill: '#6b7280', fontSize: 12 }}
+                        />
+                        <YAxis
+                          tick={{ fill: '#6b7280', fontSize: 12 }}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: '#fff',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                          }}
+                        />
                         <Legend />
-                        <Line 
-                          type="monotone" 
-                          dataKey="count" 
-                          stroke="#00C49F" 
-                          strokeWidth={2}
+                        <Line
+                          type="monotone"
+                          dataKey="count"
+                          stroke="#8b5cf6"
+                          strokeWidth={3}
                           name="New Users"
+                          dot={{ fill: '#8b5cf6', r: 5 }}
+                          activeDot={{ r: 7 }}
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -328,21 +483,46 @@ export default function AnalyticsPage() {
 
             {/* Hotspots Status Distribution */}
             {data?.hotspots_by_status && (
-              <Card className="mb-6">
+              <Card className="mb-6 border-0 shadow-lg">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5" />
-                    Hotspots Status Distribution
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                      <div className="p-2 bg-red-500 rounded-lg">
+                        <Target className="h-5 w-5 text-white" />
+                      </div>
+                      Hotspots Status Distribution
+                    </CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => exportToCSV(data.hotspots_by_status, 'hotspots_by_status')}
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">Current status of identified hotspot areas</p>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {data.hotspots_by_status.map((item, index) => (
-                      <div key={item.status} className="text-center">
-                        <div className="text-2xl font-bold mb-2" style={{ color: COLORS[index % COLORS.length] }}>
-                          {item.count}
+                      <div
+                        key={item.status}
+                        className="p-6 rounded-xl border-0 shadow-md hover:shadow-lg transition-all duration-300"
+                        style={{
+                          background: `linear-gradient(135deg, ${COLORS[index % COLORS.length]}15, ${COLORS[index % COLORS.length]}05)`
+                        }}
+                      >
+                        <div className="text-center">
+                          <div
+                            className="text-4xl font-bold mb-2"
+                            style={{ color: COLORS[index % COLORS.length] }}
+                          >
+                            {item.count}
+                          </div>
+                          <div className="text-sm font-medium text-gray-700 capitalize">
+                            {item.status} Hotspots
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-600 capitalize">{item.status} Hotspots</div>
                       </div>
                     ))}
                   </div>

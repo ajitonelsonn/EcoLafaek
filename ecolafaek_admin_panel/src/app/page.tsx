@@ -12,10 +12,12 @@ import {
   TrendingUp,
   Activity,
   Calendar,
-  Database,
-  Brain,
-  Target,
+  RefreshCw,
+  Download,
+  BarChart3,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { exportToCSV, exportToJSON } from "@/lib/export";
 
 interface DashboardStats {
   total_users: number;
@@ -31,19 +33,11 @@ interface DashboardStats {
     name: string;
     count: number;
   }>;
-  // 🏆 TiDB Vector Database Fields
-  total_embeddings: number;
-  avg_ai_confidence: number;
-  vector_processing_rate: number;
-  location_embeddings_count: number;
-  // 🏆 Real Growth Metrics
+  // Real Growth Metrics
   users_growth: number; // vs last month
   reports_growth: number; // vs last month
   hotspots_growth: number; // vs last month
   reports_today_growth: number; // vs yesterday
-  embeddings_growth: number; // vs last month
-  location_embeddings_growth: number; // vs last month
-  confidence_growth: number; // vs last month
 }
 
 interface RecentReport {
@@ -182,22 +176,23 @@ export default function Dashboard() {
   const [recentReports, setRecentReports] = useState<RecentReport[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await fetch("/api/dashboard/stats");
-        if (response.ok) {
-          const data = await response.json();
-          setStats(data.stats);
-          setRecentReports(data.recent_reports || []);
-        }
-      } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
-      } finally {
-        setLoading(false);
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/dashboard/stats");
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data.stats);
+        setRecentReports(data.recent_reports || []);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchDashboardData();
   }, []);
 
@@ -231,19 +226,50 @@ export default function Dashboard() {
             <div className="max-w-7xl mx-auto">
               {/* Header */}
               <div className="mb-8">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-4">
                   <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
                       Dashboard
                     </h1>
-                    <p className="text-gray-600 mt-2">
+                    <p className="text-gray-600 mt-2 flex items-center gap-2">
+                      <Activity className="h-4 w-4" />
                       Environmental waste monitoring overview
                     </p>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm text-gray-500">Today</div>
-                    <div className="text-lg font-semibold text-gray-900">
-                      {new Date().toLocaleDateString()}
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={fetchDashboardData}
+                      disabled={loading}
+                      className="shadow-sm hover:shadow-md transition-all"
+                    >
+                      <RefreshCw
+                        className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
+                      />
+                      Refresh
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        stats && exportToJSON({ stats, recentReports }, "dashboard_data")
+                      }
+                      disabled={!stats}
+                      className="shadow-sm hover:shadow-md transition-all"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Export
+                    </Button>
+                    <div className="text-right px-4 py-2 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                      <div className="text-xs text-green-600 font-medium">Today</div>
+                      <div className="text-sm font-bold text-green-900">
+                        {new Date().toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -290,61 +316,6 @@ export default function Dashboard() {
                   gradient="from-purple-500 to-indigo-600"
                   percentage={stats?.reports_today_growth || 0}
                 />
-              </div>
-
-              {/* 🏆 TiDB Vector Database Integration Section */}
-              <div className="mb-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 bg-orange-100 rounded-lg">
-                    <Database className="h-6 w-6 text-orange-600" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-900">TiDB Vector Database Analytics</h2>
-                    <p className="text-sm text-gray-600">AI-powered analysis with 1024-dimensional embeddings</p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                  <ModernMetricCard
-                    title="Vector Embeddings"
-                    value={stats?.total_embeddings || 0}
-                    subtitle="AI-generated embeddings"
-                    icon={Database}
-                    color="text-orange-600"
-                    gradient="from-orange-500 to-red-600"
-                    percentage={stats?.embeddings_growth || 0}
-                  />
-
-                  <ModernMetricCard
-                    title="AI Confidence"
-                    value={`${stats?.avg_ai_confidence || 0}%`}
-                    subtitle="Analysis accuracy"
-                    icon={Brain}
-                    color="text-purple-600"
-                    gradient="from-purple-500 to-indigo-600"
-                    percentage={stats?.confidence_growth || 0}
-                  />
-
-                  <ModernMetricCard
-                    title="Processing Rate"
-                    value={`${stats?.vector_processing_rate || 0}%`}
-                    subtitle="Embeddings success rate"
-                    icon={Target}
-                    color="text-green-600"
-                    gradient="from-green-500 to-emerald-600"
-                    percentage={stats?.vector_processing_rate || 0}
-                  />
-
-                  <ModernMetricCard
-                    title="Location Embeddings"
-                    value={stats?.location_embeddings_count || 0}
-                    subtitle="Spatial AI analysis"
-                    icon={MapPin}
-                    color="text-blue-600"
-                    gradient="from-blue-500 to-cyan-600"
-                    percentage={stats?.location_embeddings_growth || 0}
-                  />
-                </div>
               </div>
 
               {/* Progress and Analytics */}
@@ -436,72 +407,75 @@ export default function Dashboard() {
                     </div>
                   </CardContent>
                 </Card>
-
-                {/* 🏆 TiDB Vector Analytics */}
-                <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                      <Database className="h-5 w-5 text-orange-600" />
-                      Vector Analytics
-                    </CardTitle>
-                    <p className="text-sm text-gray-600">
-                      TiDB AI embeddings insights
-                    </p>
-                  </CardHeader>
-                  <CardContent className="space-y-4 py-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-orange-100 rounded-lg">
-                          <Brain className="h-4 w-4 text-orange-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            AI Embeddings
-                          </p>
-                          <p className="text-xs text-gray-500">1024-dimensional</p>
-                        </div>
-                      </div>
-                      <span className="text-lg font-bold text-orange-600">
-                        {stats?.total_embeddings || 0}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-purple-100 rounded-lg">
-                          <Target className="h-4 w-4 text-purple-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            Confidence
-                          </p>
-                          <p className="text-xs text-gray-500">AI accuracy</p>
-                        </div>
-                      </div>
-                      <span className="text-lg font-bold text-purple-600">
-                        {stats?.avg_ai_confidence || 0}%
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-green-100 rounded-lg">
-                          <CheckCircle className="h-4 w-4 text-green-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            Processing
-                          </p>
-                          <p className="text-xs text-gray-500">Success rate</p>
-                        </div>
-                      </div>
-                      <span className="text-lg font-bold text-green-600">
-                        {stats?.vector_processing_rate || 0}%
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
               </div>
+
+              {/* Quick Insights */}
+              {stats && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100">
+                    <CardContent className="pt-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-blue-900 mb-1">
+                            This Month
+                          </p>
+                          <p className="text-3xl font-bold text-blue-900">
+                            {stats.reports_this_month || 0}
+                          </p>
+                          <p className="text-xs text-blue-600 mt-1">
+                            New reports submitted
+                          </p>
+                        </div>
+                        <div className="p-4 bg-blue-500 rounded-full">
+                          <BarChart3 className="h-8 w-8 text-white" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100">
+                    <CardContent className="pt-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-green-900 mb-1">
+                            Avg Severity
+                          </p>
+                          <p className="text-3xl font-bold text-green-900">
+                            {stats.average_severity?.toFixed(1) || "0.0"}/10
+                          </p>
+                          <p className="text-xs text-green-600 mt-1">
+                            Across all reports
+                          </p>
+                        </div>
+                        <div className="p-4 bg-green-500 rounded-full">
+                          <Activity className="h-8 w-8 text-white" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100">
+                    <CardContent className="pt-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-purple-900 mb-1">
+                            This Week
+                          </p>
+                          <p className="text-3xl font-bold text-purple-900">
+                            {stats.reports_this_week || 0}
+                          </p>
+                          <p className="text-xs text-purple-600 mt-1">
+                            Reports in last 7 days
+                          </p>
+                        </div>
+                        <div className="p-4 bg-purple-500 rounded-full">
+                          <Calendar className="h-8 w-8 text-white" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
 
               {/* Top Waste Types */}
               {stats?.top_waste_types && stats.top_waste_types.length > 0 && (

@@ -88,9 +88,9 @@ export async function GET() {
     )
     const weekCount = reportsThisWeek[0]?.count || 0
 
-    // Get reports this month
+    // Get reports this month (current calendar month)
     const reportsThisMonth = await executeQuery<CountResult[]>(
-      'SELECT COUNT(*) as count FROM reports WHERE report_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)'
+      'SELECT COUNT(*) as count FROM reports WHERE MONTH(report_date) = MONTH(NOW()) AND YEAR(report_date) = YEAR(NOW())'
     )
     const monthCount = reportsThisMonth[0]?.count || 0
 

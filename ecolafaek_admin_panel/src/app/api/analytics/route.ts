@@ -32,22 +32,6 @@ interface HotspotByStatus {
   count: number
 }
 
-interface VectorAnalytics {
-  total_embeddings: number
-  avg_confidence: number
-  with_image_embeddings: number
-  with_location_embeddings: number
-  avg_severity: number
-  high_confidence_analyses: number
-  low_confidence_analyses: number
-}
-
-interface SimilarityPattern {
-  waste_type: string
-  embedding_count: number
-  avg_confidence: number
-  high_confidence_count: number
-}
 
 export async function GET(request: NextRequest) {
   try {
@@ -163,67 +147,13 @@ export async function GET(request: NextRequest) {
     
     const userRegistrationTrend = await executeQuery<MonthlyCount[]>(userRegistrationQuery, [])
 
-    // 🏆 TiDB Vector Database Analytics Integration
-    const vectorAnalyticsQuery = `
-      SELECT 
-        COUNT(*) as total_embeddings,
-        AVG(confidence_score) as avg_confidence,
-        COUNT(CASE WHEN image_embedding IS NOT NULL THEN 1 END) as with_image_embeddings,
-        COUNT(CASE WHEN location_embedding IS NOT NULL THEN 1 END) as with_location_embeddings,
-        AVG(severity_score) as avg_severity,
-        COUNT(CASE WHEN confidence_score >= 90 THEN 1 END) as high_confidence_analyses,
-        COUNT(CASE WHEN confidence_score < 70 THEN 1 END) as low_confidence_analyses
-      FROM analysis_results
-      WHERE analyzed_date >= DATE_SUB(NOW(), INTERVAL ${monthsBack} MONTH)
-    `
-    
-    const vectorAnalytics = await executeQuery<VectorAnalytics[]>(vectorAnalyticsQuery, [])
-    const vectorStats = vectorAnalytics[0] || {
-      total_embeddings: 0,
-      avg_confidence: 0,
-      with_image_embeddings: 0,
-      with_location_embeddings: 0,
-      avg_severity: 0,
-      high_confidence_analyses: 0,
-      low_confidence_analyses: 0
-    }
-
-    // Vector similarity patterns - real TiDB embeddings analysis
-    const similarityPatternsQuery = `
-      SELECT 
-        wt.name as waste_type,
-        COUNT(ar.analysis_id) as embedding_count,
-        AVG(ar.confidence_score) as avg_confidence,
-        COUNT(CASE WHEN ar.confidence_score >= 90 THEN 1 END) as high_confidence_count
-      FROM analysis_results ar
-      JOIN waste_types wt ON ar.waste_type_id = wt.waste_type_id
-      WHERE ar.image_embedding IS NOT NULL 
-        AND ar.analyzed_date >= DATE_SUB(NOW(), INTERVAL ${monthsBack} MONTH)
-      GROUP BY ar.waste_type_id, wt.name
-      HAVING embedding_count > 0
-      ORDER BY embedding_count DESC
-      LIMIT 5
-    `
-    
-    const similarityPatterns = await executeQuery<SimilarityPattern[]>(similarityPatternsQuery, [])
-
     return NextResponse.json({
       overview,
       reports_by_month: reportsByMonth,
       reports_by_status: reportsByStatus,
       reports_by_waste_type: reportsByWasteType,
       hotspots_by_status: hotspotsByStatus,
-      user_registration_trend: userRegistrationTrend,
-      // 🏆 TiDB Vector Database Analytics
-      vector_analytics: {
-        ...vectorStats,
-        avg_confidence: Math.round(vectorStats.avg_confidence * 10) / 10,
-        avg_severity: Math.round(vectorStats.avg_severity * 10) / 10,
-        processing_accuracy: vectorStats.total_embeddings > 0 
-          ? Math.round((vectorStats.high_confidence_analyses / vectorStats.total_embeddings) * 100) 
-          : 0
-      },
-      similarity_patterns: similarityPatterns
+      user_registration_trend: userRegistrationTrend
     })
   } catch (error) {
     console.error('Analytics fetch error:', error)
