@@ -82,7 +82,7 @@ export default function AboutPage() {
     {
       question: "Who is behind this initiative?",
       answer:
-        "The project was created by Ajito Nelson Lucio da Costa.. It addresses real waste management challenges in Timor-Leste based on JICA survey data showing that Dili produces over 300 tons of waste daily, with more than 100 tons going uncollected.",
+        "The project was created by Ajito Nelson Lucio da Costa. It addresses real waste management challenges in Timor-Leste based on JICA survey data showing that Dili produces over 300 tons of waste daily, with more than 100 tons going uncollected.",
     },
     {
       question: "Is my data private when I submit reports?",
@@ -515,181 +515,409 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-full text-sm font-medium mb-6">
               <Brain className="w-4 h-4 mr-2" />
-              Powered by Innovation
+              AWS AI Agent Global Hackathon 2025
             </div>
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Our Technology Stack
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              We leverage cutting-edge technologies to create a robust, scalable
-              waste monitoring system that works in Timor-Leste's unique
-              environment
+              Built with cutting-edge AWS AI services and modern technologies to create an autonomous, 
+              scalable waste management system for Timor-Leste
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Flutter - Frontend Mobile */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
-                  <Image
-                    src="/tech/Flutter.png"
-                    alt="Flutter"
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
+          {/* AI & Machine Learning Section */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
+              🤖 AI & Machine Learning
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Amazon Bedrock Nova-Pro */}
+              <a 
+                href="https://aws.amazon.com/bedrock/nova/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-orange-200">
+                    <Image
+                      src="/tech/amazon-nova.png"
+                      alt="Amazon Nova-Pro"
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center mb-2">
+                    <h3 className="font-bold text-xl text-gray-900">Amazon Nova-Pro</h3>
+                    <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-orange-600 transition-colors" />
+                  </div>
+                  <p className="text-sm text-orange-600 mb-4 font-medium">Multi-Modal LLM</p>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    Advanced AI model (amazon.nova-pro-v1:0) for image analysis, waste classification, 
+                    and autonomous reasoning with multi-round tool calling capabilities
+                  </div>
                 </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">Flutter</h3>
-                <p className="text-sm text-gray-600 mb-4">Mobile App</p>
-                <div className="text-xs text-gray-500 leading-relaxed">
-                  Cross-platform mobile app for citizen waste reporting with offline capabilities
-                </div>
-              </div>
-            </div>
+              </a>
 
-            {/* Next.js - Frontend Dashboard */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
-                  <Image
-                    src="/tech/next-js.svg"
-                    alt="Next.js"
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
+              {/* Amazon Bedrock AgentCore */}
+              <a 
+                href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-blue-200">
+                    <Image
+                      src="/tech/agentcore.png"
+                      alt="Amazon Bedrock AgentCore"
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center mb-2">
+                    <h3 className="font-bold text-xl text-gray-900">Bedrock AgentCore</h3>
+                    <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                  </div>
+                  <p className="text-sm text-blue-600 mb-4 font-medium">Autonomous Agent Runtime</p>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    Code Interpreter and Browser tools for autonomous SQL queries, chart generation, 
+                    map creation, and web scraping with ARM64 runtime
+                  </div>
                 </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">Next.js</h3>
-                <p className="text-sm text-gray-600 mb-4">Public Dashboard</p>
-                <div className="text-xs text-gray-500 leading-relaxed">
-                  Real-time analytics dashboard with interactive maps and visualizations
-                </div>
-              </div>
-            </div>
+              </a>
 
-            {/* FastAPI - Backend */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
-                  <Image
-                    src="/tech/fastapi.svg"
-                    alt="FastAPI"
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
+              {/* Amazon Titan Embed */}
+              <a 
+                href="https://aws.amazon.com/bedrock/titan/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-purple-200">
+                    <Image
+                      src="/tech/titan.png"
+                      alt="Amazon Titan Embed"
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center mb-2">
+                    <h3 className="font-bold text-xl text-gray-900">Titan Embed</h3>
+                    <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                  </div>
+                  <p className="text-sm text-purple-600 mb-4 font-medium">Vector Embeddings</p>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    amazon.titan-embed-image-v1 for semantic search and similarity matching 
+                    with 1024-dimensional vector embeddings
+                  </div>
                 </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">FastAPI</h3>
-                <p className="text-sm text-gray-600 mb-4">API Backend</p>
-                <div className="text-xs text-gray-500 leading-relaxed">
-                  High-performance Python API for data processing and AI integration
-                </div>
-              </div>
+              </a>
             </div>
+          </div>
 
-            {/* AWS Lightsail - Deployment */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
-                  <Image
-                    src="/tech/lightsail.svg"
-                    alt="AWS Lightsail"
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
+          {/* Frontend Applications Section */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
+              📱 Frontend Applications
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Flutter Mobile App */}
+              <a 
+                href="https://flutter.dev/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-blue-200">
+                    <Image
+                      src="/tech/Flutter.png"
+                      alt="Flutter"
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center mb-2">
+                    <h3 className="font-bold text-xl text-gray-900">Flutter</h3>
+                    <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                  </div>
+                  <p className="text-sm text-blue-600 mb-4 font-medium">Cross-Platform Mobile App</p>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    Dart-based mobile application for citizen waste reporting with GPS integration, 
+                    offline capabilities, and optimized for low-bandwidth environments
+                  </div>
                 </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">AWS Lightsail</h3>
-                <p className="text-sm text-gray-600 mb-4">Cloud Hosting</p>
-                <div className="text-xs text-gray-500 leading-relaxed">
-                  Reliable cloud deployment platform with SSL and automated backups
+              </a>
+
+              {/* Next.js Dashboard */}
+              <a 
+                href="https://nextjs.org/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-slate-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-200">
+                    <Image
+                      src="/tech/next-js.svg"
+                      alt="Next.js"
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center mb-2">
+                    <h3 className="font-bold text-xl text-gray-900">Next.js</h3>
+                    <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4 font-medium">Public Dashboard & Admin Panel</p>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    React-based web applications with serverless API routes, real-time analytics, 
+                    interactive maps, and vector search capabilities
+                  </div>
                 </div>
-              </div>
+              </a>
             </div>
+          </div>
 
-            {/* Amazon Nova-Pro - AI Analysis */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
-                  <Image
-                    src="/tech/amazon-nova.png"
-                    alt="Amazon Nova-Pro"
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
+          {/* Backend Services Section */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
+              ⚡ Backend Services
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* FastAPI */}
+              <a 
+                href="https://fastapi.tiangolo.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-green-200">
+                    <Image
+                      src="/tech/fastapi.svg"
+                      alt="FastAPI"
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center mb-2">
+                    <h3 className="font-bold text-xl text-gray-900">FastAPI</h3>
+                    <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-green-600 transition-colors" />
+                  </div>
+                  <p className="text-sm text-green-600 mb-4 font-medium">Python API Backend</p>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    High-performance Python 3.10 API with Pydantic validation, JWT authentication, 
+                    rate limiting, and AgentCore orchestration
+                  </div>
                 </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">Nova-Pro</h3>
-                <p className="text-sm text-gray-600 mb-4">AI Analysis</p>
-                <div className="text-xs text-gray-500 leading-relaxed">
-                  Advanced AI for waste classification and environmental impact analysis
+              </a>
+
+              {/* Node.js */}
+              <a 
+                href="https://nodejs.org/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-lime-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-green-200">
+                    <Image
+                      src="/tech/Node.png"
+                      alt="Node.js"
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center mb-2">
+                    <h3 className="font-bold text-xl text-gray-900">Node.js</h3>
+                    <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-green-600 transition-colors" />
+                  </div>
+                  <p className="text-sm text-green-600 mb-4 font-medium">Serverless API Routes</p>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    JavaScript runtime for Next.js API routes, direct database access, 
+                    and serverless functions on Vercel platform
+                  </div>
                 </div>
-              </div>
+              </a>
             </div>
+          </div>
 
-            {/* Amazon Titan Embed Image v1 - Embeddings */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
-                  <Image
-                    src="/tech/titan.png"
-                    alt="Titan Embed Image v1"
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
+          {/* Cloud Infrastructure Section */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
+              ☁️ Cloud Infrastructure
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* AWS Lightsail */}
+              <a 
+                href="https://aws.amazon.com/lightsail/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-yellow-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-orange-200">
+                    <Image
+                      src="/tech/lightsail.svg"
+                      alt="AWS Lightsail"
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center mb-2">
+                    <h3 className="font-bold text-xl text-gray-900">AWS Lightsail</h3>
+                    <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-orange-600 transition-colors" />
+                  </div>
+                  <p className="text-sm text-orange-600 mb-4 font-medium">Cloud Hosting</p>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    Ubuntu 22.04 LTS hosting with 1GB RAM, 2 vCPUs, SSL certificates, 
+                    and systemd service management
+                  </div>
                 </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">Titan Embed</h3>
-                <p className="text-sm text-gray-600 mb-4">Image Embeddings</p>
-                <div className="text-xs text-gray-500 leading-relaxed">
-                  Image embedding model for similarity search and pattern recognition
+              </a>
+
+              {/* Amazon S3 */}
+              <a 
+                href="https://aws.amazon.com/s3/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-red-100 to-pink-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-red-200">
+                    <Image
+                      src="/tech/s3.svg"
+                      alt="Amazon S3"
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center mb-2">
+                    <h3 className="font-bold text-xl text-gray-900">Amazon S3</h3>
+                    <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-red-600 transition-colors" />
+                  </div>
+                  <p className="text-sm text-red-600 mb-4 font-medium">Object Storage</p>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    Scalable storage for report images, generated charts, and static assets 
+                    with lifecycle management and public access policies
+                  </div>
                 </div>
-              </div>
+              </a>
+
+              {/* Vercel */}
+              <a 
+                href="https://vercel.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-slate-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-200">
+                    <div className="text-2xl font-bold text-gray-700">▲</div>
+                  </div>
+                  <div className="flex items-center justify-center mb-2">
+                    <h3 className="font-bold text-xl text-gray-900">Vercel</h3>
+                    <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4 font-medium">Serverless Platform</p>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    Global CDN deployment for Next.js applications with edge functions, 
+                    automatic scaling, and Git-based deployments
+                  </div>
+                </div>
+              </a>
             </div>
+          </div>
 
-            {/* TiDB - Database */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
-                  <Image
-                    src="/tech/tidb.png"
-                    alt="TiDB"
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
+          {/* Database & Storage Section */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
+              🗄️ Database & Storage
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-8 max-w-md mx-auto">
+              {/* TiDB Cloud */}
+              <a 
+                href="https://tidbcloud.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-indigo-200">
+                    <Image
+                      src="/tech/tidb.png"
+                      alt="TiDB Cloud"
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center mb-2">
+                    <h3 className="font-bold text-xl text-gray-900">TiDB Cloud</h3>
+                    <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-indigo-600 transition-colors" />
+                  </div>
+                  <p className="text-sm text-indigo-600 mb-4 font-medium">Distributed SQL + Vector Database</p>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    MySQL-compatible distributed database with vector storage support, 
+                    connection pooling, and automatic scaling for high availability
+                  </div>
                 </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">TiDB Cloud</h3>
-                <p className="text-sm text-gray-600 mb-4">Primary Database</p>
-                <div className="text-xs text-gray-500 leading-relaxed">
-                  Stores all data: users, reports, AI analysis, vector embeddings, and S3 image paths
-                </div>
-              </div>
+              </a>
             </div>
+          </div>
 
-            {/* AWS S3 - Storage */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+          {/* Architecture Highlights */}
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl p-8 border border-emerald-200">
+            <h3 className="text-2xl font-bold text-gray-900 text-center mb-6">
+              🏗️ Architecture Highlights
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="text-center">
-                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-gray-100">
-                  <Image
-                    src="/tech/s3.svg"
-                    alt="AWS S3"
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-emerald-100 mb-3">
+                  <div className="text-2xl mb-2">🤖</div>
+                  <div className="font-semibold text-gray-900">Autonomous AI Agent</div>
                 </div>
-                <h3 className="font-bold text-xl text-gray-900 mb-2">AWS S3</h3>
-                <p className="text-sm text-gray-600 mb-4">Image Storage</p>
-                <div className="text-xs text-gray-500 leading-relaxed">
-                  Stores actual waste images, while URLs and metadata are saved in TiDB
+                <p className="text-sm text-gray-600">Multi-round tool calling with AgentCore runtime</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-emerald-100 mb-3">
+                  <div className="text-2xl mb-2">🔍</div>
+                  <div className="font-semibold text-gray-900">Vector Search</div>
                 </div>
+                <p className="text-sm text-gray-600">Semantic similarity with Titan embeddings</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-emerald-100 mb-3">
+                  <div className="text-2xl mb-2">📊</div>
+                  <div className="font-semibold text-gray-900">Real-time Analytics</div>
+                </div>
+                <p className="text-sm text-gray-600">Live dashboards with interactive visualizations</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-emerald-100 mb-3">
+                  <div className="text-2xl mb-2">🔒</div>
+                  <div className="font-semibold text-gray-900">Enterprise Security</div>
+                </div>
+                <p className="text-sm text-gray-600">JWT auth, rate limiting, and data encryption</p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       {/* FAQs */}
       <div className="py-16 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
