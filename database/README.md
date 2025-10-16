@@ -1,22 +1,21 @@
 # EcoLafaek Database Schema
 
 <div align="center">
-  <img src="https://img.shields.io/badge/TiDB_AgentX_Hackathon_2025-🏆_DATABASE_SCHEMA-FF6B35?style=for-the-badge&logoColor=white" alt="TiDB Hackathon 2025" />
+  <img src="https://img.shields.io/badge/AWS_AI_Agent_Global_Hackathon-DATABASE_SCHEMA-FF9900?style=for-the-badge&logoColor=white" alt="AWS AI Agent Hackathon" />
 </div>
-
-This **TiDB Cloud database schema** demonstrates advanced vector database capabilities for the TiDB AgentX Hackathon 2025. It showcases how modern environmental monitoring systems can leverage TiDB's unique combination of traditional SQL and cutting-edge vector search functionality.
-
-### 🧠 Vector Database Innovation:
-
-- **1024-dimensional embeddings** stored natively in TiDB `VECTOR(1024)` columns
-- **Amazon Titan integration** for AI-generated image and spatial embeddings
-- **Real-time similarity search** using `VEC_COSINE_DISTANCE()` function
-- **Multi-application access** from mobile, web dashboard, and admin interfaces
-- **Production-scale deployment** serving real environmental data from Timor-Leste
 
 ## Overview
 
-This TiDB Cloud database powers the EcoLafaek environmental waste monitoring system for Timor-Leste. It manages community waste reports, AI-powered analysis with vector embeddings, user authentication, and real-time dashboard visualization - all demonstrating TiDB's advanced capabilities for modern AI-driven applications.
+This database schema powers the EcoLafaek environmental waste monitoring system for Timor-Leste. It manages community waste reports, AI-powered analysis with vector embeddings (Amazon Titan Embed), user authentication, and real-time dashboard visualization.
+
+### 🧠 Vector Database Features:
+
+- **1024-dimensional embeddings** for semantic similarity search
+- **Amazon Titan Embed integration** for AI-generated image and text embeddings
+- **Vector similarity search** for finding related waste reports
+- **Multi-application access** from mobile app, web dashboard, and admin panel
+
+For complete architecture details, see [Diagram/ARCHITECTURE.md](../Diagram/ARCHITECTURE.md).
 
 ## Entity Relationship Diagram
 
@@ -52,390 +51,178 @@ erDiagram
     REPORTS {
         int report_id PK
         int user_id FK
-        decimal latitude
-        decimal longitude
         int location_id FK
-        datetime report_date
+        string image_url
         text description
         enum status
-        string image_url
-        json device_info
-        string address_text
+        datetime created_date
+        float latitude
+        float longitude
     }
 
     ANALYSIS_RESULTS {
         int analysis_id PK
         int report_id FK
-        datetime analyzed_date
         int waste_type_id FK
-        decimal confidence_score
-        decimal estimated_volume
-        int severity_score
-        enum priority_level
+        vector image_embedding "VECTOR(1024)"
+        vector location_embedding "VECTOR(1024)"
+        float confidence_score
         text analysis_notes
-        text full_description
-        string processed_by
-        vector image_embedding
-        vector location_embedding
+        datetime analyzed_date
     }
 
     WASTE_TYPES {
         int waste_type_id PK
         string name
         text description
-        enum hazard_level
-        boolean recyclable
         string icon_url
     }
 
     HOTSPOTS {
         int hotspot_id PK
         string name
-        decimal center_latitude
-        decimal center_longitude
-        int radius_meters
-        int location_id FK
-        date first_reported
-        date last_reported
+        float center_latitude
+        float center_longitude
         int total_reports
-        decimal average_severity
+        float average_severity
         enum status
-        text notes
+        datetime last_reported
     }
 
     LOCATIONS {
         int location_id PK
-        string name
+        string address
+        string city
         string district
-        string sub_district
-        decimal latitude
-        decimal longitude
-        int population_estimate
-        decimal area_sqkm
-    }
-
-    REPORT_WASTE_TYPES {
-        int id PK
-        int analysis_id FK
-        int waste_type_id FK
-        decimal confidence_score
-        decimal percentage
-    }
-
-    USER_VERIFICATIONS {
-        int verification_id PK
-        int user_id FK
-        string email
-        string otp
-        datetime created_at
-        datetime expires_at
-        boolean is_verified
-        int attempts
-    }
-
-    PENDING_REGISTRATIONS {
-        int registration_id PK
-        string username UK
-        string email UK
-        string phone_number
-        string password_hash
-        string otp
-        datetime created_at
-        datetime expires_at
-        int attempts
-    }
-
-    API_KEYS {
-        int key_id PK
-        string api_key
-        string name
-        datetime created_date
-        datetime expiration_date
-        boolean active
-        json permissions
-        datetime last_used
-        int created_by FK
-    }
-
-    IMAGE_PROCESSING_QUEUE {
-        int queue_id PK
-        int report_id FK
-        string image_url
-        enum status
-        datetime queued_at
-        datetime processed_at
-        int retry_count
-        text error_message
-    }
-
-    ADMIN_USERS {
-        int admin_id PK
-        string username UK
-        string email UK
-        string password_hash
-        enum role
-        datetime created_at
-        datetime last_login
-        boolean active
-    }
-
-    SYSTEM_SETTINGS {
-        int setting_id PK
-        string setting_key UK
-        text setting_value
-        enum data_type
-        text description
-        datetime created_at
-        datetime updated_at
-    }
-
-    NOTIFICATION_TEMPLATES {
-        int template_id PK
-        string name
-        string subject
-        text body
-        enum type
-        datetime created_at
-        datetime updated_at
+        float latitude
+        float longitude
     }
 ```
 
 ## Key Tables
 
-### Core Data Tables
+### 1. **users**
+User authentication and profiles.
+
+**Key Columns**:
+- `user_id`: Primary key
+- `username`, `email`: Unique identifiers
+- `password_hash`: Hashed passwords
+- `account_status`: `active`, `suspended`, `pending`
+
+### 2. **reports**
+Core table for waste reports submitted by users.
+
+**Key Columns**:
+- `report_id`: Primary key
+- `user_id`: Foreign key to users table
+- `image_url`: AWS S3 image URL
+- `latitude`, `longitude`: GPS coordinates
+- `status`: `submitted`, `analyzing`, `analyzed`, `resolved`
+
+### 3. **analysis_results**
+AI analysis results with vector embeddings.
+
+**Key Columns**:
+- `analysis_id`: Primary key
+- `report_id`: Foreign key to reports
+- `waste_type_id`: Foreign key to waste_types
+- **`image_embedding`**: VECTOR(1024) - Amazon Titan Embed embeddings for semantic search
+- **`location_embedding`**: VECTOR(1024) - Spatial embeddings
+- `confidence_score`: AI confidence (0-100)
+- `analysis_notes`: Detailed AI analysis from Amazon Bedrock Nova-Pro
+
+### 4. **waste_types**
+Waste classification categories.
+
+**Examples**:
+- Plastic, Paper, Glass, Metal, Organic, Electronic, Construction, Mixed
+
+### 5. **hotspots**
+Geographic clustering of waste accumulation areas.
+
+**Key Columns**:
+- `hotspot_id`: Primary key
+- `center_latitude`, `center_longitude`: Cluster center
+- `total_reports`: Number of reports in cluster
+- `average_severity`: Average severity score
+- `status`: `active`, `resolved`, `monitored`
+
+## Database Configuration
+
+### Connection Example (Node.js):
+
+```javascript
+import mysql from 'mysql2/promise';
+
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT || 4000,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  connectionLimit: 20,
+  queueLimit: 0,
+  waitForConnections: true,
+});
+```
+
+### Connection Example (Python):
+
+```python
+import mysql.connector
+from dbutils.pooled_db import PooledDB
+
+pool = PooledDB(
+    creator=mysql.connector,
+    maxconnections=20,
+    mincached=2,
+    host=os.getenv('DB_HOST'),
+    port=int(os.getenv('DB_PORT', 4000)),
+    user=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD'),
+    database=os.getenv('DB_NAME')
+)
+```
+
+## Vector Search Operations
+
+### Find Similar Reports (Semantic Search):
+
+```sql
+-- Using Amazon Titan Embed embeddings
+SELECT
+  r.report_id,
+  r.description,
+  r.image_url,
+  ar.confidence_score,
+  COSINE_DISTANCE(ar.image_embedding, :query_vector) as similarity
+FROM reports r
+JOIN analysis_results ar ON r.report_id = ar.report_id
+WHERE ar.image_embedding IS NOT NULL
+ORDER BY similarity ASC
+LIMIT 10;
+```
 
-#### `users`
+## Setup Instructions
 
-Stores registered user accounts who can submit waste reports through the mobile app.
+1. **Create database** in your SQL service
+2. **Run schema migration** from `schema.sql`
+3. **Configure connection** in your application
+4. **Initialize seed data** (optional)
 
-- Authentication details secured with PBKDF2-SHA256 hashing
-- Email verification system with OTP
-- Status tracking for account management
+## Security Notes
 
-#### `reports`
+- Never commit database credentials to version control
+- Use environment variables for all sensitive configuration
+- Enable SSL/TLS for database connections in production
+- Implement proper user access controls
+- Regular backups recommended
 
-Citizen-submitted waste incidents with geolocation and images.
+---
 
-- Precise latitude/longitude for mapping
-- Lifecycle tracking (submitted → analyzing → analyzed → resolved)
-- S3 image URLs for waste photographs
-- Device metadata for quality control
+For complete system architecture, see [Diagram/ARCHITECTURE.md](../Diagram/ARCHITECTURE.md).
 
-#### `analysis_results`
-
-Amazon Bedrock Titan AI analysis of waste reports with structured insights and vector embeddings.
-
-- Waste classification with confidence scores
-- Severity assessment (1-10 scale)
-- Priority categorization (low/medium/high/critical)
-- Environmental impact analysis
-- Volume estimation
-- Detailed waste description in natural language
-- **Vector Embeddings**: 1024-dimensional vectors for image and location similarity search using TiDB's vector capabilities
-  - `image_embedding`: Generated from waste photos using Titan Embed Image v1 model
-  - `location_embedding`: Spatial embeddings for geographic similarity analysis
-
-#### `waste_types`
-
-Classification taxonomy for different waste categories.
-
-- Hazard level assessment
-- Recyclability flags
-- Material categories (Plastic, Metal, Organic, etc.)
-
-#### `hotspots`
-
-Identified areas with recurring waste problems.
-
-- Automatically detected when 3+ reports occur within 500m
-- Centroids calculated from report clusters
-- Severity aggregation for prioritization
-- Tracking of waste concentration over time
-
-### Support Tables
-
-#### `report_waste_types`
-
-Many-to-many relationship for reports containing multiple waste types.
-
-- Confidence scores for each waste type identified
-- Percentage breakdown of mixed waste composition
-- Links analysis results to multiple waste categories
-
-#### `user_verifications` & `pending_registrations`
-
-Two-step user registration and verification system.
-
-- OTP-based email verification
-- Temporary storage for unverified registrations
-- Attempt limiting for security
-- Automatic cleanup of expired verifications
-
-#### `locations`
-
-Predefined geographic regions and administrative divisions in Timor-Leste.
-
-- District and sub-district hierarchies
-- Population and area statistics
-- Geospatial reference points for reports
-
-#### `api_keys`
-
-API access management for external integrations.
-
-- Scoped permissions with JSON-based access control
-- Expiration date management
-- Usage tracking and analytics
-- Created by user tracking for audit trails
-
-#### `image_processing_queue`
-
-Asynchronous queue for Amazon Bedrock Titan processing.
-
-- Status tracking for image analysis
-- Error handling with retry logic
-- Performance monitoring
-- Batch processing capabilities
-
-#### `dashboard_statistics`
-
-Pre-calculated metrics for efficient dashboard visualization.
-
-- Aggregated metrics by location, date, and waste type
-- Trend analysis indicators
-- Optimized for frontend performance
-
-#### `system_logs`
-
-System activities audit trail for monitoring and debugging.
-
-- API call tracking
-- Error logging
-- User action history
-
-### Administrative Tables
-
-#### `admin_users`
-
-Administrative user accounts for the EcoLafaek admin panel with role-based access control.
-
-- Role-based permissions (super_admin, admin, moderator)
-- Secure password hashing with bcrypt
-- Activity tracking with last_login timestamps
-- Account status management for security
-- Separate from regular citizen users for security isolation
-
-#### `system_settings`
-
-Configurable system parameters for application-wide settings management.
-
-- Key-value store for application configuration
-- Data type validation (string, number, boolean)
-- Version control with created_at/updated_at timestamps
-- Centralized configuration management
-- Dynamic settings without code deployment
-
-#### `notification_templates`
-
-Reusable templates for system notifications across different channels.
-
-- Multi-channel support (email, SMS, push notifications)
-- Template-based messaging for consistency
-- Version control and audit trail
-- Customizable subject and body content
-- Supports multiple notification types
-
-## Amazon Bedrock Titan Integration
-
-The database schema is optimized for storing structured data from Amazon Bedrock Titan models:
-
-### Image Analysis with Titan Embed Image v1
-
-1. **Vector Embeddings**: 1024-dimensional image embeddings stored as `VECTOR(1024)` in TiDB
-2. **Similarity Search**: Cosine distance calculations using `VEC_COSINE_DISTANCE()` function
-3. **Pattern Analysis**: Clustering algorithms for identifying waste patterns and hotspots
-
-### Structured Analysis Output
-
-1. Initial waste detection data stored in confidence_score
-2. Detailed waste classification through waste_type_id
-3. Comprehensive analysis via:
-   - severity_score (numerical assessment)
-   - priority_level (categorical assessment)
-   - analysis_notes (actionable recommendations)
-   - full_description (natural language summary)
-   - image_embedding (for similarity search)
-   - location_embedding (for geographic analysis)
-
-## Key Database Features
-
-1. **Spatial Indexing:** Optimized geospatial queries for proximity searching and hotspot detection
-
-   ```sql
-   CREATE INDEX idx_reports_location ON reports(latitude, longitude);
-   CREATE INDEX idx_hotspots_location ON hotspots(center_latitude, center_longitude);
-   ```
-
-2. **Status Workflows:** Report lifecycle management with state tracking
-
-   ```sql
-   CREATE INDEX idx_reports_status ON reports(status);
-   CREATE INDEX idx_reports_status_date ON reports(status, report_date);
-   ```
-
-3. **Async Processing:** Queue system for handling large image analysis workloads
-
-   ```sql
-   CREATE INDEX idx_queue_status ON image_processing_queue(status);
-   ```
-
-4. **Admin Panel Performance:** Optimized indexes for administrative interface
-
-   ```sql
-   CREATE INDEX idx_admin_users_username ON admin_users(username);
-   CREATE INDEX idx_admin_users_email ON admin_users(email);
-   CREATE INDEX idx_system_settings_key ON system_settings(setting_key);
-   CREATE INDEX idx_analysis_results_date ON analysis_results(analyzed_date);
-   ```
-
-5. **Security Features:**
-
-   - User password hashing with PBKDF2-SHA256
-   - Admin password hashing with bcrypt
-   - Email verification system with OTP
-   - JWT authentication with secure refresh tokens
-   - API key authorization with scoped permissions
-   - Role-based access control for admin panel
-   - Separate authentication systems for users and admins
-
-6. **Performance Optimizations:**
-   - Pre-calculated statistics for dashboards
-   - Efficient spatial indexes
-   - Query optimizations for mobile app performance
-   - Vector index optimization for similarity search
-
-## Security and Scaling
-
-1. **Data Security:**
-
-   - User passwords stored with PBKDF2-SHA256 hashing
-   - Images stored in AWS S3 (only URLs in database)
-   - JWT authentication with secure refresh token rotation
-
-2. **Indexing Strategy:**
-
-   - Spatial indexes for location-based queries
-   - Performance-focused indexes on commonly filtered fields
-   - Full-text search capabilities for natural language queries
-
-3. **Scaling Considerations:**
-
-   - Queue-based architecture for horizontal scaling
-   - Read-optimized reporting tables for analytics
-   - Partitioning strategy for historical data
-
-!['tais'](../docs/image/tais.png)
-
-   <div align="center">
-     <p>Built with ❤️ for Timor-Leste</p>
-   </div>
+<div align="center">
+  <p>AWS AI Agent Global Hackathon 2025</p>
+</div>

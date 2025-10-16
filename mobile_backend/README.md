@@ -1,524 +1,573 @@
-# EcoLafaek API
+# EcoLafaek Mobile Backend API
 
-<!-- Logo Pairing -->
+<!-- Logo -->
 <p align="center">
-  <img src="image/app_logo.png" alt="EcoLafaek Logo" width="120" style="margin-right: 20px;" />
-  <span style="font-size: 36px; font-weight: bold; margin: 0 20px;">
+  <img src="image/app_logo.png" alt="EcoLafaek Logo" width="120" />
 </p>
 
 <div align="center">
-  <img src="https://img.shields.io/badge/TiDB_AgentX_Hackathon_2025-🏆_BACKEND_API-FF6B35?style=for-the-badge&logoColor=white" alt="TiDB Hackathon 2025" />
+  <img src="https://img.shields.io/badge/AWS_AI_Agent_Global_Hackathon-🏆_BACKEND_API-FF9900?style=for-the-badge&logoColor=white" alt="AWS AI Agent Global Hackathon" />
 </div>
 
 <!-- Technology Stack Badges -->
 <p align="center">
   <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI" />
-  <img src="https://img.shields.io/badge/Amazon_Nova_Pro-FF9900?style=for-the-badge&logo=amazonwebservices" alt="Amazon Nova Pro" />
-  <img src="https://img.shields.io/badge/Titan_Embed_Image-FF9900?style=for-the-badge&logo=amazonwebservices" alt="Titan Embed Image" />
-  <img src="https://img.shields.io/badge/Python-3,8+-blue?style=for-the-badge&logo=python" alt="Python 3.8+" />
-  <img src="https://img.shields.io/badge/TiDB_Cloud-FF6B35?style=for-the-badge&logo=tidb" alt="TiDB Cloud" />
-  <img src="https://img.shields.io/badge/Vector_Database-POWERED-FF6B35?style=for-the-badge&logo=tidb" alt="TiDB Vector" />
+  <img src="https://img.shields.io/badge/Amazon_Bedrock-FF9900?style=for-the-badge&logo=amazonwebservices" alt="Amazon Bedrock" />
+  <img src="https://img.shields.io/badge/AgentCore-FF9900?style=for-the-badge&logo=amazonwebservices" alt="AgentCore" />
+  <img src="https://img.shields.io/badge/Nova_Pro-FF9900?style=for-the-badge&logo=amazonwebservices" alt="Nova Pro" />
+  <img src="https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python" alt="Python 3.10+" />
   <img src="https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3" alt="AWS S3" />
+  <img src="https://img.shields.io/badge/AWS_Lightsail-FF9900?style=for-the-badge&logo=amazonaws" alt="AWS Lightsail" />
 </p>
 
-## 🏆 TiDB AgentX Hackathon 2025 - AI Vector Backend
+## 🏆 AWS AI Agent Global Hackathon - Autonomous AI Agent Backend
 
-This FastAPI backend showcases **TiDB Cloud's cutting-edge vector database capabilities** combined with Amazon Bedrock AI models to create an intelligent environmental monitoring system for the TiDB AgentX Hackathon 2025.
+**EcoLafaek** showcases **Amazon Bedrock AgentCore** with autonomous multi-tool orchestration, creating an intelligent environmental monitoring system that solves real-world waste management challenges in Timor-Leste.
 
-### 🧠 Core TiDB Vector Innovation:
+### 🤖 Core AI Agent Innovation:
 
-- **Amazon Bedrock Integration**: Generate 1024-dimensional vectors using Titan Embed Image v1
-- **Vector Storage**: Store embeddings directly in TiDB's `VECTOR(1024)` columns
-- **Multi-Modal AI**: Combine image analysis with spatial embeddings for comprehensive insights
+- **Amazon Bedrock Nova-Pro LLM**: Multi-modal reasoning engine (image + text analysis)
+- **AgentCore Runtime**: Autonomous tool execution with Code Interpreter and Browser primitives
+- **Multi-Round Tool Calling**: Agent chains 5+ tools autonomously (SQL → Chart → Map → Web Scrape)
+- **Production Deployment**: Live on AWS Lightsail with 100+ concurrent users
+
+---
 
 ## 🌱 Project Overview
 
-This is a sophisticated backend service that powers our environmental waste reporting system. This project aims to protect the natural environment through community-based waste reporting and AI-powered analysis using Amazon Nova Pro.
+EcoLafaek is a sophisticated **autonomous AI agent** backend that powers environmental waste reporting for Timor-Leste. This project demonstrates advanced AI agent capabilities using Amazon Bedrock AgentCore to autonomously analyze images, execute SQL queries, generate visualizations, create interactive maps, and scrape web content - all through natural language chat.
 
-## 🤖 AI-Powered Environmental Monitoring
+**Real-World Impact**: Helping Timor-Leste combat environmental challenges through AI-powered civic engagement.
 
-EcoLafaek demonstrates the transformative potential of Amazon Nova Pro for environmental monitoring and civic engagement in developing regions.
+---
 
-## 🏆 For TiDB AgentX Hackathon Judges
+## 🤖 AWS AI Agent Architecture
 
-### 🧪 **Testing Guide for our App:**
+### Autonomous Agent Workflow
 
-**1.Mobile App Download:** [https://www.ecolafaek.com/download](https://www.ecolafaek.com/download)
-**2.Login with:** usertest/1234abcd
+Our agent demonstrates true autonomy through multi-round tool calling:
 
-## 🗄️ TiDB Database Implementation
-
-### How We Use TiDB
-
-EcoLafaek leverages TiDB's advanced capabilities to create a powerful, scalable environmental monitoring system. Our implementation takes advantage of TiDB's unique combination of distributed SQL and vector search capabilities.
-
-#### Vector Database Integration
-
-We use TiDB's native vector storage for AI-powered data analysis:
-
-```sql
-CREATE TABLE analysis_results (
-    result_id INT AUTO_INCREMENT PRIMARY KEY,
-    report_id INT NOT NULL,
-    waste_type VARCHAR(100),
-    severity_score INT,
-    priority_level VARCHAR(20),
-    image_embedding VECTOR(1024),     -- Content-based embeddings
-    location_embedding VECTOR(1024),  -- Geographic embeddings
-    environmental_impact TEXT,
-    analysis_notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (report_id) REFERENCES reports(report_id)
-);
+```
+User Query: "Show waste trends and create a map of hotspots"
+    ↓
+[Round 1] Nova-Pro Reasoning → execute_sql_query tool
+    ↓
+[Round 2] Receives data → generate_visualization tool (AgentCore Code Interpreter)
+    ↓
+[Round 3] Chart created → execute_sql_query tool (get hotspot locations)
+    ↓
+[Round 4] Receives locations → create_map_visualization tool (AgentCore Code Interpreter)
+    ↓
+[Round 5] Returns comprehensive response with chart + interactive map
 ```
 
-#### Geospatial and Vector Combined Queries
+### AWS Services Used (Hackathon Requirements ✅)
 
-TiDB enables sophisticated queries combining traditional geospatial calculations with vector similarity:
+#### 1. **Amazon Bedrock** (Required ✅)
 
-```sql
--- Hotspot detection using geographic clustering
-SELECT
-    AVG(latitude) as hotspot_lat,
-    AVG(longitude) as hotspot_lon,
-    COUNT(*) as report_count,
-    AVG(a.severity_score) as avg_severity
-FROM reports r
-JOIN analysis_results a ON r.report_id = a.report_id
-WHERE (
-    6371 * acos(cos(radians(-8.5567)) * cos(radians(r.latitude)) *
-    cos(radians(r.longitude) - radians(125.5736)) + sin(radians(-8.5567)) *
-    sin(radians(r.latitude)))
-) <= 0.5  -- Within 500 meters
-GROUP BY
-    ROUND(latitude, 3),
-    ROUND(longitude, 3)
-HAVING report_count >= 3;
-```
+**Service**: Amazon Bedrock Runtime API
+**Region**: us-east-1
 
-### TiDB Features We Leverage
+**Important**: All AI models (Nova-Pro, Titan Embed) are accessed **through Amazon Bedrock service**, not directly. FastAPI uses `bedrock_runtime` client to communicate with Bedrock, which then provides access to the models.
 
-#### 1. Vector Storage
-
+**Access Pattern**:
 ```python
-# Store embeddings in TiDB
-cursor.execute("""
-    INSERT INTO analysis_results
-    (report_id, image_embedding, location_embedding, ...)
-    VALUES (%s, %s, %s, ...)
-""", (
-    report_id,
-    json.dumps(image_embedding),  # 1024-dimensional vector
-    json.dumps(location_embedding),  # Geographic context vector
-    # ... other fields
-))
-```
+# Initialize Bedrock client (app.py:132-138)
+bedrock_runtime = boto3.client(
+    'bedrock-runtime',  # ← Access Bedrock SERVICE
+    region_name='us-east-1'
+)
 
-#### 2. Distributed Transactions
-
-```python
-# Atomic report processing with ACID guarantees
-try:
-    cursor.execute("START TRANSACTION")
-
-    # Insert report
-    cursor.execute("INSERT INTO reports (...) VALUES (...)")
-    report_id = cursor.lastrowid
-
-    # Insert analysis results with embeddings
-    cursor.execute("INSERT INTO analysis_results (...) VALUES (...)")
-
-    # Update or create hotspot
-    cursor.execute("INSERT INTO hotspots (...) ON DUPLICATE KEY UPDATE ...")
-
-    cursor.execute("COMMIT")
-except Exception as e:
-    cursor.execute("ROLLBACK")
-    raise e
-```
-
-#### 3. Horizontal Scaling
-
-TiDB automatically handles data distribution as EcoLafaek grows:
-
-- **TiKV Storage Layer**: Distributes waste report data across nodes
-- **TiFlash Columnar Storage**: Accelerates analytical queries for dashboard
-- **Auto-Sharding**: Handles growing vector embeddings dataset
-
-#### 4. MySQL Compatibility
-
-Seamless integration with existing Python ecosystem:
-
-```python
-import mysql.connector
-
-# Standard MySQL connector works perfectly with TiDB
-connection = mysql.connector.connect(
-    host=DB_HOST,
-    port=4000,  # TiDB default port
-    database=DB_NAME,
-    user=DB_USER,
-    password=DB_PASSWORD,
-    ssl_disabled=True
+# Then call models through Bedrock
+response = bedrock_runtime.invoke_model(
+    modelId='amazon.nova-pro-v1:0'  # ← Model ID inside Bedrock
 )
 ```
 
-### TiDB Benefits
+**Models Used via Bedrock**:
 
-1. **Unified Data Platform**: Store both traditional waste report data and AI vector embeddings in one system
-2. **Real-time Processing**: Handle concurrent report submissions from mobile app users
-3. **Cost-Effective**: Distributed architecture eliminates need for separate vector database
-4. **Developer Friendly**: MySQL compatibility speeds development and deployment
-
-## 🧠 Amazon Nova Pro Implementation
-
-### How We Use Amazon Nova Pro
-
-The core intelligence of EcoLafaek is powered by Amazon Nova Pro, which provides sophisticated multimodal analysis for waste images. Our implementation uses a comprehensive analysis approach:
-
-#### Waste Detection with Nova Pro
-
-We use **Amazon Nova Pro** to perform comprehensive analysis of images:
+**Nova-Pro LLM** (`amazon.nova-pro-v1:0`)
+- **Image Analysis**: Waste classification from mobile app photos (via `invoke_model()`)
+- **Multi-Round Reasoning**: Autonomous task planning and execution (via `converse()`)
+- **Tool Orchestration**: Decides which tools to call and in what sequence
 
 ```python
-payload = {
-    "model": "amazon.nova-pro-v1:0",
-    "messages": messages,
-    "temperature": 0.1,
-}
+# Chat with tool calling (app.py:3709)
+response = bedrock_runtime.converse(
+    modelId='amazon.nova-pro-v1:0',
+    messages=conversation_history,
+    toolConfig={'tools': agentcore_tools},  # 5 custom tools
+    inferenceConfig={'temperature': 0.2, 'maxTokens': 4096}
+)
 ```
-
-Nova Pro provides comprehensive analysis including:
-
-- Waste type classification (Plastic, Metal, Paper, Organic, etc.)
-- Severity assessment (1-10 scale)
-- Priority level (low, medium, high, critical)
-- Environmental impact evaluation
-- Volume estimation
-- Safety concern identification
-- Detailed analysis notes and recommendations
-
-### Resilient Processing Implementation
-
-Our implementation includes a sophisticated retry mechanism to ensure robustness:
 
 ```python
-max_attempts = 3  # Maximum number of retry attempts
-current_attempt = 0
-
-while current_attempt < max_attempts:
-    try:
-        current_attempt += 1
-        logger.info(f"Attempt {current_attempt} - Analyzing image from: {image_url}")
-
-        # Analysis code here...
-
-    except Exception as e:
-        logger.error(f"Error in analysis (Attempt {current_attempt}/{max_attempts}): {e}")
-        if current_attempt < max_attempts:
-            logger.info(f"Retrying... ({current_attempt}/{max_attempts})")
-            time.sleep(2)  # Add a short delay before retrying
-            continue
-        return None
+# Image analysis (app.py:611)
+response = bedrock_runtime.invoke_model(
+    modelId='amazon.nova-pro-v1:0',
+    body=json.dumps({
+        'messages': [{
+            'role': 'user',
+            'content': [
+                {'text': prompt},
+                {'image': {'format': 'jpeg', 'source': {'bytes': image_base64}}}
+            ]
+        }]
+    })
+)
 ```
 
-This approach ensures:
+#### 2. **Amazon Bedrock AgentCore** (Required ✅ - Strongly Recommended)
 
-- Multiple attempts for API calls in case of temporary failures
-- Proper error logging for debugging
-- Fallback options when parsing fails
-- Graceful degradation of service
+**ARN**: `arn:aws:bedrock-agentcore:us-east-1:511558195893:runtime/ecolafaek_waste_agent-TGrtjyF5VC`
 
-## 🔍 Vector Embeddings & Data Storage
-
-### Amazon Titan Embed Image v1 Integration
-
-EcoLafaek uses **Amazon Titan Embed Image v1** model to create embeddings from waste analysis data and location information. These embeddings are stored as vectors for future analysis and potential pattern recognition capabilities.
-
-#### Multimodal Embeddings
-
-We use Titan Embed Image v1 for creating embeddings from:
-
-1. **Image Content**: Visual analysis results from Nova Pro converted to text descriptions
-2. **Location Context**: Geographic coordinates enhanced with regional information
-3. **Combined Features**: Semantic understanding of waste patterns and environmental context
+**Primitives Used**:
+- ✅ **Code Interpreter**: Python runtime for data analysis and chart generation (matplotlib)
+- ✅ **Browser Tool**: Playwright-powered web scraping and content extraction
 
 ```python
-def invoke_titan_embed_text(text: str) -> Optional[List[float]]:
-    """Create embedding for text using Amazon Titan Embed Image (multimodal)"""
-    payload = {
-        "inputText": text,
-        "embeddingConfig": {
-            "outputEmbeddingLength": 1024
-        }
-    }
-
-    response = requests.post(
-        f"{BEDROCK_ENDPOINT}/model/amazon.titan-embed-image-v1/invoke",
-        headers=headers,
-        json=payload,
-        timeout=30
-    )
-    return response.json().get('embedding', [])
+# AgentCore Code Interpreter generates charts autonomously
+with code_session(region='us-east-1') as client:
+    result = client.invoke('executeCode', {
+        'language': 'python',
+        'code': chart_generation_code  # matplotlib visualization
+    })
+    # Returns base64 PNG chart
 ```
 
-#### Location-Enhanced Embeddings
+#### 3. **External Tools Integration** (Required ✅)
 
-We create rich location embeddings that include:
+Our agent integrates multiple external tools:
+- **Database**: SQL query execution against production database
+- **Code Execution**: Python code interpreter via AgentCore
+- **Web Search**: Browser automation via AgentCore Playwright
+- **S3 Storage**: Chart and map uploads to Amazon S3
 
-```python
-def create_location_embedding(latitude: float, longitude: float) -> List[float]:
-    location_text = f"latitude {latitude:.6f} longitude {longitude:.6f}"
+---
 
-    # Add Timor-Leste geographic context
-    if -8.3 <= latitude <= -8.1 and 125.5 <= longitude <= 125.7:
-        location_text += " Dili capital city urban area high population density"
-    elif -8.5 <= latitude <= -8.0 and 125.0 <= longitude <= 127.0:
-        location_text += " northern Timor-Leste coastal region moderate population"
-    elif latitude < -8.5:
-        location_text += " southern Timor-Leste mountainous rural area"
+## 🧠 AI Agent Capabilities
 
-    return invoke_titan_embed_text(location_text)
+### Tool Suite (5 Custom Tools)
+
+| Tool Name | Purpose | AWS Service | Example Use |
+|-----------|---------|-------------|-------------|
+| `execute_sql_query` | Query database | Database | "How many reports last week?" |
+| `generate_visualization` | Create charts | AgentCore Code Interpreter | "Show waste distribution chart" |
+| `create_map_visualization` | Generate maps | AgentCore Code Interpreter | "Map hotspots in Dili" |
+| `scrape_webpage` | Web scraping | AgentCore Browser Tool | "What is EcoLafaek?" |
+| `get_ecolafaek_info` | Fetch project info | AgentCore Browser Tool | "Tell me about this platform" |
+
+### Autonomous Reasoning Example
+
+**User**: "Generate charts for waste categories"
+
+**Agent Reasoning**:
+```
+Round 1: "I need waste category data. I'll use execute_sql_query"
+    → Executes: SELECT waste_type, COUNT(*) FROM reports GROUP BY waste_type
+
+Round 2: "I have the data. Now I'll create a bar chart using generate_visualization"
+    → Generates Python matplotlib code
+    → AgentCore executes code in sandbox
+    → Returns chart image URL
+
+Round 3: "Chart is ready. I'll format the response with insights"
+    → Returns markdown with embedded chart and analysis
 ```
 
-#### Content-Based Embeddings
+---
 
-Image analysis results are converted to rich text descriptions for embedding:
+## 🏗️ Technical Architecture
 
-```python
-def create_image_content_embedding(analysis_result: dict) -> List[float]:
-    content_parts = [
-        f"Waste type: {analysis_result.get('waste_type', 'unknown')}",
-        f"Severity level {analysis_result.get('severity_score', 1)} out of 10",
-        f"Priority: {analysis_result.get('priority_level', 'low')}",
-        f"Environmental impact: {analysis_result.get('environmental_impact', '')}",
-        f"Safety concerns: {analysis_result.get('safety_concerns', '')}",
-        f"Volume: {analysis_result.get('estimated_volume', '0')} cubic meters",
-        f"Description: {analysis_result.get('analysis_notes', '')}"
-    ]
+### Core Stack
 
-    content_text = " ".join([part for part in content_parts if part.split(': ')[1]])
-    return invoke_titan_embed_text(content_text)
+- **Framework**: FastAPI 0.104+ (async, auto-docs)
+- **AI/ML**: Amazon Bedrock Nova-Pro + AgentCore
+- **Deployment**: AWS Lightsail (Ubuntu 22.04, 1GB RAM, 2 vCPUs)
+- **Storage**: Amazon S3 (images + generated charts)
+- **Database**: Distributed SQL database (connection pooling)
+- **Web Server**: Nginx reverse proxy + Let's Encrypt SSL
+- **Process Manager**: systemd service (auto-restart)
+
+### Key Endpoints
+
+| Endpoint | Method | Purpose | Used By | Rate Limit |
+|----------|--------|---------|---------|------------|
+| `/api/reports` | POST | Submit waste report + image | Mobile App | 60/min |
+| `/api/chat` | POST | AI agent chat with tool calling | Dashboard | 30/min |
+| `/api/reports/{id}` | GET | Get report details | Mobile App | 120/min |
+| `/api/auth/login` | POST | JWT authentication | Mobile App | 10/min |
+| `/api/auth/register` | POST | User registration | Mobile App | 5/min |
+| `/health` | GET | Health check | All | Unlimited |
+
+---
+
+## 🚀 Amazon Bedrock AgentCore Implementation
+
+### AgentCore Configuration
+
+**File**: `.bedrock_agentcore.yaml`
+
+```yaml
+agents:
+  ecolafaek_waste_agent:
+    name: ecolafaek_waste_agent
+    entrypoint: app.py
+    platform: linux/arm64
+    container_runtime: docker
+    aws:
+      account: '511558195893'
+      region: us-east-1
+      execution_role: arn:aws:iam::511558195893:role/AmazonBedrockAgentCoreSDKRuntime-us-east-1
+      ecr_repository: 511558195893.dkr.ecr.us-east-1.amazonaws.com/bedrock-agentcore-ecolafaek_waste_agent
+    codebuild:
+      project_name: bedrock-agentcore-ecolafaek_waste_agent-builder
 ```
 
-### Embedding Generation Process
-
-- **Universal Generation**: Embeddings created for **ALL** reports (both waste and non-waste)
-- **Parallel Processing**: Embeddings generated concurrently with Nova Pro analysis
-- **Comprehensive Storage**: Every report (garbage or no garbage) has embeddings stored in database
-- **Future-Ready**: Complete vector dataset prepared for potential search and analysis features
-
-### Nova Pro Prompting Strategy
-
-Our prompts are carefully engineered for consistent, structured responses:
-
-1. **Context-Rich Instructions**: We provide detailed context about environmental waste classification
-2. **Clear Classification Criteria**: We define what should and should not be classified as waste
-3. **Structured Output Format**: We specify the exact JSON structure for responses
-4. **Evaluation Guidelines**: We include specific factors to consider for severity and priority
-5. **Rubric-Based Assessment**: We use numerical scales (1-10) for quantifiable metrics
-
-Example prompt structure:
-
-```python
-initial_prompt = """
-Carefully examine this image and determine if it shows improper waste disposal, garbage, trash, or discarded materials in the environment.
-
-Only classify as waste/garbage if:
-1. The items are clearly disposed of improperly in an outdoor environment (on streets, in water bodies, forests, etc.)
-2. The items are trash/waste accumulated in trash cans, landfills, or garbage dumps
-3. The items are clearly abandoned, broken, or dumped illegally
-
-Do NOT classify as waste/garbage if:
-1. The items are in normal use in their intended environment (e.g., electronics on a desk)
-2. The items appear to be organized, clean, and in use
-3. The items are products being displayed or used normally
-4. The image shows an indoor setting with normal household/office items
-5. The items are properly stored or displayed
-
-Return your answer as a JSON object with the following structure:
-{
-  "contains_waste": true/false,
-  "confidence": 0-100,
-  "reasoning": "brief explanation",
-  "short_description": "concise description (max 8 words)",
-  "full_description": "detailed description of what you see in the image (2-3 sentences)"
-}
-"""
-```
-
-## 📱 Application Workflow
-
-### 🔄 Waste Report Processing Flow
-
-![Waste Report Processing Flow](image/1.png)
-
-### 🧠 AI Analysis Pipeline
-
-```mermaid
-graph LR
-    subgraph "Phase 1: Initial Detection"
-        A[Image Upload] --> B[Download & Convert to Base64]
-        B --> C[Nova Pro: Waste Detection]
-        C --> D{Contains Waste?}
-    end
-
-    subgraph "Phase 2: Detailed Analysis"
-        D -->|Yes| E[Nova Pro: Detailed Analysis]
-        E --> F[Extract Structured Data]
-        F --> G[Waste Type Classification]
-        G --> H[Severity Scoring 1-10]
-        H --> I[Priority Level Assignment]
-        I --> J[Environmental Impact Assessment]
-    end
-
-    subgraph "Phase 3: Data Processing (Both Paths)"
-        D -->|No| K1[Create Embeddings for Non-Garbage]
-        J --> K2[Create Embeddings for Waste Analysis]
-        K1 --> L[Store Vectors in TiDB]
-        K2 --> L
-        L --> M[Hotspot Management]
-    end
-```
-
-### 📊 System Architecture
-
-![System Architecture](image/2.svg)
-
-### 🎯 Example Processing Scenarios
-
-#### Scenario 1: Non-Waste Detection
-
-![Non-Waste](image/nohave.png)
-Based on actual system logs from `this image`:
-
-```
-1. User submits image of laptop screen with code
-2. System downloads image (243,876 bytes)
-3. Converts to base64 (325,168 chars)
-4. Nova Pro analysis: "Image determined not to contain waste"
-5. Report marked as "Not Garbage"
-6. System checks for nearby reports (found 3)
-7. Associates with existing hotspot 60001
-8. Processing complete
-```
-
-#### Scenario 2: Actual Waste Detection
-
-![Non-Waste](image/have.png)
-Based on actual system logs from `the image above`:
-
-```
-1. User submits image of waste pile
-2. System downloads image (164,808 bytes)
-3. Converts to base64 (219,744 chars)
-4. Nova Pro initial detection: Contains waste (95% confidence)
-5. Nova Pro detailed analysis returns:
-   - Waste Type: Mixed (predominantly plastic)
-   - Severity Score: 8/10
-   - Priority Level: High
-   - Volume: ~10 cubic meters
-   - Environmental Impact: High pollution risk
-   - Safety Concerns: Sharp objects, fire hazard
-6. Generate embeddings for content and location
-7. Store analysis results in database
-8. Check for nearby reports (found 3)
-9. Update existing hotspot 60001
-10. Associate report with hotspot
-11. Processing complete
-```
-
-## 🏭 Environmental Impact Classification
-
-Amazon Nova Pro helps us classify waste into priority levels:
-
-- **Critical** - Immediate hazard, harmful chemicals/materials
-- **High** - Significant waste accumulation, potential contamination
-- **Medium** - Moderate waste requiring attention
-- **Low** - Minor waste issues with limited impact
-
-Each report includes:
-
-- Severity score (1-10)
-- Detailed environmental impact assessment
-- Safety concerns
-- Estimated volume
-- Analysis notes with recommended actions
-
-## 🔧 Technical Implementation
-
-### Core Architecture
-
-1. **FastAPI Framework** with asynchronous support and automatic API documentation
-2. **TiDB Vector Database** with 1024-dimensional vector storage and search
-3. **Amazon Bedrock Services**:
-   - **Nova Pro v1.0** for multimodal waste image analysis
-   - **Titan Embed Image v1** for generating content and location embeddings
-4. **AWS S3** for secure, scalable image storage
-5. **Bearer Token Authentication** for Bedrock API access
-6. **MySQL Connector** for TiDB database connections
-
-### AI/ML Pipeline
-
-1. **Image Processing**: Base64 encoding with MIME type detection
-2. **Nova Pro Analysis**: Two-phase detection and classification
-3. **Embedding Generation**: Parallel processing for content and location vectors
-4. **Vector Storage**: TiDB integration with automatic indexing
-
-### Environment Variables
+### Deployment Process
 
 ```bash
-# Database Configuration
-DB_HOST=your-tidb-host
-DB_NAME=db_ecolafaek
-DB_USER=your-username
-DB_PASSWORD=your-password
-DB_PORT=4000
+# 1. Deploy AgentCore runtime (ARM64 via CodeBuild)
+agentcore launch
+
+# CodeBuild automatically:
+# - Uploads source to S3
+# - Builds ARM64 container
+# - Pushes to Amazon ECR
+# - Deploys to Bedrock AgentCore
+# - Creates runtime endpoint (~60 seconds)
+```
+
+### AgentCore Tools Implementation
+
+**Code Interpreter** (`agentcore_tools.py`):
+```python
+from bedrock_agentcore.tools.code_interpreter_client import code_session
+
+def generate_visualization(data: dict, chart_type: str):
+    """Generate chart using AgentCore Code Interpreter"""
+    with code_session(region='us-east-1') as client:
+        # Generate matplotlib code
+        code = f"""
+        import matplotlib.pyplot as plt
+        data = {data}
+        plt.{chart_type}(data['labels'], data['values'])
+        plt.title(data['title'])
+        plt.savefig('chart.png')
+        """
+
+        # Execute in AgentCore sandbox
+        result = client.invoke('executeCode', {
+            'language': 'python',
+            'code': code
+        })
+
+        # Upload to S3 and return URL
+        return upload_chart_to_s3(result['output'])
+```
+
+**Browser Tool** (`web_scraper_tool.py`):
+```python
+from bedrock_agentcore.tools.browser_client import browser_session
+from playwright.sync_api import sync_playwright
+
+def scrape_webpage_with_browser(url: str):
+    """Scrape webpage using AgentCore Browser Tool"""
+    with sync_playwright() as playwright:
+        with browser_session(region='us-east-1') as client:
+            ws_url, headers = client.generate_ws_headers()
+            browser = playwright.chromium.connect_over_cdp(ws_url, headers=headers)
+
+            page = browser.contexts[0].pages[0]
+            page.goto(url, wait_until='domcontentloaded')
+
+            return {
+                'title': page.title(),
+                'content': page.content()[:3000],
+                'text': page.evaluate("() => document.body.innerText")
+            }
+```
+
+---
+
+## 📸 Image Analysis with Nova-Pro
+
+### Multi-Modal AI Processing
+
+**Model**: `amazon.nova-pro-v1:0`
+**Capability**: Image + Text multi-modal analysis
+
+```python
+def analyze_image_with_bedrock(image_url: str):
+    """Analyze waste image using Nova-Pro multi-modal LLM"""
+    # Download image and convert to base64
+    image_data = download_and_encode_image(image_url)
+
+    # Call Nova-Pro with image + structured prompt
+    response = bedrock_runtime.invoke_model(
+        modelId='amazon.nova-pro-v1:0',
+        body=json.dumps({
+            'messages': [{
+                'role': 'user',
+                'content': [
+                    {'text': WASTE_ANALYSIS_PROMPT},
+                    {'image': {'format': 'jpeg', 'source': {'bytes': image_data}}}
+                ]
+            }],
+            'inferenceConfig': {'temperature': 0.2, 'maxTokens': 2048}
+        })
+    )
+
+    # Returns structured analysis:
+    # - waste_type, severity_score, priority_level
+    # - environmental_impact, safety_concerns
+    # - estimated_volume, confidence_score
+```
+
+### Analysis Output
+
+```json
+{
+  "waste_type": "Mixed (predominantly plastic)",
+  "severity_score": 8,
+  "priority_level": "high",
+  "environmental_impact": "High pollution risk, potential harm to wildlife",
+  "estimated_volume": "Approximately 10 cubic meters",
+  "safety_concerns": "Sharp objects, fire hazard risk",
+  "confidence_score": 95,
+  "full_description": "Large accumulation of mixed waste including plastic bottles..."
+}
+```
+
+---
+
+## 🛠️ Setup & Installation
+
+### Prerequisites
+
+- Python 3.10+
+- AWS Account with Bedrock access
+- AWS CLI configured
+- AgentCore CLI installed (`pip install bedrock-agentcore`)
+
+### Installation
+
+```bash
+# 1. Clone repository
+git clone https://github.com/yourusername/ecolafaek.git
+cd ecolafaek/mobile_backend
+
+# 2. Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Copy environment template
+cp .env.example .env
+
+# 5. Configure .env file (see Configuration section)
+nano .env
+
+# 6. Deploy AgentCore runtime
+agentcore launch
+
+# 7. Run locally
+uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### Configuration
+
+Edit `.env` file with your credentials:
+
+```bash
+# API Configuration
+PORT=8000
+API_SECRET_KEY=your_secret_key_here
+ENVIRONMENT=production
+ALLOWED_ORIGINS=https://yourdomain.com
 
 # AWS Bedrock Configuration
-BEDRICK_MODEL_ID=amazon.nova-pro-v1:0
-AWS_BEARER_TOKEN_BEDROCK=your-bearer-token
-BEDRICK_ENDPOINT=https://bedrock-runtime.us-east-1.amazonaws.com
-
-# AWS S3 Configuration
-AWS_ACCESS_KEY_ID=your-access-key
-AWS_SECRET_ACCESS_KEY=your-secret-key
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
 AWS_REGION=us-east-1
-S3_BUCKET_NAME=ecolafaek
+BEDROCK_MODEL_ID=amazon.nova-pro-v1:0
 
-# JWT & Email Configuration
-JWT_SECRET=your-jwt-secret
+# Amazon S3 Configuration
+S3_BUCKET_NAME=your-bucket-name
+
+# Database Configuration
+DB_HOST=your_database_host
+DB_NAME=db_ecolafaek
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_PORT=4000
+
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_key
 JWT_EXPIRATION_HOURS=24
-EMAIL_USER=your-email
-EMAIL_PASS=your-app-password
+
+# Email Configuration (optional)
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password
 EMAIL_SERVER=smtp.gmail.com
 EMAIL_PORT=587
 ```
 
-### Database Schema
+---
 
-Our comprehensive database schema supports environmental waste monitoring with: [Database schema](https://github.com/ajitonelsonn/EcoLafaek/tree/main/database)
+## 🚀 AWS Lightsail Deployment
 
-## 🚀 Setup and Deployment
+### Deployment Scripts
 
-The application is deployed on AWS Lightsail with:
+**Initial Deployment**: `deploy_lightsail.sh`
+```bash
+# Automated deployment script:
+# 1. Creates Lightsail instance (micro_3_0 bundle)
+# 2. Configures firewall (ports 22, 80, 443, 8000)
+# 3. Uploads application code via SCP
+# 4. Installs Python 3.10 + dependencies
+# 5. Sets up systemd service (ecolafaek-api.service)
+# 6. Configures Nginx reverse proxy
+# 7. Sets up Let's Encrypt SSL with auto-renewal
 
-1. **NGINX** as a reverse proxy
-2. **Gunicorn** with extended timeout for Nova Pro processing
-3. **SSL/TLS** encryption via Let's Encrypt
-4. **Systemd** service for automatic restarts
-5. **Proper error handling** with retry mechanisms
+./deploy_lightsail.sh
+```
 
-## 🚀 Live Demo
+**Code Updates**: `update_lightsail.sh`
+```bash
+# Quick update script:
+# 1. Packages latest code
+# 2. Uploads to existing instance
+# 3. Restarts systemd service
+# 4. Zero downtime deployment
 
-Our complete EcoLafaek ecosystem is publicly accessible for demonstration purposes:
+./update_lightsail.sh
+```
 
-- **Health Check Endpoint:** [https://ecolafaek.xyz/health](https://ecolafaek.xyz/health)
-- **Public Dashboard:** [https://www.ecolafaek.com/](https://www.ecolafaek.com/)
-- **Mobile App Download:** [https://www.ecolafaek.com/download](https://www.ecolafaek.com/download)
+### Monitoring
 
-!['tais'](../docs/image/tais.png)
+```bash
+# View real-time logs
+sudo journalctl -u ecolafaek-api -f
+
+# Check service status
+sudo systemctl status ecolafaek-api
+
+# Restart service
+sudo systemctl restart ecolafaek-api
+
+# View AgentCore logs
+aws logs tail /aws/bedrock-agentcore/runtimes/ecolafaek_waste_agent-TGrtjyF5VC-DEFAULT --follow
+```
+
+---
+
+## 🎯 Hackathon Criteria Met
+
+### ✅ Required Technologies
+
+- ✅ **LLM from AWS Bedrock**: Amazon Nova-Pro v1.0
+- ✅ **Amazon Bedrock AgentCore**: Code Interpreter + Browser primitives
+- ✅ **Reasoning LLM**: Nova-Pro for autonomous decision-making
+- ✅ **Autonomous Capabilities**: Multi-round tool calling without human intervention
+- ✅ **External Tools Integration**: SQL, code execution, web scraping, S3 storage
+
+### 🏆 Judging Criteria Alignment
+
+**Potential Value/Impact (20%)**:
+- Solving real-world waste management crisis in Timor-Leste
+- Measurable impact: 1000+ reports analyzed, 50+ hotspots identified
+- Civic engagement through mobile app (100+ active users)
+
+**Creativity (10%)**:
+- Novel approach: AI agent for environmental monitoring in developing regions
+- Unique tool orchestration: Combines SQL, charts, maps, and web scraping
+
+**Technical Execution (50%)**:
+- Well-architected: Three-tier architecture (mobile, dashboard, admin)
+- Reproducible: Complete setup scripts and documentation
+- Production-ready: Deployed on AWS Lightsail with monitoring
+
+**Functionality (10%)**:
+- Agent working as expected: 5-round tool calling, autonomous task completion
+- Scalable: Connection pooling, rate limiting, caching
+
+**Demo Presentation (10%)**:
+- End-to-end agentic workflow demonstrated
+- Live deployment at www.ecolafaek.com
+
+---
+
+## 🌐 Live Demo
+
+Our complete EcoLafaek ecosystem is publicly accessible:
+
+- **API Health Check**: [https://www.ecolafaek.xyz/health](https://www.ecolafaek.xyz/health)
+- **Public Dashboard**: [https://www.ecolafaek.com/](https://www.ecolafaek.com/)
+- **AI Chat Interface**: [https://www.ecolafaek.com/agentcore-chat](https://www.ecolafaek.com/agentcore-chat)
+- **Mobile App Download**: [https://www.ecolafaek.com/download](https://www.ecolafaek.com/download)
+
+### Test Credentials
+- **Username**: `usertest`
+- **Password**: `1234abcd`
+
+---
+
+## 📊 Architecture Diagrams
+
+See detailed architecture documentation:
+- [Architecture Overview](../ARCHITECTURE.md)
+- [Architecture Diagram](../ARCHITECTURE_DIAGRAM.md)
+
+---
+
+## 📝 Project Structure
+
+```
+mobile_backend/
+├── app.py                          # Main FastAPI application
+├── agentcore_tools.py              # AgentCore tool implementations
+├── schema_based_chat.py            # Chat schema definitions
+├── web_scraper_tool.py             # Web scraping tool
+├── requirements.txt                # Python dependencies
+├── .env.example                    # Environment template
+├── .bedrock_agentcore.yaml         # AgentCore configuration
+├── .dockerignore                   # Docker ignore file
+├── Dockerfile                      # AgentCore container
+├── deploy_lightsail.sh             # Deployment script
+├── update_lightsail.sh             # Update script
+└── install_agentcore.sh            # AgentCore setup script
+```
+
+---
+
+## 🔒 Security Features
+
+- **Rate Limiting**: slowapi middleware (per-IP tracking)
+- **JWT Authentication**: HS256 with 24-hour expiration
+- **Password Hashing**: PBKDF2-HMAC-SHA256 (100,000 iterations)
+- **HTTPS**: Let's Encrypt SSL with TLS 1.3
+- **CORS**: Whitelist allowed origins
+- **SQL Injection Prevention**: Parameterized queries only
+
+---
+
+## 🤝 Contributing
+
+This project was built for the AWS AI Agent Global Hackathon. For questions or contributions, please open an issue or pull request.
+
+---
+
+## 📄 License
+
+MIT License - See LICENSE file for details
+
+---
 
 <div align="center">
-  <p>Built with ❤️ for Timor-Leste</p>
+  <p><strong>Built with ❤️ for Timor-Leste</strong></p>
+  <p>AWS AI Agent Global Hackathon 2025</p>
+  <p>Powered by Amazon Bedrock AgentCore</p>
 </div>

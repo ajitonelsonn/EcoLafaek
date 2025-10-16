@@ -2,481 +2,228 @@
 
 <p align="center">
   <img src="public/app_logo.png" alt="EcoLafaek Logo" width="120" style="margin-right: 20px;" />
-  <span style="font-size: 36px; font-weight: bold; margin: 0 20px;">
 </p>
 
 <div align="center">
-  <img src="https://img.shields.io/badge/TiDB_AgentX_Hackathon_2025-🏆_PUBLIC_DASHBOARD-FF6B35?style=for-the-badge&logoColor=white" alt="TiDB Hackathon 2025" />
+  <img src="https://img.shields.io/badge/AWS_AI_Agent_Global_Hackathon-🏆_PUBLIC_DASHBOARD-FF9900?style=for-the-badge&logoColor=white" alt="AWS AI Agent Hackathon" />
 </div>
 
 <p align="center" style="margin-top: 10px;">
   <img src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js" alt="Next.js 15" />
   <img src="https://img.shields.io/badge/TypeScript-5.0+-blue?style=for-the-badge&logo=typescript" alt="TypeScript" />
   <img src="https://img.shields.io/badge/TailwindCSS-3.0+-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/Amazon_Bedrock-AI-orange?style=for-the-badge&logo=amazon-aws" alt="Amazon Bedrock" />
-  <img src="https://img.shields.io/badge/TiDB_Cloud-Vector_Database-FF6B35?style=for-the-badge&logo=tidb" alt="TiDB Vector DB" />
+  <img src="https://img.shields.io/badge/Amazon_Bedrock-AgentCore-FF9900?style=for-the-badge&logo=amazonwebservices" alt="Amazon Bedrock AgentCore" />
 </p>
 
-## 🏆 TiDB Vector Database Showcase
+## 🏆 AWS AI Agent Global Hackathon 2025
 
-This Next.js dashboard demonstrates **TiDB Cloud's advanced vector database capabilities** for the TiDB AgentX Hackathon 2025. It features:
+A comprehensive public web dashboard showcasing **Amazon Bedrock AgentCore** autonomous AI agent capabilities for waste management in Timor-Leste. This dashboard demonstrates real-time AI chat with multi-round tool calling, semantic vector search, and interactive data visualization.
 
-### 🧠 Vector-Powered Features:
+### 🤖 AI Agent Integration:
 
-- **Similarity Search**: Find similar waste reports using `VEC_COSINE_DISTANCE()` on 1024-dimensional embeddings
-- **Pattern Recognition**: AI-powered clustering using Amazon Titan embeddings stored in TiDB
-- **Real-time Analytics**: Lightning-fast queries across thousands of vector embeddings
-- **Semantic Search**: Natural language queries powered by TiDB's vector capabilities
+- **AgentCore AI Chat**: Natural language interface with autonomous tool execution
+- **Multi-Round Tool Calling**: Agent chains SQL queries → Chart generation → Map creation
+- **Vector Search**: Amazon Titan Embed powered semantic similarity search
+- **Real-time Analytics**: Interactive data visualization and reporting
 
-### 🗃️ Direct TiDB Integration:
+For detailed AI agent architecture, see [Backend README](../mobile_backend/README.md) and [Architecture Diagram](../Diagram/ARCHITECTURE.md).
 
-```javascript
-// Real vector similarity search in TiDB
-const similarReports = await pool.execute(
-  `
-  SELECT r.*, ar.confidence_score,
-         VEC_COSINE_DISTANCE(ar.image_embedding, ?) as similarity
-  FROM reports r 
-  JOIN analysis_results ar ON r.report_id = ar.report_id
-  ORDER BY similarity ASC LIMIT 10
-`,
-  [queryVector]
-);
-```
+## 🌟 Key Features
 
-A comprehensive public web dashboard for visualizing and analyzing waste management data across Timor-Leste. This dashboard provides government officials and citizens with real-time insights into waste distribution, hotspots, and trends powered by advanced AI vector search using Amazon Bedrock Titan models and TiDB vector database.
-
-## 🌟 Features
-
-- **🗺️ Interactive Geospatial Map**: Visualize waste reports, severity levels, and hotspots across regions with clustering and filtering
-- **📊 Real-time Analytics Dashboard**: Monitor key waste management metrics with customizable date ranges and trend analysis
-- **🔍 Advanced Vector Search**: AI-powered semantic search, similar reports finder, and pattern analysis using Amazon Bedrock
-- **💬 AI Chat Helper**: Interactive chat assistant powered by Moonshot AI to help users understand EcoLafaek features and waste management
-- **📈 Waste Type Distribution**: Analyze proportions of different waste categories with interactive charts and breakdowns
-- **🌡️ Severity Heatmaps**: Identify critical areas requiring urgent intervention with color-coded intensity maps
-- **📉 Trend Analysis**: Track waste reporting patterns over time with detailed temporal analytics
-- **🏆 Community Leaderboard**: Recognize and motivate top contributors with filtering and ranking systems
+- **🤖 AI Chat Helper**: Interact with AgentCore autonomous agent for data insights and chart generation
+- **🔍 Vector Search**: Semantic search powered by Amazon Titan Embed (1024-dimensional embeddings)
+- **🗺️ Interactive Maps**: Geospatial visualization of waste reports and hotspots
+- **📊 Real-time Analytics**: Monitor waste management metrics with customizable date ranges
+- **📈 Data Visualization**: Charts, graphs, and trends powered by AgentCore Code Interpreter
+- **🏆 Community Leaderboard**: Recognize top contributors
 
 ## 🖥️ Live Demo
 
-Visit the live dashboard: [EcoLafaek Dashboard](https://ecolafaek.com)
+Visit: [https://www.ecolafaek.com](https://www.ecolafaek.com)
 
-![Dashboard Overview](public/scs/dashboard-screen.png)
+## 🏗️ Technical Stack
 
-## 🏗️ Architecture Overview
+### Frontend
+- **Framework**: Next.js 15 (React 18)
+- **Language**: TypeScript 5.0+
+- **Styling**: Tailwind CSS 3.0+
+- **Maps**: Leaflet.js
+- **Charts**: Chart.js, Tremor Charts
 
-### Public Dashboard Architecture
+### Backend Integration
+- **API**: Next.js API Routes (Serverless)
+- **AI Agent**: Amazon Bedrock AgentCore (via FastAPI backend proxy)
+- **Vector Search**: Amazon Titan Embed + SQL database
+- **Authentication**: API Key-based
+- **Deployment**: Vercel Edge Functions
 
-```mermaid
-flowchart TB
-    subgraph "Frontend Layer"
-        NEXT[⚡ Next.js Dashboard]
-        COMP[🎨 UI Components]
-        MAPS[🗺️ Interactive Maps]
-        CHARTS[📊 Analytics]
-        VECTOR[🔍 Vector Search]
-        CHAT[💬 AI Chat Helper]
-    end
+### AI Services (via Backend)
+- **Amazon Bedrock Nova-Pro**: Multi-modal reasoning and tool orchestration
+- **Amazon Bedrock AgentCore**: Autonomous code execution and browser automation
+- **Amazon Titan Embed**: Vector embeddings for semantic search
 
-    subgraph "AI Processing Layer"
-        BEDROCK[🧠 Amazon Bedrock]
-        TITAN[🎯 Titan Embed Image v1]
-        MOONSHOT[🌙 Moonshot AI]
-    end
+## 📁 Project Structure
 
-    subgraph "🚀 TiDB Database"
-        TIDB[(📊 Reports Data)]
-        VECTORS[(🎯 Vector Store)]
-    end
-
-    subgraph "Visualization Tools"
-        LEAFLET[🗺️ Leaflet Maps]
-        TREMOR[📈 Tremor Charts]
-        CHARTJS[📊 Chart.js]
-    end
-
-    %% Data Flow
-    NEXT --> COMP
-    COMP --> MAPS
-    COMP --> CHARTS
-    COMP --> VECTOR
-    COMP --> CHAT
-
-    VECTOR --> BEDROCK
-    CHAT --> MOONSHOT
-    BEDROCK --> TITAN
-    TITAN --> VECTORS
-
-    CHARTS --> TIDB
-    MAPS --> TIDB
-
-    MAPS --> LEAFLET
-    CHARTS --> TREMOR
-    CHARTS --> CHARTJS
-
-    %% Styling
-    classDef ai fill:#FF9800,stroke:#F57C00,stroke-width:2px,color:white
-    classDef database fill:#9C27B0,stroke:#7B1FA2,stroke-width:2px,color:white
-    classDef frontend fill:#00BCD4,stroke:#0097A7,stroke-width:2px,color:white
-    classDef viz fill:#795548,stroke:#5D4037,stroke-width:2px,color:white
-
-    class BEDROCK,TITAN,MOONSHOT ai
-    class TIDB,VECTORS database
-    class NEXT,COMP,MAPS,CHARTS,VECTOR,CHAT frontend
-    class LEAFLET,TREMOR,CHARTJS viz
 ```
-
-### Vector Search Architecture
-
-```mermaid
-graph TB
-    subgraph "Search Interface"
-        UI[🔍 Search Components]
-        MODAL[📋 Result Modals]
-    end
-
-    subgraph "API Layer"
-        SEMANTIC[🧠 Semantic Search]
-        SIMILAR[🔄 Similar Reports]
-        CLUSTERS[📊 Pattern Analysis]
-        BATCH[⚡ Batch Analysis]
-    end
-
-    subgraph "AI Processing"
-        BEDROCK[🧠 Amazon Bedrock]
-        TITAN[🎯 Titan Embed Image v1]
-        EMBEDDING[📐 Vector Embeddings]
-    end
-
-    subgraph "TiDB Database"
-        VECTORS[(🎯 Vector Store)]
-        REPORTS[(📊 Reports Data)]
-        COSINE[(📏 Cosine Distance)]
-    end
-
-    UI --> SEMANTIC
-    UI --> SIMILAR
-    UI --> CLUSTERS
-    UI --> BATCH
-
-    SEMANTIC --> BEDROCK
-    SIMILAR --> TITAN
-    CLUSTERS --> EMBEDDING
-
-    BEDROCK --> TITAN
-    TITAN --> EMBEDDING
-    EMBEDDING --> VECTORS
-
-    VECTORS --> COSINE
-    COSINE --> REPORTS
-    REPORTS --> MODAL
-
-    style UI fill:#1E88E5,stroke:#0D47A1,stroke-width:2px,color:white
-    style BEDROCK fill:#FF9800,stroke:#F57C00,stroke-width:2px,color:white
-    style VECTORS fill:#9C27B0,stroke:#7B1FA2,stroke-width:2px,color:white
-    style COSINE fill:#E53935,stroke:#C62828,stroke-width:2px,color:white
+ecolafaek_public_dashboard/
+├── pages/
+│   ├── index.js                      # Dashboard homepage
+│   ├── agentcore-chat.js             # AI Agent chat interface
+│   ├── vector-search.js              # Semantic search page
+│   ├── reports.js                    # Reports listing
+│   ├── map.js                        # Interactive map view
+│   └── api/
+│       ├── chat.js                   # Proxy to FastAPI AgentCore chat
+│       ├── contact.js                # Contact form handler
+│       └── proxy-image.js            # Image proxy for CORS
+├── components/
+│   ├── Dashboard/                    # Dashboard widgets
+│   ├── Maps/                         # Map components
+│   ├── Charts/                       # Chart components
+│   └── Layout/                       # Layout components
+├── lib/
+│   ├── db.js                         # Database connection
+│   ├── bedrock.js                    # Amazon Bedrock client
+│   └── utils.js                      # Helper functions
+└── public/
+    └── scs/                          # Screenshots
 ```
-
-## 🛠️ Technologies
-
-### Frontend Stack
-
-- **Framework**: Next.js 15 (React 18+)
-- **Styling**: Tailwind CSS with custom components and glassmorphism effects
-- **State Management**: React Context API with custom hooks
-- **TypeScript**: Full type safety across the application
-- **UI Components**: Custom component library with Lucide React icons
-
-### Data Visualization & Maps
-
-- **Dashboard Components**: Tremor for responsive analytics widgets
-- **Interactive Charts**: Chart.js with custom configurations
-- **Geospatial Mapping**: Leaflet with custom markers and clustering
-- **Animations**: Intersection Observer API for scroll-triggered effects
-- **Responsive Design**: Mobile-first approach with adaptive layouts
-
-### Backend & API
-
-- **API Layer**: Next.js API Routes with TypeScript
-- **Database**: TiDB Cloud for all data and vector storage
-- **Connection Pool**: Optimized TiDB connection management (Port 4000)
-- **Validation**: Custom middleware with comprehensive error handling
-- **Caching**: Smart result caching with parameter comparison
-
-### AI & Machine Learning
-
-- **AI Platform**: Amazon Bedrock (us-east-1 region)
-- **Vector Embeddings**: Titan Embed Image v1 model for semantic search
-- **Chat Assistant**: Moonshot AI integration for interactive user support and FAQ assistance
-- **Semantic Analysis**: Advanced similarity matching using TiDB's VEC_COSINE_DISTANCE with VEC_FROM_TEXT conversion
-- **Pattern Recognition**: Enhanced AI-powered clustering algorithms with:
-  - Smart similarity threshold adjustment (0.2 → 0.5 for better matching)
-  - Geographic distance calculations and pattern classification
-  - Time-based pattern analysis and trend detection
-  - Confidence scoring with string-to-number conversion handling
-- **Search Capabilities**: Natural language search, auto-modal similar reports, and comprehensive pattern analysis
-
-### External Integrations
-
-- **AI Services**: Amazon Bedrock with Bearer Token authentication
-- **Image Processing**: Titan embeddings for visual similarity search
-- **Geographic Services**: Location-based queries and distance calculations
-- **CDN**: Optimized static asset delivery
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
-- **Node.js** (v16 or higher) - Runtime environment
-- **npm** or **yarn** - Package manager
-- **Git** - Version control
-- **TiDB Cloud** access - Database with vector search capabilities
-- **Amazon Bedrock** access - For Titan model AI features
-
-> **Note**: This dashboard requires TiDB Cloud and Amazon Bedrock access for full vector search functionality.
+- Node.js 18+ and npm
+- Access to backend API (www.ecolafaek.xyz)
 
 ### Installation
 
 1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/ajitonelsonn/EcoLafaek.git
-   cd EcoLafaek/ecolafaek_public_dahboard
-   ```
+```bash
+git clone https://github.com/ajitonelsonn/EcoLafaek.git
+cd EcoLafaek/ecolafaek_public_dahboard
+```
 
 2. Install dependencies:
-
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-3. Configure environment variables:
-   Create a `.env.local` file with the following:
-
-   ```bash
-   # TiDB Database Configuration
-   DB_HOST=gateway01.ap-northeast-1.prod.aws.tidbcloud.com
-   DB_NAME=db_ecolafaek
-   DB_USER=your_tidb_user
-   DB_PASSWORD=your_tidb_password
-   DB_PORT=4000
-
-   # Amazon Bedrock Configuration (us-east-1 for Titan models)
-   BEDROCK_ENDPOINT=https://bedrock-runtime.us-east-1.amazonaws.com
-   AWS_REGION=us-east-1
-   AWS_BEARER_TOKEN_BEDROCK=your_bearer_token
-   AWS_ACCESS_KEY_ID=your_aws_key
-   AWS_SECRET_ACCESS_KEY=your_aws_secret
-
-   # Moonshot AI Configuration
-   MOONSHOT_API_KEY=your_moonshot_api_key
-
-   # Application Settings
-   NODE_ENV=development
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
-   ```
-
-   > Copy `.env.example` and customize with your TiDB Cloud and AWS Bedrock credentials
-
-4. Run the development server:
-
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   ```
-
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## 📂 Project Structure
-
-```
-ecolafaek_public_dashboard/
-├── 📁 components/              # Reusable UI components
-│   ├── 🎨 ui/                 # Base UI components (buttons, modals, etc.)
-│   ├── 📊 charts/             # Custom chart components
-│   ├── 🗺️ maps/               # Map-related components
-│   ├── 📱 layout/             # Layout and navigation components
-│   └── 💬 ChatBubble.js       # AI chat assistant component
-├── 📁 pages/                  # Next.js pages and API routes
-│   ├── 🔌 api/               # Backend API endpoints
-│   │   ├── vector-search/    # Vector search APIs
-│   │   │   ├── semantic.ts   # Semantic search endpoint
-│   │   │   ├── similar-reports.ts # Similar reports finder with auto-modal
-│   │   │   ├── clusters.ts   # Enhanced pattern analysis with clustering algorithms
-│   │   │   ├── batch-analysis.ts # Bulk analysis endpoint
-│   │   │   └── utils/        # Shared API utilities
-│   │   ├── reports/          # Report management APIs
-│   │   ├── analytics/        # Dashboard analytics APIs
-│   │   ├── leaderboard/      # Community leaderboard APIs
-│   │   └── 💬 chat.js        # Moonshot AI chat endpoint
-│   ├── 🏠 index.js           # Homepage with dashboard overview
-│   ├── 📊 analytics.js       # Detailed analytics page
-│   ├── 🗺️ map.js             # Interactive waste map
-│   ├── 🔍 vector-search.js   # Advanced search interface with enhanced pattern analysis
-│   ├── 📄 reports/[id].js    # Individual report page with similar reports modal
-│   ├── 🏆 leaderboard.js     # Community contributors ranking
-│   ├── ℹ️ about.js           # About page with project info
-│   └── 📄 _app.js            # Next.js app configuration with chat integration
-├── 📁 lib/                   # Utility libraries and helpers
-│   ├── 🔧 utils.js          # General utility functions
-│   ├── 🌐 api.js            # API client configurations
-│   ├── 🗄️ db.js             # Database connection utilities
-│   └── 🎨 constants.js      # App constants and configurations
-├── 📁 public/                # Static assets
-│   ├── 🖼️ images/           # Images and icons
-│   ├── 📸 ss/               # Screenshots for documentation
-│   ├── 💬 data_chat/        # FAQ data for chat assistant
-│   │   └── ecolafaek.md     # Comprehensive EcoLafaek information
-│   ├── 🎨 app_logo.png      # Application logo
-│   └── 📄 favicon.ico       # Website favicon
-├── 📁 styles/                # Styling configuration
-│   ├── 🎨 globals.css       # Global CSS styles
-│   ├── ⚙️ tailwind.config.js # Tailwind CSS configuration
-│   └── 📱 components.css    # Component-specific styles
-├── 📁 types/                 # TypeScript definitions
-│   ├── 📊 api.ts            # API response types
-│   ├── 🗄️ database.ts       # Database entity types
-│   └── 🎨 ui.ts             # UI component types
-├── 📄 .env.local             # Environment variables (local)
-├── 📄 .env.example           # Environment variables template
-├── 📄 next.config.js         # Next.js configuration
-├── 📄 package.json           # Project dependencies
-├── 📄 tsconfig.json          # TypeScript configuration
-└── 📄 README.md              # Project documentation
+```bash
+npm install
 ```
 
-### Key Directories Explained
+3. Create `.env.local` file:
+```env
+# Backend API
+NEXT_PUBLIC_API_URL=https://www.ecolafaek.xyz
 
-- **`/components`**: Modular React components organized by functionality
-- **`/pages/api`**: Serverless API functions with advanced vector search capabilities
-- **`/pages`**: Client-side pages with responsive designs and interactive features
-- **`/lib`**: Shared utilities, database connections, and helper functions
-- **`/public`**: Static assets optimized for web delivery
-- **`/styles`**: Tailwind CSS configuration with custom component styles
-- **`/types`**: Comprehensive TypeScript definitions for type safety
+# Database (for direct queries from Next.js API routes)
+DB_HOST=your-database-host
+DB_PORT=4000
+DB_USER=your-db-user
+DB_PASSWORD=your-db-password
+DB_NAME=your-db-name
 
-## 🔑 Key Features Explained
+# AWS Bedrock (for vector search API route)
+AWS_ACCESS_KEY_ID=your-aws-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret
+AWS_REGION=us-east-1
 
-### 🗺️ Interactive Waste Map
-
-Our advanced geospatial visualization powered by Leaflet displays waste reports across Timor-Leste with:
-
-- **Color-coded severity indicators** for immediate priority assessment
-- **Smart clustering algorithms** for optimal performance with large datasets
-- **Multi-layer filtering** by waste type, date range, severity, and status
-- **Real-time data synchronization** with the mobile app backend
-- **Responsive marker clustering** that adapts to zoom levels
-
-![Waste Map](public/scs/map-screen.png)
-
-### 🔍 Advanced Vector Search
-
-Powered by Amazon Bedrock and TiDB vector database:
-
-- **Semantic Search**: Find reports using natural language queries with real-time processing
-- **Similar Reports Modal**: Auto-search functionality that displays up to 10 similar reports in an interactive modal instead of redirecting
-- **Pattern Analysis**: Enhanced clustering algorithm with smart similarity thresholds and comprehensive insights
-  - Geographic clustering with adjustable similarity thresholds (0.5-0.8)
-  - Pattern type classification (Geographic, Temporal, Severity-based, Mixed)
-  - Time span analysis with detailed insights generation
-  - Confidence scoring with fallback calculations for data quality assessment
-- **Batch Analysis**: Process multiple reports simultaneously for comprehensive trend analysis
-
-![Waste Map](public/scs/SimilirReportDetails.png)
-
-### 💬 AI Chat Helper
-
-Interactive chat assistant powered by Moonshot AI featuring:
-
-- **EcoLafaek Helper Persona**: Knowledgeable assistant specialized in waste management and platform guidance
-- **FAQ Integration**: Comprehensive knowledge base from markdown documentation
-- **Real-time Responses**: Instant answers using Moonshot's kimi-k2-turbo-preview model
-- **Context-Aware**: Maintains conversation history for better user experience
-- **Floating UI**: Accessible chat bubble positioned on the right side of all pages
-- **Expandable Interface**: Toggle between compact and full-screen chat modes
-
-![Chat Helper](public/scs/chat-helper.png)
-
-### 🌡️ Hotspot Analysis
-
-Automated identification the most report in same areas using:
-
-- **Geographic clustering algorithms** to detect waste concentration zones
-- **Temporal analysis** to identify recurring problem areas
-- **Severity weighting** to prioritize urgent intervention sites
-- **Resource allocation guidance** for cleanup teams and officials
-
-![Hotspots Analysis](public/scs/hotspots-screen.png)
-
-### 🏆 Community Leaderboard
-
-Comprehensive contributor recognition system featuring:
-
-- **Multi-criteria ranking** based on report quality and quantity
-- **Time-based filtering** (daily, weekly, monthly, yearly)
-- **Valid reports filter** to ensure data quality
-- **Achievement badges** and recognition levels
-- **Community engagement metrics** to foster healthy competition
-
-![Leaderboard](public/scs/leaderboard-screen.png)
-
-## 🌍 Integration with EcoLafaek Ecosystem
-
-### Data Flow Architecture
-
-```mermaid
-sequenceDiagram
-    participant C as 👥 Citizens
-    participant M as 📱 Mobile App
-    participant AI as 🤖 AI Processing
-    participant DB as 🗄️ Database
-    participant D as 📊 Dashboard
-    participant G as 🏛️ Government
-
-    C->>M: Report waste incident
-    M->>M: Capture photo & GPS
-    M->>AI: Send report data
-    AI->>AI: Analyze & classify
-    AI->>DB: Store processed data
-    DB->>D: Real-time sync
-    D->>G: Present insights
-    G->>G: Plan cleanup actions
-    G-->>C: Feedback & updates
-    D->>C: Community recognition
+# Google reCAPTCHA (for chat protection)
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your-site-key
+RECAPTCHA_SECRET_KEY=your-secret-key
 ```
 
-### Ecosystem Components Integration
+4. Run development server:
+```bash
+npm run dev
+```
 
-1. **📱 Citizen Reporting**: Users report waste via the EcoLafaek mobile app with photos and GPS coordinates
-2. **🤖 AI Processing**: Reports are analyzed using Amazon Bedrock Titan models for classification and validation
-3. **🔍 Vector Analysis**: Images are converted to embeddings and stored in TiDB for semantic search capabilities
-4. **📊 Real-time Sync**: Dashboard pulls data continuously from TiDB with smart caching
-5. **📈 Analytics Generation**: Advanced analytics are computed and presented through interactive visualizations
-6. **🏛️ Decision Support**: Government officials access actionable insights for strategic planning (Future)
-7. **🏆 Community Engagement**: Contributors are recognized and motivated through the leaderboard system
-8. **🔄 Feedback Loop**: System improvements are made based on usage patterns and effectiveness metrics
+Open [http://localhost:3000](http://localhost:3000)
 
-## 🌱 Project Background
+### Build for Production
 
-EcoLafaek was created to address the significant waste management challenges in Timor-Leste, particularly in Dili where improper waste disposal leads to flooding during heavy rains. Based on research from the JICA survey "Data Collection [Survey: Solid Waste Management in Dili City to Reduce Marine Plastic Waste in Timor-Leste,"](https://www.jica.go.jp/english/overseas/easttimor/data/__icsFiles/afieldfile/2024/11/30/Dili_SWM_Presentation_Material_English_2.pdf) it was evident that community engagement in waste reporting could significantly improve the situation.
+```bash
+npm run build
+npm start
+```
 
-This public dashboard serves as the visualization and analytics layer of the ecosystem, providing decision-makers with the insights needed to take effective action while engaging citizens through transparent data sharing and community recognition.
+## 🔑 Key Pages
 
-## For Judges
+### 1. **AgentCore AI Chat** (`/agentcore-chat`)
+- Natural language queries to autonomous AI agent
+- Multi-round tool calling (SQL → Charts → Maps → Web Scraping)
+- Real-time chart/map generation via AgentCore Code Interpreter
+- PDF export of conversation history
+- reCAPTCHA protection
 
-To review and test the app, judges can easily [download the mobile app](https://ecolafaek.com/download) and login using the following credentials:
+**Example Queries**:
+- "Show me waste trends over the last month"
+- "Create a map of high-severity hotspots"
+- "Generate a pie chart of waste types"
 
-### Login Credentials
+### 2. **Vector Search** (`/vector-search`)
+- Semantic similarity search using Amazon Titan Embed embeddings
+- Find similar waste reports based on image/text content
+- Cosine similarity matching
 
-| Username | Password |
-| -------- | -------- |
-| usertest | 1234abcd |
+### 3. **Reports** (`/reports`)
+- Browse all waste reports with filtering
+- Direct database queries from Next.js API routes
+- Pagination and search
 
-!['tais'](../docs/image/tais.png)
+### 4. **Interactive Map** (`/map`)
+- Geospatial visualization
+- Hotspot clustering
+- Real-time updates
+
+## 📊 API Routes
+
+| Endpoint | Purpose | Integration |
+|----------|---------|-------------|
+| `/api/chat` | Proxy AgentCore chat to backend | FastAPI + Bedrock AgentCore |
+| `/api/contact` | Contact form submissions | Email service |
+| `/api/proxy-image` | CORS-safe image proxy | S3 images |
+
+## 🔒 Security Features
+
+- **reCAPTCHA v2**: Bot protection for AI chat
+- **Rate Limiting**: 30 requests/minute per IP
+- **API Key Authentication**: Secure backend communication
+- **CORS Configuration**: Restricted origins
+- **Session Management**: 5-minute chat token validity
+
+## 🚢 Deployment (Vercel)
+
+This dashboard is deployed on **Vercel** with automatic deployments from Git:
+
+```bash
+# Automatic deployment on push to main branch
+git push origin main
+```
+
+**Live URL**: https://www.ecolafaek.com
+
+### Environment Variables (Vercel)
+Configure all `.env.local` variables in Vercel dashboard under Project Settings → Environment Variables.
+
+## 📖 For Judges
+
+### Testing the Dashboard:
+
+1. **Visit**: https://www.ecolafaek.com
+2. **Try AI Chat**: Navigate to "Agent Chat" and ask questions like:
+   - "Show waste type distribution chart"
+   - "Create a map of hotspots"
+   - "How many reports were submitted this month?"
+3. **Vector Search**: Try semantic search for similar waste reports
+4. **Explore Maps**: Interactive geospatial visualization
+
+### Key Features to Review:
+✅ Autonomous AI agent with multi-round tool calling
+✅ Real-time chart generation via AgentCore Code Interpreter
+✅ Semantic vector search with Amazon Titan Embed
+✅ Clean, responsive UI with real production data
+
+---
 
 <div align="center">
-  <p>Built with ❤️ in Timor-Leste</p>
+  <p>Built with ❤️ for Timor-Leste | AWS AI Agent Global Hackathon 2025</p>
+  <p>Powered by Amazon Bedrock AgentCore</p>
 </div>
