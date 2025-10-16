@@ -47,18 +47,22 @@ class ReportProvider with ChangeNotifier {
   // Total reports count (from API)
   int _totalReports = 0;
   int get totalReportsCount => _totalReports;
-  
+
+  // Status counts from API
+  Map<String, int> _statusCounts = {
+    'submitted': 0,
+    'analyzing': 0,
+    'analyzed': 0,
+  };
+
   // Get reports by status from loaded reports
   List<Report> getReportsByStatus(String status) {
     return _reports.where((report) => report.status.toLowerCase() == status.toLowerCase()).toList();
   }
-  
-  // Count reports by status - counts from loaded reports only
+
+  // Count reports by status - uses status counts from API
   int countReportsByStatus(String status) {
-    // Always return the actual count from loaded reports
-    // This ensures accurate counts after submitting new reports
-    return _reports.where((report) =>
-      report.status.toLowerCase() == status.toLowerCase()).length;
+    return _statusCounts[status.toLowerCase()] ?? 0;
   }
   
   // Check if response indicates token expiration and handle it
@@ -112,6 +116,16 @@ class ReportProvider with ChangeNotifier {
           _totalPages = response['pagination']['total_pages'] ?? 1;
           _totalReports = response['pagination']['total'] ?? _reports.length;
           _hasMoreReports = _currentPage < _totalPages;
+
+          // Update status counts if available
+          if (response['pagination']['status_counts'] != null) {
+            final apiStatusCounts = response['pagination']['status_counts'] as Map<String, dynamic>;
+            _statusCounts = {
+              'submitted': apiStatusCounts['submitted'] ?? 0,
+              'analyzing': apiStatusCounts['analyzing'] ?? 0,
+              'analyzed': apiStatusCounts['analyzed'] ?? 0,
+            };
+          }
         } else {
           _hasMoreReports = false;
           _totalReports = _reports.length;
@@ -258,6 +272,9 @@ class ReportProvider with ChangeNotifier {
         // Increment total count to reflect the new report
         _totalReports++;
 
+        // Increment status count for the submitted status
+        _statusCounts['submitted'] = (_statusCounts['submitted'] ?? 0) + 1;
+
         notifyListeners();
 
         // Return the report with database confirmation
@@ -352,10 +369,24 @@ class ReportProvider with ChangeNotifier {
       
       if (response['success'] && response['report'] != null) {
         final updatedReport = Report.fromJson(response['report']);
-        
+
         // Update report in list if status has changed
         final index = _reports.indexWhere((r) => r.id == reportId);
         if (index >= 0 && _reports[index].status != updatedReport.status) {
+          // Update status counts
+          final oldStatus = _reports[index].status.toLowerCase();
+          final newStatus = updatedReport.status.toLowerCase();
+
+          // Decrement old status count
+          if (_statusCounts.containsKey(oldStatus)) {
+            _statusCounts[oldStatus] = (_statusCounts[oldStatus]! - 1).clamp(0, double.infinity).toInt();
+          }
+
+          // Increment new status count
+          if (_statusCounts.containsKey(newStatus)) {
+            _statusCounts[newStatus] = (_statusCounts[newStatus] ?? 0) + 1;
+          }
+
           _reports[index] = updatedReport;
           notifyListeners();
         }
