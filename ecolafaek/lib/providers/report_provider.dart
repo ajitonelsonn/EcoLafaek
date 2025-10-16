@@ -53,21 +53,12 @@ class ReportProvider with ChangeNotifier {
     return _reports.where((report) => report.status.toLowerCase() == status.toLowerCase()).toList();
   }
   
-  // Count reports by status - uses status percentages to estimate total counts
+  // Count reports by status - counts from loaded reports only
   int countReportsByStatus(String status) {
-    final loadedCount = _reports.where((report) => 
+    // Always return the actual count from loaded reports
+    // This ensures accurate counts after submitting new reports
+    return _reports.where((report) =>
       report.status.toLowerCase() == status.toLowerCase()).length;
-    
-    if (_reports.isEmpty || _totalReports <= _reports.length) {
-      return loadedCount;
-    }
-    
-    // If we have partial data loaded, estimate the total based on current percentages
-    final statusPercentage = _reports.isNotEmpty ? 
-      loadedCount / _reports.length : 0;
-    
-    // Return estimated count based on total reports available
-    return (statusPercentage * _totalReports).round();
   }
   
   // Check if response indicates token expiration and handle it
@@ -263,8 +254,12 @@ class ReportProvider with ChangeNotifier {
         
         // Add to reports list at the beginning (newest first)
         _reports.insert(0, serverReport);
+
+        // Increment total count to reflect the new report
+        _totalReports++;
+
         notifyListeners();
-        
+
         // Return the report with database confirmation
         return serverReport;
       } else {
