@@ -18,3 +18,7 @@ mobile_backend/not
 mobile_backend/.aws-sam
 
 have_some.txt
+
+.vscode
+arch.md
+AWS-AI-Agent-Global-Hackathon.pdf
