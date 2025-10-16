@@ -2485,7 +2485,28 @@ async def get_reports(
         cursor.execute(count_query, params)
         count_result = cursor.fetchone()
         total_reports = count_result['count'] if count_result else 0
-        
+
+        # Get status counts for the user
+        status_query = """
+            SELECT
+                status,
+                COUNT(*) as count
+            FROM reports
+            WHERE user_id = %s
+            GROUP BY status
+        """
+        cursor.execute(status_query, [user_id])
+        status_results = cursor.fetchall()
+
+        # Build status counts dictionary
+        status_counts = {
+            'submitted': 0,
+            'analyzing': 0,
+            'analyzed': 0
+        }
+        for row in status_results:
+            status_counts[row['status']] = row['count']
+
         # Get reports with pagination
         report_query = f"""
             SELECT r.*, a.severity_score, a.priority_level, w.name as waste_type
@@ -2501,12 +2522,12 @@ async def get_reports(
         reports = cursor.fetchall()
         cursor.close()
         connection.close()
-        
+
         # Convert datetime objects to strings
         for report in reports:
             if 'report_date' in report and report['report_date']:
                 report['report_date'] = report['report_date'].strftime('%Y-%m-%d %H:%M:%S')
-        
+
         return {
             "status": "success",
             "reports": reports,
@@ -2514,7 +2535,8 @@ async def get_reports(
                 "total": total_reports,
                 "page": page,
                 "per_page": per_page,
-                "total_pages": (total_reports + per_page - 1) // per_page
+                "total_pages": (total_reports + per_page - 1) // per_page,
+                "status_counts": status_counts
             }
         }
         
