@@ -26,7 +26,7 @@ A comprehensive public web dashboard showcasing **Amazon Bedrock AgentCore** aut
 - **Vector Search**: Amazon Titan Embed powered semantic similarity search
 - **Real-time Analytics**: Interactive data visualization and reporting
 
-For detailed AI agent architecture, see [Backend README](../mobile_backend/README.md) and [Architecture Diagram](../Diagram/ARCHITECTURE.md).
+For detailed AI agent architecture, see [Backend README](../mobile_backend/README.md) and [Architecture Diagram](../Diagram/README.md).
 
 ## 🌟 Key Features
 

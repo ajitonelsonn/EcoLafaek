@@ -15,7 +15,7 @@ Complete database schema for the EcoLafaek environmental waste monitoring system
 - **Geospatial indexing** for hotspot detection and mapping
 - **Multi-application access** from mobile app (Flutter), web dashboard (Next.js), and admin panel
 
-For complete architecture, see [Diagram/ARCHITECTURE.md](../Diagram/ARCHITECTURE.md).
+For complete architecture, see [Diagram/README.md](../Diagram/README.md).
 
 ## Entity Relationship Diagram
 
@@ -599,7 +599,7 @@ All performance-critical indexes are included in `schema.sql`:
 
 ---
 
-For complete system architecture, see [Diagram/ARCHITECTURE.md](../Diagram/ARCHITECTURE.md).
+For complete system architecture, see [Diagram/README.md](../Diagram/README.md).
 
 <div align="center">
   <p>AWS AI Agent Global Hackathon 2025</p>

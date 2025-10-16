@@ -1,20 +1,8 @@
-# EcoLafaek - ARCHITECTURE
+# EcoLafaek - System Architecture
 
-**AWS AI Agent Global Hackathon 2024 Submission**
+**AWS AI Agent Global Hackathon 2025 - Technical Architecture Documentation**
 
-> **Transforming Waste Management in Timor-Leste with Amazon Bedrock AgentCore**
->
-> An intelligent platform that combines mobile reporting, AI-powered image analysis, and autonomous data processing to combat environmental challenges through advanced AI agent capabilities.
-
----
-
-### 🎯 Innovation Highlights
-
-- **Advanced Multi-Modal AI**: Combines text and image analysis for comprehensive waste classification
-- **Autonomous Agent Reasoning**: AI agent can chain multiple tools to complete complex analytical tasks
-- **Real-time Data Processing**: Instant image analysis and hotspot detection
-- **Scalable Architecture**: Cloud-native design supporting thousands of concurrent users
-- **Environmental Impact**: Directly addressing UN SDG 11 (Sustainable Cities) and SDG 13 (Climate Action)
+> Complete technical architecture for the EcoLafaek environmental monitoring platform powered by Amazon Bedrock AgentCore.
 
 ---
 
@@ -434,32 +422,18 @@ mindmap
 
 ---
 
-## 🌍 Environmental Impact & Social Good
+## 📞 Additional Documentation
 
-### UN Sustainable Development Goals Alignment
-
-![](/Diagram/Image/SDG1.png)
-
-### Real-World Impact in Timor-Leste
-
-- **Community Empowerment**: Citizens become environmental monitors
-- **Government Support**: Data-driven policy making for waste management
-- **Health Protection**: Early detection of hazardous waste accumulation
-- **Tourism Preservation**: Maintaining clean environments for economic growth
+- **📱 Mobile App**: [../ecolafaek/README.md](../ecolafaek/README.md)
+- **⚡ Backend API**: [../mobile_backend/README.md](../mobile_backend/README.md)
+- **🌐 Public Dashboard**: [../ecolafaek_public_dahboard/README.md](../ecolafaek_public_dahboard/README.md)
+- **👨‍💼 Admin Panel**: [../ecolafaek_admin_panel/README.md](../ecolafaek_admin_panel/README.md)
+- **🗄️ Database Schema**: [../database/README.md](../database/README.md)
+- **📄 Main Project**: [../README.md](../README.md)
 
 ---
 
-## 📞 Project Information
-
-### Live System URLs
-
-- **🌐 Public Dashboard**: [www.ecolafaek.com](https://www.ecolafaek.com)
-- **⚡ Mobile Backend API**: [www.ecolafaek.xyz](https://www.ecolafaek.xyz)
-- **📱 Mobile App**: Available for testing (Flutter build)
-- **👨‍💼 Admin Panel**: Local access only (security)
-
----
-
-**Built with ❤️ for AWS AI Agent Global Hackathon**
-**Powered by Amazon Bedrock AgentCore**
-**Making Timor-Leste Cleaner, One Report at a Time** 🌱
+<div align="center">
+  <p><strong>AWS AI Agent Global Hackathon 2025</strong></p>
+  <p>Powered by Amazon Bedrock AgentCore</p>
+</div>

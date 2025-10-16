@@ -71,6 +71,7 @@ User Query: "Show waste trends and create a map of hotspots"
 **Important**: All AI models (Nova-Pro, Titan Embed) are accessed **through Amazon Bedrock service**, not directly. FastAPI uses `bedrock_runtime` client to communicate with Bedrock, which then provides access to the models.
 
 **Access Pattern**:
+
 ```python
 # Initialize Bedrock client (app.py:132-138)
 bedrock_runtime = boto3.client(
@@ -87,6 +88,7 @@ response = bedrock_runtime.invoke_model(
 **Models Used via Bedrock**:
 
 **Nova-Pro LLM** (`amazon.nova-pro-v1:0`)
+
 - **Image Analysis**: Waste classification from mobile app photos (via `invoke_model()`)
 - **Multi-Round Reasoning**: Autonomous task planning and execution (via `converse()`)
 - **Tool Orchestration**: Decides which tools to call and in what sequence
@@ -122,6 +124,7 @@ response = bedrock_runtime.invoke_model(
 **ARN**: `arn:aws:bedrock-agentcore:us-east-1:511558195893:runtime/ecolafaek_waste_agent-TGrtjyF5VC`
 
 **Primitives Used**:
+
 - ✅ **Code Interpreter**: Python runtime for data analysis and chart generation (matplotlib)
 - ✅ **Browser Tool**: Playwright-powered web scraping and content extraction
 
@@ -138,6 +141,7 @@ with code_session(region='us-east-1') as client:
 #### 3. **External Tools Integration** (Required ✅)
 
 Our agent integrates multiple external tools:
+
 - **Database**: SQL query execution against production database
 - **Code Execution**: Python code interpreter via AgentCore
 - **Web Search**: Browser automation via AgentCore Playwright
@@ -149,19 +153,20 @@ Our agent integrates multiple external tools:
 
 ### Tool Suite (5 Custom Tools)
 
-| Tool Name | Purpose | AWS Service | Example Use |
-|-----------|---------|-------------|-------------|
-| `execute_sql_query` | Query database | Database | "How many reports last week?" |
-| `generate_visualization` | Create charts | AgentCore Code Interpreter | "Show waste distribution chart" |
-| `create_map_visualization` | Generate maps | AgentCore Code Interpreter | "Map hotspots in Dili" |
-| `scrape_webpage` | Web scraping | AgentCore Browser Tool | "What is EcoLafaek?" |
-| `get_ecolafaek_info` | Fetch project info | AgentCore Browser Tool | "Tell me about this platform" |
+| Tool Name                  | Purpose            | AWS Service                | Example Use                     |
+| -------------------------- | ------------------ | -------------------------- | ------------------------------- |
+| `execute_sql_query`        | Query database     | Database                   | "How many reports last week?"   |
+| `generate_visualization`   | Create charts      | AgentCore Code Interpreter | "Show waste distribution chart" |
+| `create_map_visualization` | Generate maps      | AgentCore Code Interpreter | "Map hotspots in Dili"          |
+| `scrape_webpage`           | Web scraping       | AgentCore Browser Tool     | "What is EcoLafaek?"            |
+| `get_ecolafaek_info`       | Fetch project info | AgentCore Browser Tool     | "Tell me about this platform"   |
 
 ### Autonomous Reasoning Example
 
 **User**: "Generate charts for waste categories"
 
 **Agent Reasoning**:
+
 ```
 Round 1: "I need waste category data. I'll use execute_sql_query"
     → Executes: SELECT waste_type, COUNT(*) FROM reports GROUP BY waste_type
@@ -191,14 +196,14 @@ Round 3: "Chart is ready. I'll format the response with insights"
 
 ### Key Endpoints
 
-| Endpoint | Method | Purpose | Used By | Rate Limit |
-|----------|--------|---------|---------|------------|
-| `/api/reports` | POST | Submit waste report + image | Mobile App | 60/min |
-| `/api/chat` | POST | AI agent chat with tool calling | Dashboard | 30/min |
-| `/api/reports/{id}` | GET | Get report details | Mobile App | 120/min |
-| `/api/auth/login` | POST | JWT authentication | Mobile App | 10/min |
-| `/api/auth/register` | POST | User registration | Mobile App | 5/min |
-| `/health` | GET | Health check | All | Unlimited |
+| Endpoint             | Method | Purpose                         | Used By    | Rate Limit |
+| -------------------- | ------ | ------------------------------- | ---------- | ---------- |
+| `/api/reports`       | POST   | Submit waste report + image     | Mobile App | 60/min     |
+| `/api/chat`          | POST   | AI agent chat with tool calling | Dashboard  | 30/min     |
+| `/api/reports/{id}`  | GET    | Get report details              | Mobile App | 120/min    |
+| `/api/auth/login`    | POST   | JWT authentication              | Mobile App | 10/min     |
+| `/api/auth/register` | POST   | User registration               | Mobile App | 5/min      |
+| `/health`            | GET    | Health check                    | All        | Unlimited  |
 
 ---
 
@@ -216,7 +221,7 @@ agents:
     platform: linux/arm64
     container_runtime: docker
     aws:
-      account: '511558195893'
+      account: "511558195893"
       region: us-east-1
       execution_role: arn:aws:iam::511558195893:role/AmazonBedrockAgentCoreSDKRuntime-us-east-1
       ecr_repository: 511558195893.dkr.ecr.us-east-1.amazonaws.com/bedrock-agentcore-ecolafaek_waste_agent
@@ -241,6 +246,7 @@ agentcore launch
 ### AgentCore Tools Implementation
 
 **Code Interpreter** (`agentcore_tools.py`):
+
 ```python
 from bedrock_agentcore.tools.code_interpreter_client import code_session
 
@@ -267,6 +273,7 @@ def generate_visualization(data: dict, chart_type: str):
 ```
 
 **Browser Tool** (`web_scraper_tool.py`):
+
 ```python
 from bedrock_agentcore.tools.browser_client import browser_session
 from playwright.sync_api import sync_playwright
@@ -422,6 +429,7 @@ EMAIL_PORT=587
 ### Deployment Scripts
 
 **Initial Deployment**: `deploy_lightsail.sh`
+
 ```bash
 # Automated deployment script:
 # 1. Creates Lightsail instance (micro_3_0 bundle)
@@ -436,6 +444,7 @@ EMAIL_PORT=587
 ```
 
 **Code Updates**: `update_lightsail.sh`
+
 ```bash
 # Quick update script:
 # 1. Packages latest code
@@ -477,24 +486,29 @@ aws logs tail /aws/bedrock-agentcore/runtimes/ecolafaek_waste_agent-TGrtjyF5VC-D
 ### 🏆 Judging Criteria Alignment
 
 **Potential Value/Impact (20%)**:
+
 - Solving real-world waste management crisis in Timor-Leste
 - Measurable impact: 1000+ reports analyzed, 50+ hotspots identified
 - Civic engagement through mobile app (100+ active users)
 
 **Creativity (10%)**:
+
 - Novel approach: AI agent for environmental monitoring in developing regions
 - Unique tool orchestration: Combines SQL, charts, maps, and web scraping
 
 **Technical Execution (50%)**:
+
 - Well-architected: Three-tier architecture (mobile, dashboard, admin)
 - Reproducible: Complete setup scripts and documentation
 - Production-ready: Deployed on AWS Lightsail with monitoring
 
 **Functionality (10%)**:
+
 - Agent working as expected: 5-round tool calling, autonomous task completion
 - Scalable: Connection pooling, rate limiting, caching
 
 **Demo Presentation (10%)**:
+
 - End-to-end agentic workflow demonstrated
 - Live deployment at www.ecolafaek.com
 
@@ -510,6 +524,7 @@ Our complete EcoLafaek ecosystem is publicly accessible:
 - **Mobile App Download**: [https://www.ecolafaek.com/download](https://www.ecolafaek.com/download)
 
 ### Test Credentials
+
 - **Username**: `usertest`
 - **Password**: `1234abcd`
 
@@ -518,6 +533,7 @@ Our complete EcoLafaek ecosystem is publicly accessible:
 ## 📊 Architecture Diagrams
 
 See detailed architecture documentation:
+
 - [Architecture Overview](../ARCHITECTURE.md)
 - [Architecture Diagram](../ARCHITECTURE_DIAGRAM.md)
 
@@ -553,6 +569,8 @@ mobile_backend/
 - **SQL Injection Prevention**: Parameterized queries only
 
 ---
+
+For detailed AI agent architecture, see [Architecture Diagram](../Diagram/README.md).
 
 ## 🤝 Contributing
 

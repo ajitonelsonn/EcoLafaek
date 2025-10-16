@@ -128,7 +128,7 @@ All API routes are in `src/app/api/`:
 
 ---
 
-For complete system architecture, see [Diagram/ARCHITECTURE.md](../Diagram/ARCHITECTURE.md).
+For complete system architecture, see [Diagram/README.md](../Diagram/README.md).
 
 <div align="center">
   <p>AWS AI Agent Global Hackathon 2025</p>
