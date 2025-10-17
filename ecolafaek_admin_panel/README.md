@@ -3,20 +3,14 @@
 <div align="center">
   <img src="https://img.shields.io/badge/AWS_AI_Agent_Global_Hackathon-ADMIN_PANEL-FF9900?style=for-the-badge&logoColor=white" alt="AWS AI Agent Hackathon" />
 
-  <p>📍 <em>Local development environment only (localhost:3001)</em></p>
+  <p>📍 <em>Local development environment only (localhost:3000)</em></p>
 </div>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js" alt="Next.js 14" />
-  <img src="https://img.shields.io/badge/TypeScript-5.0+-blue?style=for-the-badge&logo=typescript" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/TailwindCSS-3.0+-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS" />
-</p>
 
 ## 📋 Overview
 
 Local-only administrative interface for managing the EcoLafaek waste monitoring system powered by Amazon Bedrock AgentCore. This admin panel provides secure access to user management, report moderation, system analytics, and configuration.
 
-**Security Note**: This admin panel is intentionally **NOT deployed** to the internet. It runs only on `localhost:3001` for security reasons with direct database access.
+**Security Note**: This admin panel is intentionally **NOT deployed** to the internet. It runs only on `localhost:3000` for security reasons with direct database access.
 
 ## 🔐 Key Features
 
@@ -35,27 +29,33 @@ Local-only administrative interface for managing the EcoLafaek waste monitoring 
 - **Styling**: Tailwind CSS 3.0+
 - **Database**: Direct SQL connection (local only)
 - **Authentication**: Local admin authentication
-- **Deployment**: Local machine only (`localhost:3001`)
+- **Deployment**: Local machine only (`localhost:3000`)
+
+![dashboard](/public/ssc/dashboard.png)
 
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js 18+
 - Access to database credentials
 
 ### Installation
 
 1. Navigate to admin panel directory:
+
 ```bash
 cd ecolafaek_admin_panel
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Create `.env.local` file:
+
 ```env
 # Database Connection
 DB_HOST=your-database-host
@@ -71,11 +71,12 @@ JWT_SECRET=your-jwt-secret
 ```
 
 4. Run development server:
+
 ```bash
 npm run dev
 ```
 
-5. Access at [http://localhost:3001](http://localhost:3001)
+5. Access at [http://localhost:3000](http://localhost:3000)
 
 ## 📁 Project Structure
 
@@ -103,14 +104,14 @@ ecolafaek_admin_panel/
 
 All API routes are in `src/app/api/`:
 
-| Route | Purpose | Description |
-|-------|---------|-------------|
-| `/api/reports` | Report Management | CRUD operations on waste reports |
-| `/api/users` | User Management | User approval, suspension, deletion |
-| `/api/analytics` | System Statistics | Usage metrics, AI performance |
-| `/api/hotspots` | Hotspot Management | Geographic clustering data |
-| `/api/settings` | System Configuration | Application settings |
-| `/api/auth/*` | Authentication | Local admin login/logout |
+| Route            | Purpose              | Description                         |
+| ---------------- | -------------------- | ----------------------------------- |
+| `/api/reports`   | Report Management    | CRUD operations on waste reports    |
+| `/api/users`     | User Management      | User approval, suspension, deletion |
+| `/api/analytics` | System Statistics    | Usage metrics, AI performance       |
+| `/api/hotspots`  | Hotspot Management   | Geographic clustering data          |
+| `/api/settings`  | System Configuration | Application settings                |
+| `/api/auth/*`    | Authentication       | Local admin login/logout            |
 
 ## 📈 Analytics Features
 
@@ -125,7 +126,7 @@ All API routes are in `src/app/api/`:
 - **Local Only**: Not exposed to internet - runs only on developer machine
 - **Direct DB Access**: No API proxy needed, direct SQL connections
 - **Admin Auth**: Username/password protection with JWT tokens
-- **No Public Access**: Only accessible from `localhost:3001`
+- **No Public Access**: Only accessible from `localhost:3000`
 - **Environment Variables**: Sensitive credentials in `.env.local`
 
 ---
@@ -133,5 +134,5 @@ All API routes are in `src/app/api/`:
 For complete system architecture, see [Diagram/README.md](../Diagram/README.md).
 
 <div align="center">
-  <p>AWS AI Agent Global Hackathon 2025</p>
+  <p>AWS AI Agent Global Hackathon</p>
 </div>
