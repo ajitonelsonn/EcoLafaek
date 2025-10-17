@@ -58,7 +58,12 @@
 
 ### Multi-Platform Deployment Strategy
 
-```mermaid
+<div class="mermaid-container">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.12.0/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+  <div class="mermaid">
 flowchart TB
     subgraph "Development Environment"
         Dev["💻 Developer Workstation<br/>(macOS ARM)<br/><br/>• Git repository<br/>• Local testing<br/>• Code changes"]
@@ -100,7 +105,9 @@ flowchart TB
     style Vercel fill:#e8f5e9
     style CodeBuild fill:#ffe0b2
     style LocalRun fill:#fce4ec
-```
+
+  </div>
+</div>
 
 ---
 
