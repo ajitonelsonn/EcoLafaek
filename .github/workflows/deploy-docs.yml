@@ -38,14 +38,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: docs/package-lock.json
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Install dependencies
-        run: cd docs && npm ci
+        run: cd docs && npm install
 
       - name: Sync documentation
         run: cd docs && npm run sync
