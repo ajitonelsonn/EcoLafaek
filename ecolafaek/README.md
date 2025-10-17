@@ -1,19 +1,9 @@
 # EcoLafaek Mobile App
 
 <div align="center">
-    <img src="assets/images/app_logo.png" alt="EcoLafaek Logo" width="120" style="margin-right: 20px;" />
     <span style="font-size: 36px; font-weight: bold; margin: 0 20px;">
-    <h3>Guarding Timor's Beauty</h3>
-    <img src="https://img.shields.io/badge/AWS_AI_Agent_Global_Hackathon-_MOBILE_APP-FF9900?style=for-the-badge&logoColor=white" alt="AWS AI Agent Hackathon" />
-    <p>
-        <a href="https://ajitonelson.itch.io/ecolafaek" target="_blank">
-            <img src="https://img.shields.io/badge/Download_APK-4CAF50?style=for-the-badge&logo=android&logoColor=white" alt="Download APK"/>
-        </a>
-        <a href="https://ecolafaek.com" target="_blank">
-            <img src="https://img.shields.io/badge/Public_Dashboard-2196F3?style=for-the-badge&logo=react&logoColor=white" alt="Public Dashboard"/>
-        </a>
-        <img src="https://img.shields.io/badge/Amazon_Bedrock-POWERED-FF9900?style=for-the-badge&logo=amazonwebservices&logoColor=white" alt="Amazon Bedrock" />
-    </p>
+    <img src="https://img.shields.io/badge/AWS_AI_Agent_Global_-Hackathon_-FF9900?style=for-the-badge&logoColor=white" alt="AWS AI Agent Hackathon" />
+  
 </div>
 
 ## 🏆 AWS AI Agent Global Hackathon 2025
@@ -254,7 +244,7 @@ lib/
 
 ## For Judges
 
-To review and test the app, judges can easily [download the mobile app](https://ajitonelson.itch.io/ecolafaek) and login using the following credentials:
+To review and test the app, judges can easily [download the mobile app](https://ecolafaek.com/download) and login using the following credentials:
 
 ### Login Credentials
 
