@@ -529,6 +529,17 @@ For detailed AI agent architecture, see [Architecture Diagram](../Diagram/README
 
 ---
 
+## 📞 Additional Documentation
+
+- **📱 Mobile App**: [../ecolafaek/README.md](../ecolafaek/README.md)
+- **🌐 Public Dashboard**: [../ecolafaek_public_dahboard/README.md](../ecolafaek_public_dahboard/README.md)
+- **👨‍💼 Admin Panel**: [../ecolafaek_admin_panel/README.md](../ecolafaek_admin_panel/README.md)
+- **🗄️ Database Schema**: [../database/README.md](../database/README.md)
+- **📊 System architecture**: [../Diagram/README.md](../Diagram/README.md)
+- **📄 Main Project**: [../README.md](../README.md)
+
+---
+
 <div align="center">
   <p><strong>Built with ❤️ for Timor-Leste</strong></p>
   <p>AWS AI Agent Global Hackathon 2025</p>

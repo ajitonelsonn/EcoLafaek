@@ -252,6 +252,19 @@ To review and test the app, judges can easily [download the mobile app](https://
 | -------- | -------- |
 | usertest | 1234abcd |
 
+---
+
+## 📞 Additional Documentation
+
+- **⚡ Backend API**: [../mobile_backend/README.md](../mobile_backend/README.md)
+- **🌐 Public Dashboard**: [../ecolafaek_public_dahboard/README.md](../ecolafaek_public_dahboard/README.md)
+- **👨‍💼 Admin Panel**: [../ecolafaek_admin_panel/README.md](../ecolafaek_admin_panel/README.md)
+- **🗄️ Database Schema**: [../database/README.md](../database/README.md)
+- **📊 System architecture**: [../Diagram/README.md](../Diagram/README.md)
+- **📄 Main Project**: [../README.md](../README.md)
+
+---
+
 !['tais'](../docs/image/tais.png)
 
 <div align="center">

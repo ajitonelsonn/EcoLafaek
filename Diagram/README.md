@@ -182,7 +182,7 @@ flowchart TD
 
 ---
 
-## 📊 Data Architecture & Models
+## 📊 Data Architecture & Models [Click to see full Database](/database/README.md)
 
 ### Comprehensive Database Schema
 
