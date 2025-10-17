@@ -18,6 +18,33 @@ This Flutter mobile app is part of EcoLafaek's **AWS AI Agent Global Hackathon 2
 
 For detailed AI agent architecture, see [Backend README](../mobile_backend/README.md).
 
+---
+
+## 📑 Table of Contents
+
+- [About](#-about)
+  - [How The App Works](#-how-the-app-works)
+- [App Screens](#-app-screens)
+  - [Login / Registration](#-login--registration)
+  - [Home Dashboard](#-home-dashboard)
+  - [Report Creation](#-report-creation)
+  - [Map View](#️-map-view)
+  - [Report Details](#-report-details)
+  - [Profile](#-profile)
+  - [Stats](#-stats)
+- [Technical Overview](#️-technical-overview)
+  - [System Architecture](#system-architecture)
+  - [Technology Stack](#technology-stack)
+  - [Dependencies](#dependencies)
+- [Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Project Structure](#-project-structure)
+- [For Judges](#for-judges)
+  - [Login Credentials](#login-credentials)
+
+---
+
 ## 📱 About
 
 EcoLafaek Mobile is a citizen-focused mobile application that empowers residents of Timor-Leste to report waste issues and track their environmental impact. The app provides a streamlined experience for waste reporting with intelligent AI analysis and meaningful progress tracking.
