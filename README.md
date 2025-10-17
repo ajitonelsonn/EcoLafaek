@@ -108,40 +108,7 @@ An autonomous AI agent system that:
 
 ### Core Components:
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    AWS CLOUD SERVICES                       │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │  Amazon Bedrock AgentCore Runtime                    │   │
-│  │  ├─ FastAPI Backend (agentcore_app.run())           │   │
-│  │  ├─ Code Interpreter (Python execution)             │   │
-│  │  └─ Browser Tool (Playwright automation)            │   │
-│  └──────────────────────────────────────────────────────┘   │
-│                           ↓                                  │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │  Amazon Bedrock Models                               │   │
-│  │  ├─ Nova-Pro LLM (Reasoning + Image Analysis)       │   │
-│  │  └─ Titan Embed (1024-dim Vector Embeddings)        │   │
-│  └──────────────────────────────────────────────────────┘   │
-│                           ↓                                  │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │  AWS Infrastructure                                  │   │
-│  │  ├─ Lightsail (1GB RAM, 2 vCPUs, Ubuntu 22.04)     │   │
-│  │  ├─ S3 (Image + Chart Storage)                      │   │
-│  │  ├─ ECR (Container Registry)                        │   │
-│  │  ├─ CodeBuild (ARM64 Builder)                       │   │
-│  │  └─ IAM (Security & Permissions)                    │   │
-│  └──────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────┐
-│                   EXTERNAL SERVICES                         │
-│  ├─ Vercel Cloud (Next.js Dashboard - www.ecolafaek.com)   │
-│  ├─ Database (Distributed SQL with Vector Support)         │
-│  ├─ Mobile App (Flutter - iOS/Android)                     │
-│  └─ Admin Panel (Next.js - Local Only)                     │
-└─────────────────────────────────────────────────────────────┘
-```
+![](Diagram/Image/core_components.png)
 
 **Detailed Architecture**: See [Diagram/README.md](./Diagram/README.md)
 
