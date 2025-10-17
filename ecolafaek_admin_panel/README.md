@@ -22,7 +22,9 @@ Local-only administrative interface for managing the EcoLafaek waste monitoring 
 
 - **User Management**: Approve, suspend, or delete user accounts
 - **Report Moderation**: Review and moderate submitted waste reports
+- **Hotspot Management**: Monitor and manage waste hotspot clusters
 - **System Analytics**: View system health metrics, AI analysis performance, and usage statistics
+- **Background Task Monitoring**: Track AgentCore tool executions, S3 cleanup tasks, and async processing
 - **Vector Analytics**: Monitor Amazon Titan Embed embedding generation and similarity search performance
 - **Configuration**: Update application settings and system parameters
 - **Direct Database Access**: CRUD operations on all tables

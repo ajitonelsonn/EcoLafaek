@@ -6,8 +6,8 @@
     <h3>Guarding Timor's Beauty</h3>
     <img src="https://img.shields.io/badge/AWS_AI_Agent_Global_Hackathon-_MOBILE_APP-FF9900?style=for-the-badge&logoColor=white" alt="AWS AI Agent Hackathon" />
     <p>
-        <a href="https://ecolafaek.com/download" target="_blank">
-            <img src="https://img.shields.io/badge/Download_App-4CAF50?style=for-the-badge&logo=android&logoColor=white" alt="Download App"/>
+        <a href="https://ajitonelson.itch.io/ecolafaek" target="_blank">
+            <img src="https://img.shields.io/badge/Download_APK-4CAF50?style=for-the-badge&logo=android&logoColor=white" alt="Download APK"/>
         </a>
         <a href="https://ecolafaek.com" target="_blank">
             <img src="https://img.shields.io/badge/Public_Dashboard-2196F3?style=for-the-badge&logo=react&logoColor=white" alt="Public Dashboard"/>
@@ -254,7 +254,7 @@ lib/
 
 ## For Judges
 
-To review and test the app, judges can easily [download the mobile app](https://ecolafaek.com/download) and login using the following credentials:
+To review and test the app, judges can easily [download the mobile app](https://ajitonelson.itch.io/ecolafaek) and login using the following credentials:
 
 ### Login Credentials
 
