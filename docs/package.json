@@ -1,7 +1,7 @@
 {
   "name": "ecolafaek-docs",
   "version": "1.0.0",
-  "description": "EcoLafaek Documentation Site - AWS AI Agent Global Hackathon 2025",
+  "description": "EcoLafaek Documentation Site - AWS AI Agent Global Hackathon",
   "main": "index.js",
   "scripts": {
     "sync": "node sync-docs.js",
@@ -10,7 +10,13 @@
     "preview": "vitepress preview",
     "deploy": "npm run build && gh-pages -d .vitepress/dist"
   },
-  "keywords": ["ecolafaek", "documentation", "aws", "bedrock", "agentcore"],
+  "keywords": [
+    "ecolafaek",
+    "documentation",
+    "aws",
+    "bedrock",
+    "agentcore"
+  ],
   "author": "EcoLafaek Team",
   "license": "MIT",
   "type": "commonjs",

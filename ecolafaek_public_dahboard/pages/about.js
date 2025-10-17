@@ -515,14 +515,15 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-full text-sm font-medium mb-6">
               <Brain className="w-4 h-4 mr-2" />
-              AWS AI Agent Global Hackathon 2025
+              AWS AI Agent Global Hackathon
             </div>
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Our Technology Stack
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              Built with cutting-edge AWS AI services and modern technologies to create an autonomous, 
-              scalable waste management system for Timor-Leste
+              Built with cutting-edge AWS AI services and modern technologies to
+              create an autonomous, scalable waste management system for
+              Timor-Leste
             </p>
           </div>
 
@@ -533,9 +534,9 @@ export default function AboutPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Amazon Bedrock Nova-Pro */}
-              <a 
-                href="https://aws.amazon.com/bedrock/nova/" 
-                target="_blank" 
+              <a
+                href="https://aws.amazon.com/bedrock/nova/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
               >
@@ -550,21 +551,26 @@ export default function AboutPage() {
                     />
                   </div>
                   <div className="flex items-center justify-center mb-2">
-                    <h3 className="font-bold text-xl text-gray-900">Amazon Nova-Pro</h3>
+                    <h3 className="font-bold text-xl text-gray-900">
+                      Amazon Nova-Pro
+                    </h3>
                     <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-orange-600 transition-colors" />
                   </div>
-                  <p className="text-sm text-orange-600 mb-4 font-medium">Multi-Modal LLM</p>
+                  <p className="text-sm text-orange-600 mb-4 font-medium">
+                    Multi-Modal LLM
+                  </p>
                   <div className="text-xs text-gray-500 leading-relaxed">
-                    Advanced AI model (amazon.nova-pro-v1:0) for image analysis, waste classification, 
-                    and autonomous reasoning with multi-round tool calling capabilities
+                    Advanced AI model (amazon.nova-pro-v1:0) for image analysis,
+                    waste classification, and autonomous reasoning with
+                    multi-round tool calling capabilities
                   </div>
                 </div>
               </a>
 
               {/* Amazon Bedrock AgentCore */}
-              <a 
-                href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html" 
-                target="_blank" 
+              <a
+                href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
               >
@@ -579,21 +585,26 @@ export default function AboutPage() {
                     />
                   </div>
                   <div className="flex items-center justify-center mb-2">
-                    <h3 className="font-bold text-xl text-gray-900">Bedrock AgentCore</h3>
+                    <h3 className="font-bold text-xl text-gray-900">
+                      Bedrock AgentCore
+                    </h3>
                     <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-blue-600 transition-colors" />
                   </div>
-                  <p className="text-sm text-blue-600 mb-4 font-medium">Autonomous Agent Runtime</p>
+                  <p className="text-sm text-blue-600 mb-4 font-medium">
+                    Autonomous Agent Runtime
+                  </p>
                   <div className="text-xs text-gray-500 leading-relaxed">
-                    Code Interpreter and Browser tools for autonomous SQL queries, chart generation, 
-                    map creation, and web scraping with ARM64 runtime
+                    Code Interpreter and Browser tools for autonomous SQL
+                    queries, chart generation, map creation, and web scraping
+                    with ARM64 runtime
                   </div>
                 </div>
               </a>
 
               {/* Amazon Titan Embed */}
-              <a 
-                href="https://aws.amazon.com/bedrock/titan/" 
-                target="_blank" 
+              <a
+                href="https://aws.amazon.com/bedrock/titan/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
               >
@@ -608,13 +619,17 @@ export default function AboutPage() {
                     />
                   </div>
                   <div className="flex items-center justify-center mb-2">
-                    <h3 className="font-bold text-xl text-gray-900">Titan Embed</h3>
+                    <h3 className="font-bold text-xl text-gray-900">
+                      Titan Embed
+                    </h3>
                     <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-purple-600 transition-colors" />
                   </div>
-                  <p className="text-sm text-purple-600 mb-4 font-medium">Vector Embeddings</p>
+                  <p className="text-sm text-purple-600 mb-4 font-medium">
+                    Vector Embeddings
+                  </p>
                   <div className="text-xs text-gray-500 leading-relaxed">
-                    amazon.titan-embed-image-v1 for semantic search and similarity matching 
-                    with 1024-dimensional vector embeddings
+                    amazon.titan-embed-image-v1 for semantic search and
+                    similarity matching with 1024-dimensional vector embeddings
                   </div>
                 </div>
               </a>
@@ -628,9 +643,9 @@ export default function AboutPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Flutter Mobile App */}
-              <a 
-                href="https://flutter.dev/" 
-                target="_blank" 
+              <a
+                href="https://flutter.dev/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
               >
@@ -648,18 +663,21 @@ export default function AboutPage() {
                     <h3 className="font-bold text-xl text-gray-900">Flutter</h3>
                     <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-blue-600 transition-colors" />
                   </div>
-                  <p className="text-sm text-blue-600 mb-4 font-medium">Cross-Platform Mobile App</p>
+                  <p className="text-sm text-blue-600 mb-4 font-medium">
+                    Cross-Platform Mobile App
+                  </p>
                   <div className="text-xs text-gray-500 leading-relaxed">
-                    Dart-based mobile application for citizen waste reporting with GPS integration, 
-                    offline capabilities, and optimized for low-bandwidth environments
+                    Dart-based mobile application for citizen waste reporting
+                    with GPS integration, offline capabilities, and optimized
+                    for low-bandwidth environments
                   </div>
                 </div>
               </a>
 
               {/* Next.js Dashboard */}
-              <a 
-                href="https://nextjs.org/" 
-                target="_blank" 
+              <a
+                href="https://nextjs.org/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
               >
@@ -677,10 +695,13 @@ export default function AboutPage() {
                     <h3 className="font-bold text-xl text-gray-900">Next.js</h3>
                     <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-gray-600 transition-colors" />
                   </div>
-                  <p className="text-sm text-gray-600 mb-4 font-medium">Public Dashboard & Admin Panel</p>
+                  <p className="text-sm text-gray-600 mb-4 font-medium">
+                    Public Dashboard & Admin Panel
+                  </p>
                   <div className="text-xs text-gray-500 leading-relaxed">
-                    React-based web applications with serverless API routes, real-time analytics, 
-                    interactive maps, and vector search capabilities
+                    React-based web applications with serverless API routes,
+                    real-time analytics, interactive maps, and vector search
+                    capabilities
                   </div>
                 </div>
               </a>
@@ -694,9 +715,9 @@ export default function AboutPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* FastAPI */}
-              <a 
-                href="https://fastapi.tiangolo.com/" 
-                target="_blank" 
+              <a
+                href="https://fastapi.tiangolo.com/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
               >
@@ -714,18 +735,21 @@ export default function AboutPage() {
                     <h3 className="font-bold text-xl text-gray-900">FastAPI</h3>
                     <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-green-600 transition-colors" />
                   </div>
-                  <p className="text-sm text-green-600 mb-4 font-medium">Python API Backend</p>
+                  <p className="text-sm text-green-600 mb-4 font-medium">
+                    Python API Backend
+                  </p>
                   <div className="text-xs text-gray-500 leading-relaxed">
-                    High-performance Python 3.10 API with Pydantic validation, JWT authentication, 
-                    rate limiting, and AgentCore orchestration
+                    High-performance Python 3.10 API with Pydantic validation,
+                    JWT authentication, rate limiting, and AgentCore
+                    orchestration
                   </div>
                 </div>
               </a>
 
               {/* Node.js */}
-              <a 
-                href="https://nodejs.org/" 
-                target="_blank" 
+              <a
+                href="https://nodejs.org/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
               >
@@ -743,10 +767,12 @@ export default function AboutPage() {
                     <h3 className="font-bold text-xl text-gray-900">Node.js</h3>
                     <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-green-600 transition-colors" />
                   </div>
-                  <p className="text-sm text-green-600 mb-4 font-medium">Serverless API Routes</p>
+                  <p className="text-sm text-green-600 mb-4 font-medium">
+                    Serverless API Routes
+                  </p>
                   <div className="text-xs text-gray-500 leading-relaxed">
-                    JavaScript runtime for Next.js API routes, direct database access, 
-                    and serverless functions on Vercel platform
+                    JavaScript runtime for Next.js API routes, direct database
+                    access, and serverless functions on Vercel platform
                   </div>
                 </div>
               </a>
@@ -760,9 +786,9 @@ export default function AboutPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* AWS Lightsail */}
-              <a 
-                href="https://aws.amazon.com/lightsail/" 
-                target="_blank" 
+              <a
+                href="https://aws.amazon.com/lightsail/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
               >
@@ -777,21 +803,25 @@ export default function AboutPage() {
                     />
                   </div>
                   <div className="flex items-center justify-center mb-2">
-                    <h3 className="font-bold text-xl text-gray-900">AWS Lightsail</h3>
+                    <h3 className="font-bold text-xl text-gray-900">
+                      AWS Lightsail
+                    </h3>
                     <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-orange-600 transition-colors" />
                   </div>
-                  <p className="text-sm text-orange-600 mb-4 font-medium">Cloud Hosting</p>
+                  <p className="text-sm text-orange-600 mb-4 font-medium">
+                    Cloud Hosting
+                  </p>
                   <div className="text-xs text-gray-500 leading-relaxed">
-                    Ubuntu 22.04 LTS hosting with 1GB RAM, 2 vCPUs, SSL certificates, 
-                    and systemd service management
+                    Ubuntu 22.04 LTS hosting with 1GB RAM, 2 vCPUs, SSL
+                    certificates, and systemd service management
                   </div>
                 </div>
               </a>
 
               {/* Amazon S3 */}
-              <a 
-                href="https://aws.amazon.com/s3/" 
-                target="_blank" 
+              <a
+                href="https://aws.amazon.com/s3/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
               >
@@ -806,21 +836,26 @@ export default function AboutPage() {
                     />
                   </div>
                   <div className="flex items-center justify-center mb-2">
-                    <h3 className="font-bold text-xl text-gray-900">Amazon S3</h3>
+                    <h3 className="font-bold text-xl text-gray-900">
+                      Amazon S3
+                    </h3>
                     <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-red-600 transition-colors" />
                   </div>
-                  <p className="text-sm text-red-600 mb-4 font-medium">Object Storage</p>
+                  <p className="text-sm text-red-600 mb-4 font-medium">
+                    Object Storage
+                  </p>
                   <div className="text-xs text-gray-500 leading-relaxed">
-                    Scalable storage for report images, generated charts, and static assets 
-                    with lifecycle management and public access policies
+                    Scalable storage for report images, generated charts, and
+                    static assets with lifecycle management and public access
+                    policies
                   </div>
                 </div>
               </a>
 
               {/* Vercel */}
-              <a 
-                href="https://vercel.com/" 
-                target="_blank" 
+              <a
+                href="https://vercel.com/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
               >
@@ -832,10 +867,12 @@ export default function AboutPage() {
                     <h3 className="font-bold text-xl text-gray-900">Vercel</h3>
                     <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-gray-600 transition-colors" />
                   </div>
-                  <p className="text-sm text-gray-600 mb-4 font-medium">Serverless Platform</p>
+                  <p className="text-sm text-gray-600 mb-4 font-medium">
+                    Serverless Platform
+                  </p>
                   <div className="text-xs text-gray-500 leading-relaxed">
-                    Global CDN deployment for Next.js applications with edge functions, 
-                    automatic scaling, and Git-based deployments
+                    Global CDN deployment for Next.js applications with edge
+                    functions, automatic scaling, and Git-based deployments
                   </div>
                 </div>
               </a>
@@ -849,9 +886,9 @@ export default function AboutPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-1 gap-8 max-w-md mx-auto">
               {/* TiDB Cloud */}
-              <a 
-                href="https://tidbcloud.com/" 
-                target="_blank" 
+              <a
+                href="https://tidbcloud.com/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
               >
@@ -866,13 +903,18 @@ export default function AboutPage() {
                     />
                   </div>
                   <div className="flex items-center justify-center mb-2">
-                    <h3 className="font-bold text-xl text-gray-900">TiDB Cloud</h3>
+                    <h3 className="font-bold text-xl text-gray-900">
+                      TiDB Cloud
+                    </h3>
                     <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-indigo-600 transition-colors" />
                   </div>
-                  <p className="text-sm text-indigo-600 mb-4 font-medium">Distributed SQL + Vector Database</p>
+                  <p className="text-sm text-indigo-600 mb-4 font-medium">
+                    Distributed SQL + Vector Database
+                  </p>
                   <div className="text-xs text-gray-500 leading-relaxed">
-                    MySQL-compatible distributed database with vector storage support, 
-                    connection pooling, and automatic scaling for high availability
+                    MySQL-compatible distributed database with vector storage
+                    support, connection pooling, and automatic scaling for high
+                    availability
                   </div>
                 </div>
               </a>
@@ -888,30 +930,46 @@ export default function AboutPage() {
               <div className="text-center">
                 <div className="bg-white rounded-xl p-4 shadow-sm border border-emerald-100 mb-3">
                   <div className="text-2xl mb-2">🤖</div>
-                  <div className="font-semibold text-gray-900">Autonomous AI Agent</div>
+                  <div className="font-semibold text-gray-900">
+                    Autonomous AI Agent
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600">Multi-round tool calling with AgentCore runtime</p>
+                <p className="text-sm text-gray-600">
+                  Multi-round tool calling with AgentCore runtime
+                </p>
               </div>
               <div className="text-center">
                 <div className="bg-white rounded-xl p-4 shadow-sm border border-emerald-100 mb-3">
                   <div className="text-2xl mb-2">🔍</div>
-                  <div className="font-semibold text-gray-900">Vector Search</div>
+                  <div className="font-semibold text-gray-900">
+                    Vector Search
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600">Semantic similarity with Titan embeddings</p>
+                <p className="text-sm text-gray-600">
+                  Semantic similarity with Titan embeddings
+                </p>
               </div>
               <div className="text-center">
                 <div className="bg-white rounded-xl p-4 shadow-sm border border-emerald-100 mb-3">
                   <div className="text-2xl mb-2">📊</div>
-                  <div className="font-semibold text-gray-900">Real-time Analytics</div>
+                  <div className="font-semibold text-gray-900">
+                    Real-time Analytics
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600">Live dashboards with interactive visualizations</p>
+                <p className="text-sm text-gray-600">
+                  Live dashboards with interactive visualizations
+                </p>
               </div>
               <div className="text-center">
                 <div className="bg-white rounded-xl p-4 shadow-sm border border-emerald-100 mb-3">
                   <div className="text-2xl mb-2">🔒</div>
-                  <div className="font-semibold text-gray-900">Enterprise Security</div>
+                  <div className="font-semibold text-gray-900">
+                    Enterprise Security
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600">JWT auth, rate limiting, and data encryption</p>
+                <p className="text-sm text-gray-600">
+                  JWT auth, rate limiting, and data encryption
+                </p>
               </div>
             </div>
           </div>

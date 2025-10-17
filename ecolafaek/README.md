@@ -1,14 +1,12 @@
 # EcoLafaek Mobile App
 
 <div align="center">
-    <span style="font-size: 36px; font-weight: bold; margin: 0 20px;">
-    <img src="https://img.shields.io/badge/AWS_AI_Agent_Global_-Hackathon_-FF9900?style=for-the-badge&logoColor=white" alt="AWS AI Agent Hackathon" />
-  
+  <img src="https://img.shields.io/badge/AWS_AI_Agent_Global_-Hackathon_-FF9900?style=for-the-badge&logoColor=white" alt="AWS AI Agent Hackathon" />
 </div>
 
-## 🏆 AWS AI Agent Global Hackathon 2025
+## 🏆 AWS AI Agent Global Hackathon
 
-This Flutter mobile app is part of EcoLafaek's **AWS AI Agent Global Hackathon 2025** submission, showcasing how mobile applications integrate with autonomous AI agents powered by **Amazon Bedrock AgentCore** for intelligent environmental monitoring.
+This Flutter mobile app is part of EcoLafaek's **AWS AI Agent Global Hackathon** submission, showcasing how mobile applications integrate with autonomous AI agents powered by **Amazon Bedrock AgentCore** for intelligent environmental monitoring.
 
 ### 🤖 AI Integration Flow:
 

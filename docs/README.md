@@ -41,6 +41,7 @@ The site will be available at http://localhost:5173
 The `sync-docs.js` script automatically:
 
 1. **Copies README.md files** from all project components:
+
    - Main README.md → getting-started.md
    - Diagram/README.md → architecture.md
    - ecolafaek/README.md → mobile-app/index.md
@@ -50,6 +51,7 @@ The `sync-docs.js` script automatically:
    - database/README.md → database/index.md
 
 2. **Transforms content** for VitePress:
+
    - Fixes relative image paths
    - Updates cross-references between docs
    - Adds VitePress frontmatter
@@ -82,6 +84,7 @@ Edit `.vitepress/theme/style.css` to customize colors, fonts, and styling.
 ### Navigation
 
 Edit `.vitepress/config.mjs` to update:
+
 - Sidebar navigation
 - Top navigation
 - Social links
@@ -128,6 +131,7 @@ docs/
 ### GitHub Pages
 
 The site automatically deploys to GitHub Pages via GitHub Actions when:
+
 - You push to the `main` branch
 - Any README.md file changes
 - You manually trigger the workflow
@@ -137,6 +141,7 @@ The site automatically deploys to GitHub Pages via GitHub Actions when:
 See `.github/workflows/deploy-docs.yml` for the complete deployment configuration.
 
 **Steps**:
+
 1. Checkout code
 2. Setup Node.js and install dependencies
 3. Run sync script to copy README files
@@ -158,6 +163,7 @@ npm run build
 To add a new documentation page:
 
 1. **Option A: Add to existing component README**
+
    - Update the relevant README.md file (e.g., mobile_backend/README.md)
    - Run `npm run sync` to sync changes
 
@@ -182,7 +188,7 @@ To add a new documentation page:
 ---
 
 <div align="center">
-  <p>Built with ❤️ for Timor-Leste | AWS AI Agent Global Hackathon 2025</p>
+  <p>Built with ❤️ for Timor-Leste | AWS AI Agent Global Hackathon</p>
   <p>Powered by VitePress</p>
 </div>
 # Documentation Site

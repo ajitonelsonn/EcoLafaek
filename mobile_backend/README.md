@@ -542,6 +542,6 @@ For detailed AI agent architecture, see [Architecture Diagram](../Diagram/README
 
 <div align="center">
   <p><strong>Built with ❤️ for Timor-Leste</strong></p>
-  <p>AWS AI Agent Global Hackathon 2025</p>
+  <p>AWS AI Agent Global Hackathon</p>
   <p>Powered by Amazon Bedrock AgentCore</p>
 </div>

@@ -630,5 +630,5 @@ For complete system architecture, see [Diagram/README.md](../Diagram/README.md).
 - **📄 Main Project**: [../README.md](../README.md)
 
 <div align="center">
-  <p>AWS AI Agent Global Hackathon 2025</p>
+  <p>AWS AI Agent Global Hackathon</p>
 </div>
