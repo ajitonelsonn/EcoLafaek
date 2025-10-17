@@ -1,3 +1,4 @@
+# FastAPI and core dependencies
 fastapi
 uvicorn
 python-multipart
@@ -5,12 +6,37 @@ python-dotenv
 pydantic
 pydantic[email]
 requests
+slowapi
+
+# AWS Services
 boto3
+botocore
+
+# Amazon Bedrock AgentCore
+bedrock-agentcore
+bedrock-agentcore-starter-toolkit
+
+# Database
 mysql-connector-python
+DBUtils
+
+# Authentication
 PyJWT
 passlib
 bcrypt
 email-validator
 python-jose
+
+# Image processing
 pillow
 numpy
+
+# Web scraping
+beautifulsoup4
+lxml
+playwright
+
+# Visualization
+matplotlib
+folium
+pandas
