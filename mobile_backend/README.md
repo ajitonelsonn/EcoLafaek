@@ -5,37 +5,22 @@
   <img src="image/app_logo.png" alt="EcoLafaek Logo" width="120" />
 </p>
 
-<div align="center">
-  <img src="https://img.shields.io/badge/AWS_AI_Agent_Global_Hackathon-🏆_BACKEND_API-FF9900?style=for-the-badge&logoColor=white" alt="AWS AI Agent Global Hackathon" />
-</div>
+## Autonomous AI Agent Backend
 
-<!-- Technology Stack Badges -->
-<p align="center">
-  <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI" />
-  <img src="https://img.shields.io/badge/Amazon_Bedrock-FF9900?style=for-the-badge&logo=amazonwebservices" alt="Amazon Bedrock" />
-  <img src="https://img.shields.io/badge/AgentCore-FF9900?style=for-the-badge&logo=amazonwebservices" alt="AgentCore" />
-  <img src="https://img.shields.io/badge/Nova_Pro-FF9900?style=for-the-badge&logo=amazonwebservices" alt="Nova Pro" />
-  <img src="https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python" alt="Python 3.10+" />
-  <img src="https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3" alt="AWS S3" />
-  <img src="https://img.shields.io/badge/AWS_Lightsail-FF9900?style=for-the-badge&logo=amazonaws" alt="AWS Lightsail" />
-</p>
-
-## 🏆 AWS AI Agent Global Hackathon - Autonomous AI Agent Backend
-
-**EcoLafaek** showcases **Amazon Bedrock AgentCore** with autonomous multi-tool orchestration, creating an intelligent environmental monitoring system that solves real-world waste management challenges in Timor-Leste.
+**EcoLafaek Mobile Backend API** showcases **Amazon Bedrock AgentCore** with autonomous multi-tool orchestration, creating an intelligent environmental monitoring system that solves real-world waste management challenges in Timor-Leste.
 
 ### 🤖 Core AI Agent Innovation:
 
 - **Amazon Bedrock Nova-Pro LLM**: Multi-modal reasoning engine (image + text analysis)
 - **AgentCore Runtime**: Autonomous tool execution with Code Interpreter and Browser primitives
 - **Multi-Round Tool Calling**: Agent chains 5+ tools autonomously (SQL → Chart → Map → Web Scrape)
-- **Production Deployment**: Live on AWS Lightsail with 100+ concurrent users
+- **Production Deployment**: Live on AWS Lightsail
 
 ---
 
-## 🌱 Project Overview
+## 🌱 Overview
 
-EcoLafaek is a sophisticated **autonomous AI agent** backend that powers environmental waste reporting for Timor-Leste. This project demonstrates advanced AI agent capabilities using Amazon Bedrock AgentCore to autonomously analyze images, execute SQL queries, generate visualizations, create interactive maps, and scrape web content - all through natural language chat.
+This is a sophisticated **autonomous AI agent** backend that powers environmental waste reporting for Timor-Leste. This project demonstrates advanced AI agent capabilities using Amazon Bedrock AgentCore to autonomously analyze images, execute SQL queries, generate visualizations, create interactive maps, and scrape web content - all through natural language chat.
 
 **Real-World Impact**: Helping Timor-Leste combat environmental challenges through AI-powered civic engagement.
 
@@ -61,9 +46,9 @@ User Query: "Show waste trends and create a map of hotspots"
 [Round 5] Returns comprehensive response with chart + interactive map
 ```
 
-### AWS Services Used (Hackathon Requirements ✅)
+### AWS Services Used
 
-#### 1. **Amazon Bedrock** (Required ✅)
+#### 1. **Amazon Bedrock**
 
 **Service**: Amazon Bedrock Runtime API
 **Region**: us-east-1
@@ -119,9 +104,9 @@ response = bedrock_runtime.invoke_model(
 )
 ```
 
-#### 2. **Amazon Bedrock AgentCore** (Required ✅ - Strongly Recommended)
+#### 2. **Amazon Bedrock AgentCore**
 
-**ARN**: `arn:aws:bedrock-agentcore:us-east-1:511558195893:runtime/ecolafaek_waste_agent-TGrtjyF5VC`
+**ARN**: `arn:aws:bedrock-agentcore:us-east-1:my_aws_ID:runtime/ecolafaek_waste_agent-TGrtjyF5VC`
 
 **Primitives Used**:
 
@@ -138,7 +123,7 @@ with code_session(region='us-east-1') as client:
     # Returns base64 PNG chart
 ```
 
-#### 3. **External Tools Integration** (Required ✅)
+#### 3. **External Tools Integration**
 
 Our agent integrates multiple external tools:
 
@@ -155,11 +140,14 @@ Our agent integrates multiple external tools:
 
 | Tool Name                  | Purpose            | AWS Service                | Example Use                     |
 | -------------------------- | ------------------ | -------------------------- | ------------------------------- |
-| `execute_sql_query`        | Query database     | Database                   | "How many reports last week?"   |
+| `execute_sql_query`        | Query database     | Database                   | "How many reports this week?"   |
 | `generate_visualization`   | Create charts      | AgentCore Code Interpreter | "Show waste distribution chart" |
-| `create_map_visualization` | Generate maps      | AgentCore Code Interpreter | "Map hotspots in Dili"          |
+| `create_map_visualization` | Generate maps      | AgentCore Code Interpreter | "Map hotspots"                  |
 | `scrape_webpage`           | Web scraping       | AgentCore Browser Tool     | "What is EcoLafaek?"            |
 | `get_ecolafaek_info`       | Fetch project info | AgentCore Browser Tool     | "Tell me about this platform"   |
+
+**Example Chat**
+![Example Output](/image/output_chat.png)
 
 ### Autonomous Reasoning Example
 
@@ -179,6 +167,9 @@ Round 2: "I have the data. Now I'll create a bar chart using generate_visualizat
 Round 3: "Chart is ready. I'll format the response with insights"
     → Returns markdown with embedded chart and analysis
 ```
+
+**Example chat Log**
+![Example Output](/image/chat_log.png)
 
 ---
 
@@ -221,15 +212,18 @@ agents:
     platform: linux/arm64
     container_runtime: docker
     aws:
-      account: "511558195893"
+      account: "Your_AWS_ID"
       region: us-east-1
-      execution_role: arn:aws:iam::511558195893:role/AmazonBedrockAgentCoreSDKRuntime-us-east-1
-      ecr_repository: 511558195893.dkr.ecr.us-east-1.amazonaws.com/bedrock-agentcore-ecolafaek_waste_agent
+      execution_role: arn:aws:iam::Your_AWS_ID:role/AmazonBedrockAgentCoreSDKRuntime-us-east-1
+      ecr_repository: Your_AWS_ID.dkr.ecr.us-east-1.amazonaws.com/bedrock-agentcore-ecolafaek_waste_agent
     codebuild:
       project_name: bedrock-agentcore-ecolafaek_waste_agent-builder
 ```
 
 ### Deployment Process
+
+To execute agentcore launch make sure you're iam like bellow:
+![Iam](/image/iam.png)
 
 ```bash
 # 1. Deploy AgentCore runtime (ARM64 via CodeBuild)
@@ -242,6 +236,9 @@ agentcore launch
 # - Deploys to Bedrock AgentCore
 # - Creates runtime endpoint (~60 seconds)
 ```
+
+My Aws Agentcore:
+![Aws AgentCore that already Deployed](/image/aws_bed_agentcore.png)
 
 ### AgentCore Tools Implementation
 
@@ -346,6 +343,14 @@ def analyze_image_with_bedrock(image_url: str):
 }
 ```
 
+### Example Output
+
+**No have Image**
+![No have Image](/image/nohave.png)
+
+**Have Image**
+![have Image](/image/have.png)
+
 ---
 
 ## 🛠️ Setup & Installation
@@ -361,7 +366,7 @@ def analyze_image_with_bedrock(image_url: str):
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/yourusername/ecolafaek.git
+git clone https://github.com/ajitonelsonn/ecolafaek.git
 cd ecolafaek/mobile_backend
 
 # 2. Create virtual environment
@@ -473,47 +478,6 @@ aws logs tail /aws/bedrock-agentcore/runtimes/ecolafaek_waste_agent-TGrtjyF5VC-D
 
 ---
 
-## 🎯 Hackathon Criteria Met
-
-### ✅ Required Technologies
-
-- ✅ **LLM from AWS Bedrock**: Amazon Nova-Pro v1.0
-- ✅ **Amazon Bedrock AgentCore**: Code Interpreter + Browser primitives
-- ✅ **Reasoning LLM**: Nova-Pro for autonomous decision-making
-- ✅ **Autonomous Capabilities**: Multi-round tool calling without human intervention
-- ✅ **External Tools Integration**: SQL, code execution, web scraping, S3 storage
-
-### 🏆 Judging Criteria Alignment
-
-**Potential Value/Impact (20%)**:
-
-- Solving real-world waste management crisis in Timor-Leste
-- Measurable impact: 1000+ reports analyzed, 50+ hotspots identified
-- Civic engagement through mobile app (100+ active users)
-
-**Creativity (10%)**:
-
-- Novel approach: AI agent for environmental monitoring in developing regions
-- Unique tool orchestration: Combines SQL, charts, maps, and web scraping
-
-**Technical Execution (50%)**:
-
-- Well-architected: Three-tier architecture (mobile, dashboard, admin)
-- Reproducible: Complete setup scripts and documentation
-- Production-ready: Deployed on AWS Lightsail with monitoring
-
-**Functionality (10%)**:
-
-- Agent working as expected: 5-round tool calling, autonomous task completion
-- Scalable: Connection pooling, rate limiting, caching
-
-**Demo Presentation (10%)**:
-
-- End-to-end agentic workflow demonstrated
-- Live deployment at www.ecolafaek.com
-
----
-
 ## 🌐 Live Demo
 
 Our complete EcoLafaek ecosystem is publicly accessible:
@@ -527,15 +491,6 @@ Our complete EcoLafaek ecosystem is publicly accessible:
 
 - **Username**: `usertest`
 - **Password**: `1234abcd`
-
----
-
-## 📊 Architecture Diagrams
-
-See detailed architecture documentation:
-
-- [Architecture Overview](../ARCHITECTURE.md)
-- [Architecture Diagram](../ARCHITECTURE_DIAGRAM.md)
 
 ---
 
@@ -571,16 +526,6 @@ mobile_backend/
 ---
 
 For detailed AI agent architecture, see [Architecture Diagram](../Diagram/README.md).
-
-## 🤝 Contributing
-
-This project was built for the AWS AI Agent Global Hackathon. For questions or contributions, please open an issue or pull request.
-
----
-
-## 📄 License
-
-MIT License - See LICENSE file for details
 
 ---
 
