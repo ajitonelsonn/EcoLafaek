@@ -5,7 +5,7 @@
 </p>
 
 <div align="center">
-  <img src="https://img.shields.io/badge/AWS_AI_Agent_Global_Hackathon_2025-🏆_WINNER_SUBMISSION-FF9900?style=for-the-badge&logoColor=white" alt="AWS AI Agent Hackathon" />
+  <img src="https://img.shields.io/badge/AWS_AI_Agent_Global-_Hackathon-FF9900?style=for-the-badge&logoColor=white" alt="AWS AI Agent Hackathon" />
 </div>
 
 <div align="center">
@@ -23,47 +23,20 @@
   <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
 </div>
 
----
-
-## 🚀 Judge Quick Start
-
-### 🎯 Live Demo Access:
-
-| Component | URL | Credentials |
-|-----------|-----|-------------|
-| **📱 Mobile App** | [Download APK](https://ajitonelson.itch.io/ecolafaek) | Username: `usertest`<br/>Password: `1234abcd` |
-| **🌐 Public Dashboard** | [www.ecolafaek.com](https://www.ecolafaek.com) | No login required |
-| **🤖 AI Agent Chat** | [www.ecolafaek.com/agentcore-chat](https://www.ecolafaek.com/agentcore-chat) | Try: "Show waste trends chart" |
-| **⚡ Backend API** | [www.ecolafaek.xyz/health](https://www.ecolafaek.xyz/health) | Health check endpoint |
-
-### 📚 Complete Documentation:
-
-| Component | Documentation | Description |
-|-----------|---------------|-------------|
-| **📐 Architecture** | [Diagram/README.md](./Diagram/README.md) | Complete system architecture |
-| **⚡ Backend API** | [mobile_backend/README.md](./mobile_backend/README.md) | AgentCore implementation details |
-| **🌐 Dashboard** | [ecolafaek_public_dahboard/README.md](./ecolafaek_public_dahboard/README.md) | Frontend integration |
-| **📱 Mobile App** | [ecolafaek/README.md](./ecolafaek/README.md) | Flutter mobile client |
-| **🗄️ Database** | [database/README.md](./database/README.md) | Schema and vector storage |
-
----
-
-## 🏆 AWS AI Agent Global Hackathon 2025 Submission
-
 **EcoLafaek** demonstrates the power of **Amazon Bedrock AgentCore** to create truly autonomous AI agents that solve real-world environmental challenges in Timor-Leste. Our system showcases multi-round tool calling, code execution, browser automation, and intelligent decision-making through advanced reasoning LLMs.
 
-### 🎯 Hackathon Requirements Met:
-
 ✅ **LLM from AWS Bedrock**: Amazon Nova-Pro v1.0 (`amazon.nova-pro-v1:0`)
-✅ **Amazon Bedrock AgentCore** (Strongly Recommended):
-   - ✅ Code Interpreter primitive for autonomous chart generation
-   - ✅ Browser Tool primitive for web scraping
-   - ✅ Application runs on `agentcore_app.run()` framework
+✅ **Amazon Bedrock AgentCore**:
+
+- ✅ Code Interpreter primitive for autonomous chart generation
+- ✅ Browser Tool primitive for web scraping
+- ✅ Application runs on `agentcore_app.run()` framework
 
 ✅ **Autonomous AI Agent**:
-   - ✅ Uses reasoning LLM (Nova-Pro) for decision-making
-   - ✅ Demonstrates autonomous capabilities with multi-round tool calling (up to 5 rounds)
-   - ✅ Integrates external tools: SQL databases, code execution, web scraping, S3 storage
+
+- ✅ Uses reasoning LLM (Nova-Pro) for decision-making
+- ✅ Demonstrates autonomous capabilities with multi-round tool calling (up to 5 rounds)
+- ✅ Integrates external tools: SQL databases, code execution, web scraping, S3 storage
 
 ✅ **Production Deployment**: Live on AWS Lightsail + Vercel with 100+ active users
 
@@ -77,25 +50,50 @@
 
 ---
 
+## 🚀 Judge Quick Start
+
+### 🎯 Live Demo Access:
+
+| Component               | URL                                                                          | Credentials                                   |
+| ----------------------- | ---------------------------------------------------------------------------- | --------------------------------------------- |
+| **📱 Mobile App**       | [Download APK](https://ajitonelson.itch.io/ecolafaek)                        | Username: `usertest`<br/>Password: `1234abcd` |
+| **🌐 Public Dashboard** | [www.ecolafaek.com](https://www.ecolafaek.com)                               | No login required                             |
+| **🤖 AI Agent Chat**    | [www.ecolafaek.com/agentcore-chat](https://www.ecolafaek.com/agentcore-chat) | Try: "Show waste trends chart"                |
+| **⚡ Backend API**      | [www.ecolafaek.xyz/health](https://www.ecolafaek.xyz/health)                 | Health check endpoint                         |
+
+### 📚 Complete Documentation:
+
+| Component           | Documentation                                                                | Description                      |
+| ------------------- | ---------------------------------------------------------------------------- | -------------------------------- |
+| **📐 Architecture** | [Diagram/README.md](./Diagram/README.md)                                     | Complete system architecture     |
+| **⚡ Backend API**  | [mobile_backend/README.md](./mobile_backend/README.md)                       | AgentCore implementation details |
+| **🌐 Dashboard**    | [ecolafaek_public_dahboard/README.md](./ecolafaek_public_dahboard/README.md) | Frontend integration             |
+| **📱 Mobile App**   | [ecolafaek/README.md](./ecolafaek/README.md)                                 | Flutter mobile client            |
+| **🗄️ Database**     | [database/README.md](./database/README.md)                                   | Schema and vector storage        |
+
+---
+
 ## 🌟 About EcoLafaek
 
-**EcoLafaek** (named after the sacred crocodile "Lafaek" in Timorese culture) is an AI-powered environmental monitoring system that empowers citizens of Timor-Leste to combat waste management challenges through intelligent reporting and autonomous data analysis.
+**EcoLafaek** (named after the crocodile "Lafaek" in Timorese culture) is an AI-powered environmental monitoring system that empowers citizens of Timor-Leste to combat waste management challenges through intelligent reporting and autonomous data analysis.
 
 ### 🎯 The Problem
 
 Timor-Leste's capital Dili faces a severe waste crisis:
+
 - **300+ tons** of waste generated daily
 - **100+ tons** go uncollected each day
 - Blocked drainage systems cause flooding during rainy season
 - Limited infrastructure and resources for waste management
 
-*Source: [JICA Survey on Solid Waste Management](https://www.jica.go.jp/english/overseas/easttimor/data/__icsFiles/afieldfile/2024/11/30/Dili_SWM_Presentation_Material_English_2.pdf)*
+_Source: [JICA Survey on Solid Waste Management](https://www.jica.go.jp/english/overseas/easttimor/data/__icsFiles/afieldfile/2024/11/30/Dili_SWM_Presentation_Material_English_2.pdf)_
 
 ![Waste in Timor-Leste](docs/image/dili_waste.png)
 
 ### 💡 Our Solution
 
 An autonomous AI agent system that:
+
 1. **Analyzes** waste images using Amazon Bedrock Nova-Pro multimodal LLM
 2. **Classifies** waste types and severity automatically
 3. **Generates** real-time analytics and visualizations via AgentCore Code Interpreter
@@ -153,7 +151,7 @@ An autonomous AI agent system that:
 
 ### Multi-Round Tool Calling Example
 
-**User Query**: *"Show me waste trends and create a map of hotspots"*
+**User Query**: _"Show me waste trends and create a map of hotspots"_
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -198,21 +196,28 @@ An autonomous AI agent system that:
 └─────────────────────────────────────────────────────────────┘
 ```
 
+**Example Log**
+![](/mobile_backend/image/chat_log.png)
+
 ### Agent Tools Available
 
-| Tool Name | AgentCore Component | Purpose | Example |
-|-----------|---------------------|---------|---------|
-| `execute_sql_query` | Direct Execution | Database queries | "How many reports last week?" |
-| `generate_visualization` | Code Interpreter | Chart generation | "Show waste distribution chart" |
-| `create_map_visualization` | Code Interpreter | Map creation | "Map hotspots in Dili" |
-| `scrape_webpage_with_browser` | Browser Tool | Web scraping | "What is EcoLafaek?" |
-| `get_ecolafaek_info` | Browser Tool | Project info | "Tell me about features" |
+| Tool Name                     | AgentCore Component | Purpose          | Example                         |
+| ----------------------------- | ------------------- | ---------------- | ------------------------------- |
+| `execute_sql_query`           | Direct Execution    | Database queries | "How many reports last week?"   |
+| `generate_visualization`      | Code Interpreter    | Chart generation | "Show waste distribution chart" |
+| `create_map_visualization`    | Code Interpreter    | Map creation     | "Map hotspots"                  |
+| `scrape_webpage_with_browser` | Browser Tool        | Web scraping     | "What is EcoLafaek?"            |
+| `get_ecolafaek_info`          | Browser Tool        | Project info     | "Tell me about features"        |
+
+**Example Chat**
+![](/mobile_backend/image/output_chat.png)
 
 ---
 
 ## 📱 Components Overview
 
 ### 1. **Mobile Application** (Flutter)
+
 - Cross-platform iOS/Android app
 - Camera integration for waste photo capture
 - GPS location tracking
@@ -222,6 +227,7 @@ An autonomous AI agent system that:
 **[→ Full Mobile App Documentation](./ecolafaek/README.md)**
 
 ### 2. **Public Dashboard** (Next.js + Vercel)
+
 - AI Agent chat interface with multi-round tool calling
 - Semantic vector search powered by Amazon Titan Embed
 - Interactive geospatial maps
@@ -231,6 +237,7 @@ An autonomous AI agent system that:
 **[→ Full Dashboard Documentation](./ecolafaek_public_dahboard/README.md)**
 
 ### 3. **Backend API** (FastAPI + AgentCore)
+
 - Runs on `agentcore_app.run()` framework
 - Amazon Bedrock Nova-Pro integration for reasoning
 - AgentCore Code Interpreter for chart generation
@@ -242,6 +249,7 @@ An autonomous AI agent system that:
 **[→ Full Backend Documentation](./mobile_backend/README.md)**
 
 ### 4. **Database** (Distributed SQL + Vectors)
+
 - User authentication and management
 - Waste report storage with GPS coordinates
 - AI analysis results with 1024-dim vector embeddings
@@ -251,6 +259,7 @@ An autonomous AI agent system that:
 **[→ Full Database Documentation](./database/README.md)**
 
 ### 5. **Admin Panel** (Next.js - Local Only)
+
 - User management and moderation
 - Report oversight and analytics
 - System configuration
@@ -266,14 +275,16 @@ An autonomous AI agent system that:
 ### For Judges - Quick Testing
 
 1. **Try the Live Dashboard**:
+
    ```
    Visit: https://www.ecolafaek.com
    Click: "Agent Chat" → Ask: "Show waste type distribution chart"
    ```
 
 2. **Test Mobile App**:
+
    ```
-   Download: https://ajitonelson.itch.io/ecolafaek
+   Download: https://www.ecolafaek.com/download
    Login: usertest / 1234abcd
    Try: Submit a report with photo
    ```
@@ -288,6 +299,7 @@ An autonomous AI agent system that:
 ### For Developers - Local Setup
 
 See component-specific README files for detailed setup instructions:
+
 - [Backend Setup](./mobile_backend/README.md#getting-started)
 - [Dashboard Setup](./ecolafaek_public_dahboard/README.md#getting-started)
 - [Mobile App Setup](./ecolafaek/README.md#getting-started)
@@ -299,12 +311,14 @@ See component-specific README files for detailed setup instructions:
 ### Amazon Bedrock Integration
 
 **Nova-Pro LLM** (`amazon.nova-pro-v1:0`):
+
 - Multi-modal image + text analysis
 - Autonomous reasoning and decision-making
 - Tool orchestration and planning
 - Multi-round conversational capabilities
 
 **Titan Embed** (`amazon.titan-embed-image-v1`):
+
 - 1024-dimensional vector embeddings
 - Semantic similarity search
 - Image and text embedding generation
@@ -312,6 +326,7 @@ See component-specific README files for detailed setup instructions:
 ### AgentCore Primitives
 
 **Code Interpreter**:
+
 ```python
 with code_session(region='us-east-1') as client:
     result = client.invoke('executeCode', {
@@ -321,6 +336,7 @@ with code_session(region='us-east-1') as client:
 ```
 
 **Browser Tool**:
+
 ```python
 with browser_session(region='us-east-1') as client:
     ws_url, headers = client.generate_ws_headers()
@@ -332,117 +348,9 @@ with browser_session(region='us-east-1') as client:
 ## 📊 Impact & Scale
 
 - **✅ Production Deployment**: Live system with real users
-- **📱 100+ Active Users**: Mobile app downloads and engagement
-- **🗺️ 200+ Reports**: Waste reports submitted and analyzed
-- **🤖 1000+ AI Interactions**: Agent tool executions
-- **🌍 Real Impact**: Helping Timor-Leste combat waste crisis
-
----
-
-## 🏅 Why EcoLafaek Wins
-
-### Innovation (Judging Criteria: 10%)
-- **Novel Problem**: First AI agent for waste management in Timor-Leste
-- **Novel Approach**: Multi-round tool calling with AgentCore primitives
-- **Creative Solution**: Combining civic engagement with autonomous AI
-
-### Technical Execution (Judging Criteria: 50%)
-- **Well-Architected**: Clean separation of concerns, scalable design
-- **Reproducible**: Complete documentation and deployment scripts
-- **AWS Services**: Bedrock AgentCore, Nova-Pro, Titan Embed, S3, Lightsail, ECR, CodeBuild
-- **AgentCore Primitives**: Code Interpreter + Browser Tool fully integrated
-
-### Functionality (Judging Criteria: 10%)
-- **Agent Works**: Autonomous tool calling demonstrated in production
-- **Scalable**: Connection pooling, async operations, rate limiting
-- **Reliable**: Health checks, auto-restart, error handling
-
-### Potential Impact (Judging Criteria: 20%)
-- **Real-World Problem**: 300+ tons daily waste crisis in Timor-Leste
-- **Measurable Impact**: Reducing uncollected waste, improving response times
-- **Sustainable**: Built for long-term use by government and citizens
-
-### Demo Quality (Judging Criteria: 10%)
-- **End-to-End Workflow**: Mobile report → AI analysis → Dashboard visualization
-- **Clear Presentation**: Live demos, clean UI, comprehensive documentation
-- **Production Ready**: Real users, real data, real impact
-
----
-
-## 🌍 Environmental Impact & UN SDG Alignment
-
-### UN Sustainable Development Goals
-
-<p align="center">
-  <img src="Diagram/Image/SDG1.png" alt="UN SDG Alignment" width="600"/>
-</p>
-
-EcoLafaek directly addresses two critical United Nations Sustainable Development Goals:
-
-#### 🏙️ SDG 11: Sustainable Cities and Communities
-
-**Target 11.6**: *By 2030, reduce the adverse per capita environmental impact of cities, including by paying special attention to air quality and municipal and other waste management.*
-
-**How EcoLafaek Contributes**:
-- **Real-time Waste Monitoring**: AI-powered tracking of 300+ tons daily waste generation in Dili
-- **Community Participation**: Empowering 100+ citizens as environmental monitors through mobile reporting
-- **Data-Driven Solutions**: Providing government with actionable insights for waste collection optimization
-- **Hotspot Detection**: Identifying and mapping waste accumulation areas for targeted intervention
-
-**Measurable Impact**:
-- 📊 200+ waste reports submitted and analyzed
-- 🗺️ 15+ hotspot areas identified for priority cleanup
-- 📱 100+ active community members engaged
-- ⏱️ 50% faster response time to waste accumulation issues
-
-#### 🌱 SDG 13: Climate Action
-
-**Target 13.3**: *Improve education, awareness-raising and human and institutional capacity on climate change mitigation, adaptation, impact reduction and early warning.*
-
-**How EcoLafaek Contributes**:
-- **Environmental Awareness**: AI-powered educational insights about waste impact and classification
-- **Climate Data Collection**: Building comprehensive waste dataset for environmental planning
-- **Early Warning System**: Detecting hazardous waste accumulation before it becomes critical
-- **Institutional Capacity**: Providing government agencies with AI-powered analytics tools
-
-**Measurable Impact**:
-- 🧠 1000+ AI-generated environmental insights shared with users
-- 📈 Community awareness increased through real-time feedback on waste impact
-- 🚨 Early detection of 20+ hazardous waste sites
-- 📊 Data-driven policy recommendations for municipal waste management
-
-### Real-World Impact in Timor-Leste
-
-#### 👥 Community Empowerment
-Citizens transform from passive observers to active environmental monitors, equipped with AI-powered tools to report and track waste issues in their neighborhoods.
-
-#### 🏛️ Government Support
-Data-driven policy making for waste management authorities with:
-- Real-time waste distribution maps
-- AI-generated trend analysis and forecasts
-- Priority area identification for resource allocation
-- Community engagement metrics
-
-#### 🏥 Health Protection
-Early detection and monitoring of hazardous waste accumulation, reducing health risks from:
-- Blocked drainage systems (preventing flooding and disease)
-- Toxic waste exposure
-- Air quality degradation from burning waste
-- Contaminated water sources
-
-#### 🌴 Tourism & Economic Growth
-Maintaining clean environments supports Timor-Leste's growing tourism sector:
-- Preserving natural beauty of beaches and public spaces
-- Enhancing visitor experience and international reputation
-- Supporting sustainable economic development
-- Creating jobs in environmental monitoring and cleanup
-
-### Long-Term Sustainability Vision
-
-**Phase 1 (Current)**: Community engagement and data collection in Dili
-**Phase 2 (6 months)**: Expansion to other districts and municipalities
-**Phase 3 (12 months)**: Integration with government waste management systems
-**Phase 4 (18 months)**: Regional expansion across Southeast Asia
+- **📱 3+ Active Users**: Mobile app downloads and engagement
+- **🗺️ 50+ Reports**: Waste reports submitted and analyzed
+- **🤖 25+ AI Interactions**: Agent tool executions
 
 ---
 
@@ -452,19 +360,47 @@ Maintaining clean environments supports Timor-Leste's growing tourism sector:
 
 ---
 
-## 👥 Team
+## 🛠️ Kiro - AI-powered Integrated Development Environment (IDE)
 
-**Ajito Nelson Lúcio da Costa**
-- Role: Full-Stack Developer & AI Engineer
-- Location: Dili, Timor-Leste
-- Email: ajitonelsonn@gmail.com
-- GitHub: [@ajitonelsonn](https://github.com/ajitonelsonn)
+During the development of EcoLafaek, we leveraged **Kiro** - AWS's AI agent platform - to accelerate our development workflow and enhance code quality.
 
----
+<p align="center">
+  <img src="Diagram/Image/use_Kiro.png" alt="Using Kiro for Development" width="800"/>
+</p>
 
-## 📄 License
+### How Kiro Enhanced Our Development:
 
-This project is developed for the AWS AI Agent Global Hackathon 2025.
+**🔍 Code Analysis & Review**
+
+- Analyzed complex AgentCore integration code for best practices
+- Identified potential bugs and security vulnerabilities
+- Suggested optimizations for multi-round tool calling logic
+
+**📊 Architecture Diagram Generation**
+
+- Generated system architecture diagrams from codebase
+- Created visual representations of agent workflow
+- Helped document complex AI agent interactions
+
+**🤖 AI Agent Code Assistance**
+
+- Guided implementation of AgentCore Code Interpreter integration
+- Provided examples for Browser Tool usage with Playwright
+- Assisted with Amazon Bedrock API integration patterns
+
+**📚 Documentation Generation**
+
+- Helped structure comprehensive README files
+- Generated API documentation from code comments
+- Created deployment guides and setup instructions
+
+**⚡ Rapid Prototyping**
+
+- Accelerated development of visualization tools
+- Streamlined database schema design
+- Quick testing of different AI prompt strategies
+
+Kiro's autonomous capabilities allowed us to focus on solving Timor-Leste's waste management challenges while maintaining high code quality and comprehensive documentation.
 
 ---
 
@@ -473,7 +409,7 @@ This project is developed for the AWS AI Agent Global Hackathon 2025.
   <p><strong>AWS AI Agent Global Hackathon 2025</strong></p>
   <p>Powered by Amazon Bedrock AgentCore, Nova-Pro, and Titan Embed</p>
 
-  ![Tais Pattern](docs/image/tais.png)
+![Tais Pattern](docs/image/tais.png)
 
   <p><em>"Lafaek" - The Sacred Crocodile Guardian of Timor-Leste</em></p>
 </div>
