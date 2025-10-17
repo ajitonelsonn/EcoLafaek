@@ -1,7 +1,9 @@
 import { defineConfig } from "vitepress";
+import { withMermaid } from "vitepress-plugin-mermaid";
 
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
+export default withMermaid(
+  defineConfig({
   title: "EcoLafaek Documentation",
   description:
     "AI-Powered Waste Management System for Timor-Leste - AWS AI Agent Global Hackathon",
@@ -36,7 +38,7 @@ export default defineConfig({
       {
         text: "📖 Introduction",
         items: [
-          { text: "Overview", link: "/" },
+          { text: "Home", link: "/" },
           { text: "Getting Started", link: "/getting-started" },
           { text: "Architecture", link: "/architecture" },
           { text: "About This Docs Site", link: "/about-docs" },
@@ -44,23 +46,23 @@ export default defineConfig({
       },
       {
         text: "📱 Mobile App",
-        items: [{ text: "Overview", link: "/mobile-app/" }],
+        items: [{ text: "Mobile App Overview", link: "/mobile-app/" }],
       },
       {
         text: "⚡ Backend API",
-        items: [{ text: "Overview", link: "/backend/" }],
+        items: [{ text: "Backend API Overview", link: "/backend/" }],
       },
       {
         text: "🌐 Public Dashboard",
-        items: [{ text: "Overview", link: "/dashboard/" }],
+        items: [{ text: "Dashboard Overview", link: "/dashboard/" }],
       },
       {
         text: "👨‍💼 Admin Panel",
-        items: [{ text: "Overview", link: "/admin/" }],
+        items: [{ text: "Admin Panel Overview", link: "/admin/" }],
       },
       {
         text: "🗄️ Database",
-        items: [{ text: "Overview", link: "/database/" }],
+        items: [{ text: "Database Overview", link: "/database/" }],
       },
     ],
 
@@ -89,4 +91,10 @@ export default defineConfig({
       },
     },
   },
-});
+
+  // Mermaid plugin configuration
+  mermaid: {
+    // Mermaid configuration options
+  },
+})
+);
