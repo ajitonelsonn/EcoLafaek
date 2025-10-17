@@ -4,11 +4,11 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "EcoLafaek Documentation",
   description: "AI-Powered Waste Management System for Timor-Leste - AWS AI Agent Global Hackathon 2025",
-  base: '/EcoLafaek/',
+  base: '/',
   ignoreDeadLinks: true,
 
   head: [
-    ['link', { rel: 'icon', href: '/EcoLafaek/app_logo.png' }],
+    ['link', { rel: 'icon', href: '/app_logo.png' }],
     ['meta', { name: 'theme-color', content: '#10b981' }],
     ['meta', { property: 'og:title', content: 'EcoLafaek Documentation' }],
     ['meta', { property: 'og:description', content: 'AI-Powered Waste Management System powered by Amazon Bedrock AgentCore' }],
