@@ -58,7 +58,7 @@
 
 ### Multi-Platform Deployment Strategy
 
-<div class="mermaid">
+```mermaid
 flowchart TB
     subgraph "Development Environment"
         Dev["💻 Developer Workstation<br/>(macOS ARM)<br/><br/>• Git repository<br/>• Local testing<br/>• Code changes"]
@@ -100,8 +100,7 @@ flowchart TB
     style Vercel fill:#e8f5e9
     style CodeBuild fill:#ffe0b2
     style LocalRun fill:#fce4ec
-
-</div>
+```
 
 ---
 
