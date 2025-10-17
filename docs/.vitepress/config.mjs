@@ -39,6 +39,7 @@ export default defineConfig({
           { text: "Overview", link: "/" },
           { text: "Getting Started", link: "/getting-started" },
           { text: "Architecture", link: "/architecture" },
+          { text: "About This Docs Site", link: "/about-docs" },
         ],
       },
       {
