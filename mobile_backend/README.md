@@ -18,38 +18,6 @@
 
 ---
 
-## 📑 Table of Contents
-
-- [Overview](#-overview)
-- [AWS AI Agent Architecture](#-aws-ai-agent-architecture)
-  - [Autonomous Agent Workflow](#autonomous-agent-workflow)
-  - [AWS Services Used](#aws-services-used)
-- [AI Agent Capabilities](#-ai-agent-capabilities)
-  - [Tool Suite (5 Custom Tools)](#tool-suite-5-custom-tools)
-  - [Autonomous Reasoning Example](#autonomous-reasoning-example)
-- [Technical Architecture](#-technical-architecture)
-  - [Core Stack](#core-stack)
-  - [Key Endpoints](#key-endpoints)
-- [Amazon Bedrock AgentCore Implementation](#-amazon-bedrock-agentcore-implementation)
-  - [AgentCore Configuration](#agentcore-configuration)
-  - [Deployment Process](#deployment-process)
-  - [AgentCore Tools Implementation](#agentcore-tools-implementation)
-- [Image Analysis with Nova-Pro](#-image-analysis-with-nova-pro)
-  - [Multi-Modal AI Processing](#multi-modal-ai-processing)
-  - [Analysis Output](#analysis-output)
-- [Setup & Installation](#-setup--installation)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Configuration](#configuration)
-- [AWS Lightsail Deployment](#-aws-lightsail-deployment)
-  - [Deployment Scripts](#deployment-scripts)
-  - [Monitoring](#monitoring)
-- [Live Demo](#-live-demo)
-- [Project Structure](#-project-structure)
-- [Security Features](#-security-features)
-
----
-
 ## 🌱 Overview
 
 This is a sophisticated **autonomous AI agent** backend that powers environmental waste reporting for Timor-Leste. This project demonstrates advanced AI agent capabilities using Amazon Bedrock AgentCore to autonomously analyze images, execute SQL queries, generate visualizations, create interactive maps, and scrape web content - all through natural language chat.
