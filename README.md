@@ -10,7 +10,7 @@
 
 <div align="center">
   <img src="https://img.shields.io/badge/Amazon_Bedrock-AgentCore-FF9900?style=for-the-badge&logo=amazonwebservices&logoColor=white" alt="Amazon Bedrock AgentCore" />
-  <img src="https://img.shields.io/badge/Nova_Pro-Reasoning_LLM-FF9900?style=for-the-badge&logo=amazonwebservices&logoColor=white" alt="Nova Pro" />
+  <img src="https://img.shields.io/badge/AWS_Nova-Pro-FF9900?style=for-the-badge&logo=amazonwebservices&logoColor=white" alt="Amazon Nova" />
   <img src="https://img.shields.io/badge/Titan_Embed-Vector_Search-FF9900?style=for-the-badge&logo=amazonwebservices&logoColor=white" alt="Titan Embed" />
   <img src="https://img.shields.io/badge/AWS_S3-Storage-569A31?style=for-the-badge&logo=amazons3&logoColor=white" alt="S3" />
   <img src="https://img.shields.io/badge/AWS_Lightsail-Compute-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white" alt="Lightsail" />
@@ -56,7 +56,7 @@
 
 | Component               | URL                                                                          | Credentials                                   |
 | ----------------------- | ---------------------------------------------------------------------------- | --------------------------------------------- |
-| **📱 Mobile App**       | [Download APK](https://ajitonelson.itch.io/ecolafaek)                        | Username: `usertest`<br/>Password: `1234abcd` |
+| **📱 Mobile App**       | [Download APK](https://bit.ly/ecolafaek)                                     | Username: `usertest`<br/>Password: `1234abcd` |
 | **🌐 Public Dashboard** | [www.ecolafaek.com](https://www.ecolafaek.com)                               | No login required                             |
 | **🤖 AI Agent Chat**    | [www.ecolafaek.com/agentcore-chat](https://www.ecolafaek.com/agentcore-chat) | Try: "Show waste trends chart"                |
 | **⚡ Backend API**      | [www.ecolafaek.xyz/health](https://www.ecolafaek.xyz/health)                 | Health check endpoint                         |
