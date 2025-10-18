@@ -373,7 +373,7 @@ Kiro's autonomous capabilities allowed us to focus on solving Timor-Leste's wast
 
 <div align="center">
   <h3>🌿 Built with ❤️ for Timor-Leste 🌿</h3>
-  <p><strong>AWS AI Agent Global Hackathon</strong></p>
+  <p><strong>🏆 AWS AI Agent Global Hackathon</strong></p>
   <p>Powered by Amazon Bedrock AgentCore, Nova-Pro, and Titan Embed</p>
 
 ![Tais Pattern](docs/image/tais.png)

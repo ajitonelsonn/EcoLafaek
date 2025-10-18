@@ -515,7 +515,7 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-full text-sm font-medium mb-6">
               <Brain className="w-4 h-4 mr-2" />
-              AWS AI Agent Global Hackathon
+              🏆 AWS AI Agent Global Hackathon
             </div>
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Our Technology Stack

@@ -1,6 +1,6 @@
 # EcoLafaek - System Architecture
 
-**AWS AI Agent Global Hackathon - Technical Architecture Documentation**
+**🏆 AWS AI Agent Global Hackathon - Technical Architecture Documentation**
 
 > Complete technical architecture for the EcoLafaek environmental monitoring platform powered by Amazon Bedrock AgentCore.
 
@@ -434,6 +434,6 @@ mindmap
 ---
 
 <div align="center">
-  <p><strong>AWS AI Agent Global Hackathon</strong></p>
+  <p><strong>🏆 AWS AI Agent Global Hackathon</strong></p>
   <p>Powered by Amazon Bedrock AgentCore</p>
 </div>

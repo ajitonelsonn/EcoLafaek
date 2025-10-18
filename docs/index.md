@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "EcoLafaek"
   text: "AI-Powered Waste Management"
-  tagline: "Empowering Timor-Leste with Amazon Bedrock AgentCore - AWS AI Agent Global Hackathon"
+  tagline: "Empowering Timor-Leste with Amazon Bedrock AgentCore - 🏆 AWS AI Agent Global Hackathon"
   image:
     src: /app_logo.png
     alt: EcoLafaek Logo
@@ -72,7 +72,7 @@ features:
 
 ---
 
-## 🏆 AWS AI Agent Global Hackathon
+## 🏆 🏆 AWS AI Agent Global Hackathon
 
 EcoLafaek showcases the power of **Amazon Bedrock AgentCore** to solve real-world environmental challenges in Timor-Leste through autonomous AI agents.
 

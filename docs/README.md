@@ -193,5 +193,5 @@ To add a new documentation page:
 ---
 
 <div align="center">
-  <p>Built with ❤️ for Timor-Leste | AWS AI Agent Global Hackathon</p>
+  <p>Built with ❤️ for Timor-Leste | 🏆 AWS AI Agent Global Hackathon</p>
 </div>
