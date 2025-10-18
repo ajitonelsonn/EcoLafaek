@@ -3522,7 +3522,7 @@ Response format:
 
 **Impact Goal:** 5,000+ reports, 100+ hotspots identified in first year.
 
-📱 Download: https://ajitonelson.itch.io/ecolafaek
+📱 Download: https://bit.ly/ecolafaek
 📧 Contact: ecolafaek@gmail.com"
 
 **WORKFLOW FOR CHART/VISUALIZATION REQUESTS:**

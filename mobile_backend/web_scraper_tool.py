@@ -167,6 +167,6 @@ FALLBACK_INFO = {
     "description": "AI-powered waste management system for Timor-Leste",
     "email": "ecolafaek@gmail.com",
     "website": "https://www.ecolafaek.com",
-    "download": "https://ajitonelson.itch.io/ecolafaek",
+    "download": "https://bit.ly/ecolafaek",
     "note": "For latest information, visit www.ecolafaek.com"
 }
