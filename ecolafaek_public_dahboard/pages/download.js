@@ -140,7 +140,7 @@ export default function DownloadApp() {
                 )}
 
                 <div className="mt-4 text-sm text-gray-500">
-                  Version 1.0.0 • Released Sep 01, 2025
+                  Version 1.0.0 • Released Oct 10, 2025
                 </div>
 
                 <div className="mt-6">
