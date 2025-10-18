@@ -15,6 +15,8 @@ const SYNC_MAP = {
   '../README.md': 'getting-started.md',
   '../Diagram/README.md': 'architecture.md',
   '../ecolafaek/README.md': 'mobile-app/index.md',
+  '../ecolafaek/IOS.md': 'mobile-app/ios.md',
+  '../ecolafaek/Android.md': 'mobile-app/android.md',
   '../mobile_backend/README.md': 'backend/index.md',
   '../ecolafaek_public_dahboard/README.md': 'dashboard/index.md',
   '../ecolafaek_admin_panel/README.md': 'admin/index.md',
