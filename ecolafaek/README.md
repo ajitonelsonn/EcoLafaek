@@ -12,7 +12,6 @@ This Flutter mobile app is part of EcoLafaek's **AWS AI Agent Global Hackathon**
 
 1. **Report Submission** → FastAPI Backend (AgentCore Runtime) → **AI Analysis**
 2. **Image Analysis** → Amazon Bedrock Nova-Pro → **Waste Classification**
-3. **Vector Search** → Amazon Titan Embed → **Semantic Similarity**
 
 For detailed AI agent architecture, see [Backend README](../mobile_backend/README.md).
 

@@ -26,6 +26,7 @@
 **EcoLafaek** demonstrates the power of **Amazon Bedrock AgentCore** to create truly autonomous AI agents that solve real-world environmental challenges in Timor-Leste. Our system showcases multi-round tool calling, code execution, browser automation, and intelligent decision-making through advanced reasoning LLMs.
 
 ✅ **LLM from AWS Bedrock**: Amazon Nova-Pro v1.0 (`amazon.nova-pro-v1:0`)
+
 ✅ **Amazon Bedrock AgentCore**:
 
 - ✅ Code Interpreter primitive for autonomous chart generation
@@ -38,7 +39,7 @@
 - ✅ Demonstrates autonomous capabilities with multi-round tool calling (up to 5 rounds)
 - ✅ Integrates external tools: SQL databases, code execution, web scraping, S3 storage
 
-✅ **Production Deployment**: Live on AWS Lightsail + Vercel with 100+ active users
+✅ **Production Deployment**: Live on AWS Lightsail
 
 ### 🤖 Agent Innovation Highlights:
 
@@ -62,6 +63,8 @@
 | **⚡ Backend API**      | [www.ecolafaek.xyz/health](https://www.ecolafaek.xyz/health)                 | Health check endpoint                         |
 
 ### 📚 Complete Documentation:
+
+[https://docs.ecolafaek.com](https://docs.ecolafaek.com/)
 
 | Component           | Documentation                                                                | Description                      |
 | ------------------- | ---------------------------------------------------------------------------- | -------------------------------- |

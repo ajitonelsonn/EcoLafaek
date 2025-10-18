@@ -535,7 +535,7 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Amazon Bedrock Nova-Pro */}
               <a
-                href="https://aws.amazon.com/bedrock/nova/"
+                href="https://docs.aws.amazon.com/nova/latest/userguide/what-is-nova.html"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
@@ -569,7 +569,7 @@ export default function AboutPage() {
 
               {/* Amazon Bedrock AgentCore */}
               <a
-                href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html"
+                href="https://aws.amazon.com/bedrock/agentcore/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
@@ -603,7 +603,7 @@ export default function AboutPage() {
 
               {/* Amazon Titan Embed */}
               <a
-                href="https://aws.amazon.com/bedrock/titan/"
+                href="https://docs.aws.amazon.com/bedrock/latest/userguide/titan-embedding-models.html"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
