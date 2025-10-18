@@ -38,22 +38,22 @@ export default function AgentCoreChat() {
     scrollToBottom();
   }, [messages]);
 
-  // Check if user is already verified (within 5 minutes)
+  // Check if user is already verified (within 2 minutes - reCAPTCHA token lifetime)
   useEffect(() => {
     const verificationData = localStorage.getItem("recaptcha_verification");
     if (verificationData) {
       try {
         const { token, timestamp, used } = JSON.parse(verificationData);
-        const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+        const twoMinutes = 2 * 60 * 1000; // 2 minutes in milliseconds (reCAPTCHA token lifetime)
         const now = Date.now();
 
-        // Check if verification is still valid (within 5 minutes)
-        if (now - timestamp < fiveMinutes) {
+        // Check if verification is still valid (within 2 minutes and not used)
+        if (now - timestamp < twoMinutes && !used) {
           setRecaptchaToken(token);
           setIsVerified(true);
-          setTokenUsed(used || false);
+          setTokenUsed(false);
         } else {
-          // Expired, remove old verification
+          // Expired or already used, remove old verification
           localStorage.removeItem("recaptcha_verification");
         }
       } catch (error) {
@@ -185,23 +185,41 @@ export default function AgentCoreChat() {
     } catch (error) {
       let errorMessage =
         "❌ Error: Could not connect to AgentCore. Please try again.";
+      let shouldRefresh = false;
 
       if (error.message === "reCAPTCHA not loaded") {
         errorMessage =
           "❌ Security verification not loaded. Please refresh the page.";
+        shouldRefresh = true;
       } else if (error.message.includes("reCAPTCHA verification failed")) {
         errorMessage =
-          "❌ Security verification failed. You may be a bot. Please try again.";
+          "🔒 Security verification failed. Your session may have expired. Please refresh the page to continue.";
+        shouldRefresh = true;
+        // Clear expired token
+        localStorage.removeItem("recaptcha_verification");
+        setIsVerified(false);
+        setRecaptchaToken(null);
+        setTokenUsed(false);
       } else if (error.message.includes("Missing reCAPTCHA token")) {
         errorMessage =
           "❌ Security verification missing. Please refresh the page.";
+        shouldRefresh = true;
+      } else if (error.message.includes("403")) {
+        errorMessage =
+          "🔒 Your security verification has expired. Please refresh the page to continue chatting.";
+        shouldRefresh = true;
+        // Clear expired token
+        localStorage.removeItem("recaptcha_verification");
+        setIsVerified(false);
+        setRecaptchaToken(null);
+        setTokenUsed(false);
       }
 
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: errorMessage,
+          content: errorMessage + (shouldRefresh ? "\n\n**Click the refresh button or press F5 to reload the page.**" : ""),
         },
       ]);
     } finally {
