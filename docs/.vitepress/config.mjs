@@ -46,7 +46,11 @@ export default withMermaid(
       },
       {
         text: "📱 Mobile App",
-        items: [{ text: "Mobile App Overview", link: "/mobile-app/" }],
+        items: [
+          { text: "Mobile App Overview", link: "/mobile-app/" },
+          { text: "Testing on iOS", link: "/mobile-app/ios" },
+          { text: "Testing on Android", link: "/mobile-app/android" },
+        ],
       },
       {
         text: "⚡ Backend API",
