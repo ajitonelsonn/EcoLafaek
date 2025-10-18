@@ -6,7 +6,7 @@ export default withMermaid(
   defineConfig({
     title: "EcoLafaek Documentation",
     description:
-      "AI-Powered Waste Management System for Timor-Leste - 🏆 AWS AI Agent Global Hackathon",
+      "AI-Powered Waste Management System for Timor-Leste - AWS AI Agent Global Hackathon",
     base: "/",
     ignoreDeadLinks: true,
 
@@ -76,7 +76,7 @@ export default withMermaid(
 
       footer: {
         message:
-          "Built with ❤️ for Timor-Leste | 🏆 AWS AI Agent Global Hackathon",
+          "Built with ❤️ for Timor-Leste | AWS AI Agent Global Hackathon",
         copyright: "Powered by Amazon Bedrock AgentCore",
       },
 

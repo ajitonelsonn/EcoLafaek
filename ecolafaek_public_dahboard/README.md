@@ -243,6 +243,6 @@ Configure all `.env.local` variables in Vercel dashboard under Project Settings 
 ---
 
 <div align="center">
-  <p>Built with ❤️ for Timor-Leste | 🏆 AWS AI Agent Global Hackathon</p>
+  <p>Built with ❤️ for Timor-Leste | AWS AI Agent Global Hackathon</p>
   <p>Powered by Amazon Bedrock AgentCore</p>
 </div>

@@ -4,9 +4,9 @@
   <img src="https://img.shields.io/badge/AWS_AI_Agent_Global_-Hackathon_-FF9900?style=for-the-badge&logoColor=white" alt="AWS AI Agent Hackathon" />
 </div>
 
-## 🏆 🏆 AWS AI Agent Global Hackathon
+## 🏆 AWS AI Agent Global Hackathon
 
-This Flutter mobile app is part of EcoLafaek's **🏆 AWS AI Agent Global Hackathon** submission, showcasing how mobile applications integrate with autonomous AI agents powered by **Amazon Bedrock AgentCore** for intelligent environmental monitoring.
+This Flutter mobile app is part of EcoLafaek's **AWS AI Agent Global Hackathon** submission, showcasing how mobile applications integrate with autonomous AI agents powered by **Amazon Bedrock AgentCore** for intelligent environmental monitoring.
 
 ### 🤖 AI Integration Flow:
 
@@ -266,5 +266,5 @@ To review and test the app, judges can easily [download the mobile app](https://
 !['tais'](../docs/image/tais.png)
 
 <div align="center">
-  <p>Built with ❤️ for Timor-Leste | 🏆 AWS AI Agent Global Hackathon</p>
+  <p>Built with ❤️ for Timor-Leste | AWS AI Agent Global Hackathon</p>
 </div>

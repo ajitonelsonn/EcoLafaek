@@ -145,5 +145,5 @@ For complete system architecture, see [Diagram/README.md](../Diagram/README.md).
 ---
 
 <div align="center">
-  <p>🏆 AWS AI Agent Global Hackathon</p>
+  <p>AWS AI Agent Global Hackathon</p>
 </div>

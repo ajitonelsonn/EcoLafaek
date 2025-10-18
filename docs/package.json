@@ -1,7 +1,7 @@
 {
   "name": "ecolafaek-docs",
   "version": "1.0.0",
-  "description": "EcoLafaek Documentation Site - 🏆 AWS AI Agent Global Hackathon",
+  "description": "EcoLafaek Documentation Site - AWS AI Agent Global Hackathon",
   "main": "index.js",
   "scripts": {
     "sync": "node sync-docs.js",
