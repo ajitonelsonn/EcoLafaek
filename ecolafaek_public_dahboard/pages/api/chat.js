@@ -26,7 +26,6 @@ async function chat(messages, sessionId = null) {
       sessionId: data.session_id,
     };
   } catch (error) {
-    console.error("FastAPI Error:", error);
     throw error;
   }
 }
@@ -36,7 +35,6 @@ async function verifyRecaptcha(token, remoteIp) {
   const secretKey = process.env.RECAPTCHA_SECRET_KEY;
 
   if (!secretKey) {
-    console.error("RECAPTCHA_SECRET_KEY not found in environment variables");
     return { success: false, error: "Server configuration error" };
   }
 
@@ -65,18 +63,12 @@ async function verifyRecaptcha(token, remoteIp) {
       return { success: true };
     }
 
-    console.warn("reCAPTCHA v2 verification failed:", {
-      success: data.success,
-      "error-codes": data["error-codes"],
-    });
-
     return {
       success: false,
       error: "Verification failed",
       errorCodes: data["error-codes"],
     };
   } catch (error) {
-    console.error("reCAPTCHA verification error:", error);
     return { success: false, error: "Verification error" };
   }
 }
@@ -131,7 +123,6 @@ export default async function handler(req, res) {
 
       const recaptchaResult = await verifyRecaptcha(recaptcha_token, clientIp);
       if (!recaptchaResult.success) {
-        console.warn("reCAPTCHA verification failed:", recaptchaResult);
         return res.status(403).json({
           error: "reCAPTCHA verification failed. Please try again.",
           details: recaptchaResult.error,
@@ -151,7 +142,6 @@ export default async function handler(req, res) {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Chat API Error:", error);
     res.status(500).json({
       error: "Failed to process chat request",
       details: error.message,
