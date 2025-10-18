@@ -23,9 +23,9 @@ export default function DownloadApp() {
 
   // App download links
   const downloadLinks = {
-    android: "https://ajitonelson.itch.io/ecolafaek",
+    android: "https://bit.ly/ecolafaek",
     ios: "/uc",
-    direct: "https://ajitonelson.itch.io/ecolafaek",
+    direct: "https://bit.ly/ecolafaek",
   };
 
   return (
@@ -116,25 +116,17 @@ export default function DownloadApp() {
                       <Download className="w-5 h-5" />
                       Download for Android
                     </a>
-                    
-                    {/* Installation Tutorial Video */}
-                    <div className="mt-6">
-                      <h4 className="text-sm font-medium text-gray-900 mb-3">
-                        📱 How to Download & Install
-                      </h4>
-                      <div className="relative w-full max-w-sm mx-auto" style={{ aspectRatio: '9/16' }}>
-                        <iframe
-                          src="https://www.youtube.com/embed/lKbzUADEsoo"
-                          title="How to Download and Install EcoLafaek App"
-                          style={{ border: 0 }}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          allowFullScreen
-                          className="w-full h-full rounded-lg shadow-sm"
-                        ></iframe>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 text-center">
-                        Step-by-step installation guide
-                      </p>
+
+                    <div className="mt-4">
+                      <a
+                        href="https://docs.ecolafaek.com/mobile-app/android.html"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-emerald-600 hover:text-emerald-800 text-sm font-medium inline-flex items-center"
+                      >
+                        Installation Guide
+                        <ChevronRight className="w-4 h-4 ml-1" />
+                      </a>
                     </div>
                   </div>
                 ) : (
