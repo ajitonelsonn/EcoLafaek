@@ -570,61 +570,61 @@ export default function AgentCoreChat() {
           <>
             {/* Modern Header */}
             <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40 backdrop-blur-md bg-opacity-95">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-20">
-                  <div className="flex items-center gap-6">
+              <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-16 md:h-20">
+                  <div className="flex items-center gap-2 md:gap-6">
                     <button
                       onClick={() => router.push("/")}
-                      className="p-2.5 hover:bg-gray-100 rounded-xl transition-colors group"
+                      className="p-2 md:p-2.5 hover:bg-gray-100 rounded-lg md:rounded-xl transition-colors group"
                       aria-label="Go home"
                     >
                       <Home
-                        size={22}
-                        className="text-gray-600 group-hover:text-gray-900"
+                        size={18}
+                        className="md:w-5.5 md:h-5.5 text-gray-600 group-hover:text-gray-900"
                       />
                     </button>
 
-                    <div className="flex items-center gap-4">
-                      <div className="relative w-14 h-14">
+                    <div className="flex items-center gap-2 md:gap-4">
+                      <div className="relative w-10 h-10 md:w-14 md:h-14">
                         <NextImage
                           src="/app_logo.png"
                           alt="EcoLafaek Logo"
                           width={56}
                           height={56}
-                          className="rounded-2xl shadow-md object-cover"
+                          className="rounded-xl md:rounded-2xl shadow-md object-cover"
                           style={{ width: "auto", height: "auto" }}
                         />
-                        <div className="absolute -bottom-1 -right-1 bg-emerald-500 rounded-full p-1.5 shadow-lg">
-                          <Bot size={14} className="text-white" />
+                        <div className="absolute -bottom-0.5 -right-0.5 md:-bottom-1 md:-right-1 bg-emerald-500 rounded-full p-1 md:p-1.5 shadow-lg">
+                          <Bot size={10} className="md:w-3.5 md:h-3.5 text-white" />
                         </div>
                       </div>
                       <div>
-                        <h1 className="text-2xl font-bold text-gray-900">
-                          EcoLafaek AI Assistant
+                        <h1 className="text-base md:text-2xl font-bold text-gray-900">
+                          EcoLafaek AI
                         </h1>
-                        <p className="text-sm text-gray-600 font-medium">
-                          Powered by Amazon Bedrock AgentCore
+                        <p className="text-[10px] md:text-sm text-gray-600 font-medium hidden sm:block">
+                          Powered by Amazon Bedrock
                         </p>
                       </div>
                     </div>
                   </div>
 
                   {messages.length > 0 && (
-                    <div className="hidden md:flex gap-3">
+                    <div className="flex gap-2 md:gap-3">
                       <button
                         onClick={exportChat}
-                        className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all flex items-center gap-2 font-semibold text-sm"
+                        className="px-3 md:px-4 py-2 md:py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all flex items-center gap-1 md:gap-2 font-semibold text-xs md:text-sm"
                         aria-label="Export chat"
                       >
-                        <Download size={16} />
-                        Export
+                        <Download size={14} className="md:w-4 md:h-4" />
+                        <span className="hidden sm:inline">Export</span>
                       </button>
                       <button
                         onClick={clearChat}
-                        className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-all flex items-center gap-2 font-semibold text-sm"
+                        className="px-3 md:px-4 py-2 md:py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-all flex items-center gap-1 md:gap-2 font-semibold text-xs md:text-sm"
                       >
-                        <Trash2 size={16} />
-                        Clear
+                        <Trash2 size={14} className="md:w-4 md:h-4" />
+                        <span className="hidden sm:inline">Clear</span>
                       </button>
                     </div>
                   )}
@@ -633,18 +633,18 @@ export default function AgentCoreChat() {
             </div>
 
             {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 md:py-12">
               {messages.length === 0 ? (
                 /* Welcome Screen */
-                <div className="py-8">
-                  <div className="text-center mb-16">
-                    <div className="inline-flex items-center justify-center p-3 bg-emerald-100 rounded-2xl mb-6">
-                      <Sparkles size={32} className="text-emerald-600" />
+                <div className="py-4 md:py-8">
+                  <div className="text-center mb-8 md:mb-16">
+                    <div className="inline-flex items-center justify-center p-2 md:p-3 bg-emerald-100 rounded-2xl mb-4 md:mb-6">
+                      <Sparkles size={24} className="md:w-8 md:h-8 text-emerald-600" />
                     </div>
-                    <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                    <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4 px-2">
                       How can I help you today?
                     </h2>
-                    <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                    <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed px-2">
                       Ask me anything about waste reports, statistics, trends,
                       or visualizations. I can generate charts, maps, and
                       detailed insights from your data.
@@ -652,25 +652,25 @@ export default function AgentCoreChat() {
                   </div>
 
                   {/* Sample Queries - Better Sized */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-8 md:mb-16">
                     {sampleQueries.map((query, idx) => (
                       <button
                         key={idx}
                         onClick={() => sendMessage(query.text)}
                         disabled={loading}
-                        className={`group relative p-6 bg-gradient-to-br ${query.gradient} ${query.hoverGradient} text-white rounded-2xl shadow-md hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 overflow-hidden text-left`}
+                        className={`group relative p-4 md:p-6 bg-gradient-to-br ${query.gradient} ${query.hoverGradient} text-white rounded-xl md:rounded-2xl shadow-md hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 overflow-hidden text-left`}
                       >
                         <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
                         <div className="relative z-10">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="p-2 bg-white bg-opacity-20 rounded-lg">
+                          <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                            <div className="p-1.5 md:p-2 bg-white bg-opacity-20 rounded-lg">
                               <query.icon
-                                size={24}
-                                className="drop-shadow-lg"
+                                size={20}
+                                className="md:w-6 md:h-6 drop-shadow-lg"
                               />
                             </div>
                           </div>
-                          <p className="font-semibold text-base leading-relaxed">
+                          <p className="font-semibold text-sm md:text-base leading-relaxed">
                             {query.text}
                           </p>
                         </div>
@@ -679,17 +679,17 @@ export default function AgentCoreChat() {
                   </div>
 
                   {/* Capabilities */}
-                  <div className="bg-white rounded-3xl shadow-lg p-10 border border-gray-200">
-                    <div className="text-center mb-10">
-                      <h3 className="text-3xl font-bold text-gray-900 mb-3">
+                  <div className="bg-white rounded-2xl md:rounded-3xl shadow-lg p-6 md:p-10 border border-gray-200">
+                    <div className="text-center mb-6 md:mb-10">
+                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-3">
                         AI-Powered Capabilities
                       </h3>
-                      <p className="text-gray-600">
+                      <p className="text-sm md:text-base text-gray-600">
                         Advanced features to help you analyze and visualize
                         waste data
                       </p>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                       <div className="flex gap-4 p-5 rounded-2xl hover:bg-gradient-to-br hover:from-emerald-50 hover:to-teal-50 transition-all group border border-transparent hover:border-emerald-200">
                         <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md group-hover:shadow-lg transition-shadow">
                           <BarChart3 size={26} className="text-white" />
@@ -760,23 +760,23 @@ export default function AgentCoreChat() {
                       } animate-fade-in`}
                     >
                       <div
-                        className={`flex gap-3 max-w-[85%] ${
+                        className={`flex gap-2 md:gap-3 max-w-[95%] md:max-w-[85%] ${
                           msg.role === "user" ? "flex-row-reverse" : ""
                         }`}
                       >
                         {msg.role === "assistant" && (
                           <div className="flex-shrink-0">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
-                              <Bot size={20} className="text-white" />
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
+                              <Bot size={16} className="md:w-5 md:h-5 text-white" />
                             </div>
                           </div>
                         )}
                         <div
                           className={`${
                             msg.role === "user"
-                              ? "bg-gradient-to-br from-emerald-600 to-teal-600 text-white rounded-3xl rounded-br-md shadow-lg"
-                              : "bg-white text-gray-800 rounded-3xl rounded-bl-md shadow-lg border border-gray-200"
-                          } px-6 py-4`}
+                              ? "bg-gradient-to-br from-emerald-600 to-teal-600 text-white rounded-2xl md:rounded-3xl rounded-br-md shadow-lg"
+                              : "bg-white text-gray-800 rounded-2xl md:rounded-3xl rounded-bl-md shadow-lg border border-gray-200"
+                          } px-4 py-3 md:px-6 md:py-4`}
                         >
                           {msg.role === "assistant" ? (
                             <div
@@ -796,13 +796,13 @@ export default function AgentCoreChat() {
                   ))}
                   {loading && (
                     <div className="flex justify-start animate-fade-in">
-                      <div className="flex gap-3">
+                      <div className="flex gap-2 md:gap-3">
                         <div className="flex-shrink-0">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
-                            <Bot size={20} className="text-white" />
+                          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
+                            <Bot size={16} className="md:w-5 md:h-5 text-white" />
                           </div>
                         </div>
-                        <div className="bg-white px-6 py-4 rounded-3xl rounded-bl-md shadow-lg border border-gray-200">
+                        <div className="bg-white px-4 py-3 md:px-6 md:py-4 rounded-2xl md:rounded-3xl rounded-bl-md shadow-lg border border-gray-200">
                           <div className="flex gap-2">
                             <div className="w-2.5 h-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full animate-bounce"></div>
                             <div
@@ -825,15 +825,15 @@ export default function AgentCoreChat() {
 
             {/* Input Bar */}
             <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl backdrop-blur-md bg-opacity-98 z-50">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <div className="flex gap-3">
+              <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 md:py-4">
+                <div className="flex gap-2 md:gap-3">
                   <div className="flex-1 relative">
                     <textarea
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyPress}
-                      placeholder="Ask me anything about waste data, trends, statistics..."
-                      className="w-full px-6 py-4 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none text-base shadow-sm hover:border-gray-400 transition-all"
+                      placeholder="Ask me anything about waste data..."
+                      className="w-full px-4 py-3 md:px-6 md:py-4 border-2 border-gray-300 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none text-sm md:text-base shadow-sm hover:border-gray-400 transition-all"
                       rows={1}
                       disabled={loading}
                     />
@@ -841,23 +841,23 @@ export default function AgentCoreChat() {
                   <button
                     onClick={() => sendMessage()}
                     disabled={loading || !input.trim()}
-                    className="px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white rounded-2xl transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg font-semibold"
+                    className="px-4 py-3 md:px-6 md:py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white rounded-xl md:rounded-2xl transition-all duration-200 flex items-center gap-1.5 md:gap-2 shadow-md hover:shadow-lg font-semibold text-sm md:text-base"
                     aria-label="Send message"
                   >
-                    <Send size={20} />
+                    <Send size={18} className="md:w-5 md:h-5" />
                     <span className="hidden sm:inline">Send</span>
                   </button>
                 </div>
-                <div className="flex items-center justify-center gap-4 mt-3">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mt-2 md:mt-3">
                   <div className="flex items-center gap-1.5">
                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                    <p className="text-xs text-gray-600 font-medium">
+                    <p className="text-[10px] md:text-xs text-gray-600 font-medium">
                       Powered by Amazon Bedrock AgentCore
                     </p>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Shield size={12} className="text-emerald-600" />
-                    <p className="text-xs text-gray-600 font-medium">
+                    <Shield size={10} className="md:w-3 md:h-3 text-emerald-600" />
+                    <p className="text-[10px] md:text-xs text-gray-600 font-medium">
                       Verified Session
                     </p>
                   </div>
