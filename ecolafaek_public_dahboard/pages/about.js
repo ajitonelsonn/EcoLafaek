@@ -82,7 +82,7 @@ export default function AboutPage() {
     {
       question: "Who is behind this initiative?",
       answer:
-        "The project was created by Ajito Nelson Lucio da Costa. It addresses real waste management challenges in Timor-Leste based on JICA survey data showing that Dili produces over 300 tons of waste daily, with more than 100 tons going uncollected.",
+        "The project was created by Ajito Nelson Lucio da Costa, a young person from Timor-Leste who observed significant waste management challenges in the capital city Dili. The project addresses real environmental problems based on JICA survey data showing that Dili produces over 300 tons of waste daily, with more than 100 tons going uncollected. This uncollected waste clogs drainage systems, causing flooding and environmental damage. EcoLafaek was built for the AWS AI Agent Global Hackathon to demonstrate how Amazon Bedrock AgentCore can create autonomous AI agents that solve real-world problems through multi-round tool orchestration and intelligent decision-making.",
     },
     {
       question: "Is my data private when I submit reports?",
