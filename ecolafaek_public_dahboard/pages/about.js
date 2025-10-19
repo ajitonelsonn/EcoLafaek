@@ -921,6 +921,46 @@ export default function AboutPage() {
             </div>
           </div>
 
+          {/* Development Tools Section */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
+              🛠️ Development Tools
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-8 max-w-md mx-auto">
+              {/* Kiro */}
+              <a
+                href="https://kiro.dev/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-purple-200">
+                    <Image
+                      src="/tech/kiro.jpg"
+                      alt="Kiro"
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center mb-2">
+                    <h3 className="font-bold text-xl text-gray-900">
+                      Kiro
+                    </h3>
+                    <ExternalLink className="w-4 h-4 ml-2 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                  </div>
+                  <p className="text-sm text-purple-600 mb-4 font-medium">
+                    AI-Powered IDE
+                  </p>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    Spec-driven development environment with autonomous agents, multimodal chat interface, and intelligent code generation for systematic architecture design
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+
           {/* Architecture Highlights */}
           <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl p-8 border border-emerald-200">
             <h3 className="text-2xl font-bold text-gray-900 text-center mb-6">
