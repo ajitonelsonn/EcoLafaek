@@ -2,12 +2,27 @@ const bcrypt = require('bcryptjs');
 const mysql = require('mysql2/promise');
 
 async function createAdminUser() {
+  // Check for required environment variables
+  if (!process.env.DB_HOST || !process.env.DB_USER || !process.env.DB_PASSWORD || !process.env.DB_NAME) {
+    console.error('❌ Error: Database credentials not found!');
+    console.error('Please set the following environment variables:');
+    console.error('  DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT');
+    console.error('\nExample:');
+    console.error('  DB_HOST=your-tidb-host.tidbcloud.com \\');
+    console.error('  DB_USER=your-username \\');
+    console.error('  DB_PASSWORD=your-password \\');
+    console.error('  DB_NAME=db_ecolafaek \\');
+    console.error('  DB_PORT=4000 \\');
+    console.error('  node scripts/create-admin.js');
+    process.exit(1);
+  }
+
   const connection = await mysql.createConnection({
-    host: process.env.DB_HOST || 'gateway01.ap-northeast-1.prod.aws.tidbcloud.com',
+    host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT || '4000'),
-    user: process.env.DB_USER || 'sVS5xgcyguKUN4N.root',
-    password: process.env.DB_PASSWORD || 'GHtH8NE0bWUc0QK2',
-    database: process.env.DB_NAME || 'db_ecolafaek',
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     ssl: {
       rejectUnauthorized: true
     }

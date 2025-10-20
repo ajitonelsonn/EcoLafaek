@@ -1,13 +1,125 @@
+# ===================================
+# CRITICAL: Environment Variables & Secrets
+# ===================================
+# NEVER commit these files!
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*.local
+**/.env
+**/.env.local
+**/.env.development
+**/.env.production
+**/.env.test
 mobile_backend/.env*
-mobile_backend/venv
 
+# Sensitive credentials files
+**/credentials.json
+**/serviceAccount.json
+**/*credentials*.json
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+
+# AWS credentials
+.aws/
+**/.aws/
+
+# ===================================
+# Python
+# ===================================
+mobile_backend/venv
 mobile_backend/__pycache__
 mobile_backend/config/__pycache__
 mobile_backend/models/__pycache__
 mobile_backend/routes/__pycache__
 mobile_backend/services/__pycache__
-mobile_backend/routes/__pycache__
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+.venv
 
+# ===================================
+# Node.js / Next.js / React
+# ===================================
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+.vercel/
+**/.vercel/
+out/
+dist/
+build/
+.cache/
+
+# Dependencies
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ===================================
+# Flutter / Dart
+# ===================================
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/pubspec.lock
+**/.metadata
+**/.idea/
+**/*.iml
+**/.gradle/
+**/local.properties
+
+# ===================================
+# Database
+# ===================================
+*.sql
+*.dump
+*.backup
+*.db
+*.sqlite
+*.sqlite3
+
+# ===================================
+# Logs
+# ===================================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# ===================================
+# IDE & Editors
+# ===================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ===================================
+# AWS SAM
+# ===================================
+mobile_backend/.aws-sam
+.aws-sam/
+
+# ===================================
+# Temporary files
+# ===================================
 File
 Hackthon
 ss
@@ -15,26 +127,18 @@ MD
 TIDB
 Diagram/draw.io/
 mobile_backend/not
-mobile_backend/.aws-sam
 
 have_some.txt
-
-.vscode
-arch.md
-AWS-AI-Agent-Global-Hackathon.pdf
-
-Diagram/diagram.md
-Diagram/Ecolafaek3.drawio.png
-mobile_backend/deploy_lightsail.sh
 error.txt
 Start_idea.txt
 Idea.txt
 
---
+# Images (working files)
 image.png
 image1.png
 image2.png
 
+# Submission drafts (keep in local, don't push)
 some_info.txt
 some_submission_need.md
 submission_readme.md
@@ -42,3 +146,19 @@ video_script copy.md
 video_script.md
 video.txt
 youtube_upload_info.md
+
+# Documentation working files
+arch.md
+Diagram/diagram.md
+Diagram/Ecolafaek3.drawio.png
+
+# Deployment scripts (sensitive)
+mobile_backend/deploy_lightsail.sh
+mobile_backend/update_lightsail.sh
+
+# PDFs
+AWS-AI-Agent-Global-Hackathon.pdf
+
+# Security fixes (don't push with actual credentials)
+SECURITY_FIX_URGENT.md
+recaptcha_fix_guide.md
