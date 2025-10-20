@@ -42,24 +42,35 @@ export default async function handler(
     const whereClause =
       conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-    // Get reports
-    const reportsQuery = `
-      SELECT r.report_id, r.latitude, r.longitude, r.status, 
-             r.image_url, r.report_date, a.severity_score, 
-             a.priority_level, w.name as waste_type
-      FROM reports r
-      LEFT JOIN analysis_results a ON r.report_id = a.report_id
-      LEFT JOIN waste_types w ON a.waste_type_id = w.waste_type_id
-      ${whereClause}
-      ORDER BY r.report_date DESC
-      LIMIT 1000
-    `;
+    // OPTIMIZED: Execute reports and hotspots queries in parallel
+    const [reportsResult, hotspotsResult] = await Promise.all([
+      // Get reports (uses idx_map_reports_covering index)
+      executeQuery<any[]>({
+        query: `
+          SELECT r.report_id, r.latitude, r.longitude, r.status,
+                 r.image_url, r.report_date, a.severity_score,
+                 a.priority_level, w.name as waste_type
+          FROM reports r
+          LEFT JOIN analysis_results a ON r.report_id = a.report_id
+          LEFT JOIN waste_types w ON a.waste_type_id = w.waste_type_id
+          ${whereClause}
+          ORDER BY r.report_date DESC
+          LIMIT 1000
+        `,
+        values: params,
+      }),
 
-
-    const reportsResult = await executeQuery<any[]>({
-      query: reportsQuery,
-      values: params,
-    });
+      // Get hotspots (uses idx_hotspots_status index)
+      executeQuery<any[]>({
+        query: `
+          SELECT h.hotspot_id, h.name, h.center_latitude, h.center_longitude,
+                 h.radius_meters, h.total_reports, h.average_severity,
+                 h.first_reported, h.last_reported, h.status
+          FROM hotspots h
+          WHERE h.status = 'active'
+        `,
+      }),
+    ]);
 
     // Convert datetime objects to strings
     const reports = reportsResult.map((report) => {
@@ -68,19 +79,6 @@ export default async function handler(
         formattedReport.report_date = formatDateTime(report.report_date);
       }
       return formattedReport;
-    });
-
-    // Get hotspots
-    const hotspotsQuery = `
-      SELECT h.hotspot_id, h.name, h.center_latitude, h.center_longitude,
-             h.radius_meters, h.total_reports, h.average_severity,
-             h.first_reported, h.last_reported, h.status
-      FROM hotspots h
-      WHERE h.status = 'active'
-    `;
-
-    const hotspotsResult = await executeQuery<any[]>({
-      query: hotspotsQuery,
     });
 
     // Convert datetime objects to strings

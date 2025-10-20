@@ -13,77 +13,87 @@ export default async function handler(
   }
 
   try {
-    // Get total reports count (all time)
-    const totalReportsResult = await executeQuery<{ total_reports: number }[]>({
-      query:
-        "SELECT COUNT(*) as total_reports FROM reports",
-    });
+    // OPTIMIZED: Combine multiple queries into parallel execution
+    // This reduces latency by executing queries concurrently
+    const [
+      totalReportsResult,
+      statusCountsResult,
+      wasteTypeCountsResult,
+      avgSeverityResult,
+      priorityCountsResult,
+      hotspotCountResult,
+      dailyReportsResult,
+    ] = await Promise.all([
+      // Get total reports count (uses idx_reports_status for faster COUNT)
+      executeQuery<{ total_reports: number }[]>({
+        query: "SELECT COUNT(*) as total_reports FROM reports",
+      }),
+
+      // Get reports by status (uses idx_reports_status index)
+      executeQuery<{ status: string; count: number }[]>({
+        query: "SELECT status, COUNT(*) as count FROM reports GROUP BY status",
+      }),
+
+      // Get reports by waste type (uses idx_analysis_waste_type index)
+      executeQuery<{ name: string; count: number }[]>({
+        query: `
+          SELECT w.name, COUNT(*) as count
+          FROM analysis_results a
+          JOIN waste_types w ON a.waste_type_id = w.waste_type_id
+          GROUP BY w.name
+        `,
+      }),
+
+      // Get average severity score (uses idx_analysis_severity index)
+      executeQuery<{ avg_severity: number }[]>({
+        query:
+          "SELECT AVG(severity_score) as avg_severity FROM analysis_results",
+      }),
+
+      // Get priority level breakdown (uses idx_analysis_priority index)
+      executeQuery<{ priority_level: string; count: number }[]>({
+        query:
+          "SELECT priority_level, COUNT(*) as count FROM analysis_results GROUP BY priority_level",
+      }),
+
+      // Get hotspot count (uses idx_hotspots_status index)
+      executeQuery<{ hotspot_count: number }[]>({
+        query:
+          "SELECT COUNT(*) as hotspot_count FROM hotspots WHERE status = 'active'",
+      }),
+
+      // Get all daily report stats (uses idx_reports_report_date index)
+      executeQuery<{ date: Date; count: number }[]>({
+        query: `
+          SELECT DATE(report_date) as date, COUNT(*) as count
+          FROM reports
+          GROUP BY DATE(report_date)
+          ORDER BY date
+        `,
+      }),
+    ]);
+
+    // Process results
     const total_reports = totalReportsResult[0].total_reports;
 
-    // Get reports by status (all time)
-    const statusCountsResult = await executeQuery<
-      { status: string; count: number }[]
-    >({
-      query:
-        "SELECT status, COUNT(*) as count FROM reports GROUP BY status",
-    });
     const status_counts: Record<string, number> = {};
     statusCountsResult.forEach((row) => {
       status_counts[row.status] = row.count;
     });
 
-    // Get reports by waste type
-    const wasteTypeCountsResult = await executeQuery<
-      { name: string; count: number }[]
-    >({
-      query: `
-        SELECT w.name, COUNT(*) as count 
-        FROM analysis_results a
-        JOIN waste_types w ON a.waste_type_id = w.waste_type_id
-        GROUP BY w.name
-      `,
-    });
     const waste_type_counts: Record<string, number> = {};
     wasteTypeCountsResult.forEach((row) => {
       waste_type_counts[row.name] = row.count;
     });
 
-    // Get average severity score
-    const avgSeverityResult = await executeQuery<{ avg_severity: number }[]>({
-      query: "SELECT AVG(severity_score) as avg_severity FROM analysis_results",
-    });
     const avg_severity = avgSeverityResult[0].avg_severity || 0;
 
-    // Get priority level breakdown
-    const priorityCountsResult = await executeQuery<
-      { priority_level: string; count: number }[]
-    >({
-      query:
-        "SELECT priority_level, COUNT(*) as count FROM analysis_results GROUP BY priority_level",
-    });
     const priority_counts: Record<string, number> = {};
     priorityCountsResult.forEach((row) => {
       priority_counts[row.priority_level] = row.count;
     });
 
-    // Get hotspot count
-    const hotspotCountResult = await executeQuery<{ hotspot_count: number }[]>({
-      query:
-        "SELECT COUNT(*) as hotspot_count FROM hotspots WHERE status = 'active'",
-    });
     const hotspot_count = hotspotCountResult[0].hotspot_count;
-
-    // Get all daily report stats (all time)
-    const dailyReportsResult = await executeQuery<
-      { date: Date; count: number }[]
-    >({
-      query: `
-        SELECT DATE(report_date) as date, COUNT(*) as count
-        FROM reports
-        GROUP BY DATE(report_date)
-        ORDER BY date
-      `,
-    });
 
     // Format daily reports (no filling in missing dates for all-time data)
     const daily_reports: DailyReport[] = dailyReportsResult.map((row) => ({

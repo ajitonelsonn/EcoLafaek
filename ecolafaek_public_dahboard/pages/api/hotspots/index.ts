@@ -13,11 +13,15 @@ export default async function handler(
   }
 
   try {
+    // OPTIMIZED: Use LEFT JOIN instead of correlated subquery
+    // Uses idx_hotspots_status and idx_hotspot_reports_hotspot indexes
     const query = `
-      SELECT h.*, 
-            (SELECT COUNT(*) FROM hotspot_reports hr WHERE hr.hotspot_id = h.hotspot_id) as report_count
+      SELECT h.*,
+             COUNT(DISTINCT hr.report_id) as report_count
       FROM hotspots h
+      LEFT JOIN hotspot_reports hr ON h.hotspot_id = hr.hotspot_id
       WHERE h.status = 'active'
+      GROUP BY h.hotspot_id
       ORDER BY h.total_reports DESC
     `;
 

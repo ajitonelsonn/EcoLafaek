@@ -106,14 +106,7 @@ export default async function handler(
       `;
     }
 
-    const countResult = await executeQuery<{ total: number }[]>({
-      query: countQuery,
-      values: params,
-    });
-
-    const total = countResult[0].total;
-    const totalPages = Math.ceil(total / perPage);
-
+    // OPTIMIZED: Execute count and leaderboard queries in parallel
     // Query to get leaderboard data with pagination
     let leaderboardQuery;
 
@@ -165,10 +158,21 @@ export default async function handler(
       `;
     }
 
-    const users = await executeQuery<LeaderboardUser[]>({
-      query: leaderboardQuery,
-      values: [...params, perPage, offset],
-    });
+    // Execute count and data queries in parallel
+    // Uses idx_users_status and idx_reports_user_date indexes
+    const [countResult, users] = await Promise.all([
+      executeQuery<{ total: number }[]>({
+        query: countQuery,
+        values: params,
+      }),
+      executeQuery<LeaderboardUser[]>({
+        query: leaderboardQuery,
+        values: [...params, perPage, offset],
+      }),
+    ]);
+
+    const total = countResult[0].total;
+    const totalPages = Math.ceil(total / perPage);
 
     res.status(200).json({
       users,

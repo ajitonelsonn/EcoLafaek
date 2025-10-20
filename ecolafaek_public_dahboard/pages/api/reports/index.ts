@@ -27,40 +27,38 @@ export default async function handler(
     const whereClause =
       conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-    // Get total count
-    const countQuery = `
-      SELECT COUNT(*) as total
-      FROM reports r
-      LEFT JOIN analysis_results a ON r.report_id = a.report_id
-      LEFT JOIN waste_types w ON a.waste_type_id = w.waste_type_id
-      ${whereClause}
-    `;
+    // OPTIMIZED: Execute count and reports queries in parallel
+    const [countResult, reportsResult] = await Promise.all([
+      // Get total count (uses idx_reports_status and idx_analysis_report_id indexes)
+      executeQuery<{ total: number }[]>({
+        query: `
+          SELECT COUNT(*) as total
+          FROM reports r
+          LEFT JOIN analysis_results a ON r.report_id = a.report_id
+          LEFT JOIN waste_types w ON a.waste_type_id = w.waste_type_id
+          ${whereClause}
+        `,
+        values: params,
+      }),
 
-    const countResult = await executeQuery<{ total: number }[]>({
-      query: countQuery,
-      values: params,
-    });
+      // Get reports with pagination (uses idx_reports_date_status covering index)
+      executeQuery<Report[]>({
+        query: `
+          SELECT r.report_id, r.user_id, r.latitude, r.longitude,
+                 r.description, r.status, r.image_url, r.report_date,
+                 a.severity_score, a.priority_level, w.name as waste_type
+          FROM reports r
+          LEFT JOIN analysis_results a ON r.report_id = a.report_id
+          LEFT JOIN waste_types w ON a.waste_type_id = w.waste_type_id
+          ${whereClause}
+          ORDER BY r.report_date DESC
+          LIMIT ? OFFSET ?
+        `,
+        values: [...params, perPage, offset],
+      }),
+    ]);
 
     const total = countResult[0].total;
-
-    // Get reports with pagination
-    const reportQuery = `
-      SELECT r.report_id, r.user_id, r.latitude, r.longitude, 
-             r.description, r.status, r.image_url, r.report_date,
-             a.severity_score, a.priority_level, w.name as waste_type
-      FROM reports r
-      LEFT JOIN analysis_results a ON r.report_id = a.report_id
-      LEFT JOIN waste_types w ON a.waste_type_id = w.waste_type_id
-      ${whereClause}
-      ORDER BY r.report_date DESC
-      LIMIT ? OFFSET ?
-    `;
-
-
-    const reportsResult = await executeQuery<Report[]>({
-      query: reportQuery,
-      values: [...params, perPage, offset],
-    });
 
     // Convert datetime objects to strings
     const reports = reportsResult.map((report) => {
