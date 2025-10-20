@@ -326,7 +326,7 @@ with browser_session(region='us-east-1') as client:
 
 ## 📹 Demo Video
 
-**[→ Watch 3-Minute Demo Video](https://youtu.be/YOUR_VIDEO_ID)**
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ZWKOsdWfSsA?si=BUef2_owJ8W9Pr_k" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ---
 
