@@ -4005,8 +4005,8 @@ async def custom_404_handler(request: requests, exc: HTTPException):
         content={
             "project": "EcoLafaek",
             "message": "🌱 This path doesn't exist in our EcoLafaek ecosystem",
-            "hint": "Contact Admin",
-            "status": "not_found"
+            "Contact": "https://www.ecolafaek.com/contact",
+            "Visit": "www.ecolafaek.com"
         }
     )
 
