@@ -1,16 +1,44 @@
-default_agent: your_agent_name
+default_agent: ecolafaek_waste_agent
 agents:
-  your_agent_name:
-    name: your_agent_name
+  app:
+    name: app
+    entrypoint: app.py:chat_agent
+    platform: linux/arm64
+    container_runtime: none
+    aws:
+      execution_role: null
+      execution_role_auto_create: true
+      account: 'YOUR_AWS_ACCOUNT_ID'
+      region: us-east-1
+      ecr_repository: null
+      ecr_auto_create: true
+      network_configuration:
+        network_mode: PUBLIC
+      protocol_configuration:
+        server_protocol: HTTP
+      observability:
+        enabled: true
+    bedrock_agentcore:
+      agent_id: null
+      agent_arn: null
+      agent_session_id: null
+    codebuild:
+      project_name: null
+      execution_role: null
+      source_bucket: null
+    authorizer_configuration: null
+    oauth_configuration: null
+  ecolafaek_waste_agent:
+    name: ecolafaek_waste_agent
     entrypoint: app.py
     platform: linux/arm64
     container_runtime: docker
     aws:
-      execution_role: arn:aws:iam::YOUR_ACCOUNT_ID:role/YOUR_EXECUTION_ROLE
+      execution_role: arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/YOUR_EXECUTION_ROLE
       execution_role_auto_create: false
       account: 'YOUR_AWS_ACCOUNT_ID'
       region: us-east-1
-      ecr_repository: YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/bedrock-agentcore-YOUR_AGENT_NAME
+      ecr_repository: YOUR_AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/bedrock-agentcore-ecolafaek_waste_agent
       ecr_auto_create: false
       network_configuration:
         network_mode: PUBLIC
@@ -19,12 +47,12 @@ agents:
       observability:
         enabled: true
     bedrock_agentcore:
-      agent_id: your_agent_id
-      agent_arn: arn:aws:bedrock-agentcore:us-east-1:YOUR_ACCOUNT_ID:runtime/your_agent_id
-      agent_session_id: null
+      agent_id: YOUR_AGENT_ID
+      agent_arn: arn:aws:bedrock-agentcore:us-east-1:YOUR_AWS_ACCOUNT_ID:runtime/YOUR_AGENT_ID
+      agent_session_id: YOUR_AGENT_SESSION_ID
     codebuild:
-      project_name: bedrock-agentcore-YOUR_AGENT_NAME-builder
-      execution_role: arn:aws:iam::YOUR_ACCOUNT_ID:role/YOUR_CODEBUILD_ROLE
-      source_bucket: bedrock-agentcore-codebuild-sources-YOUR_ACCOUNT_ID-us-east-1
+      project_name: bedrock-agentcore-ecolafaek_waste_agent-builder
+      execution_role: arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/YOUR_CODEBUILD_ROLE
+      source_bucket: bedrock-agentcore-codebuild-sources-YOUR_AWS_ACCOUNT_ID-us-east-1
     authorizer_configuration: null
     oauth_configuration: null
