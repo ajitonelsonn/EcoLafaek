@@ -830,6 +830,112 @@ def analyze_waste_image(payload):
                 "analysis_notes": "Analysis failed, manual review required"
             }
         }
+        
+@agentcore_app.entrypoint
+def chat_agent(payload):
+    """
+    EcoLafaek Chat Agent for answering questions about waste data and the platform
+    Uses autonomous tool calling to query database, generate visualizations, and fetch info
+    """
+    try:
+        prompt = payload.get("prompt", "")
+        session_id = payload.get("session_id", f"chat_{datetime.now().timestamp()}")
+
+        if not prompt:
+            return {
+                "success": False,
+                "error": "No prompt provided",
+                "response": "Please provide a question or prompt."
+            }
+
+        logger.info(f"AgentCore chat request (session {session_id}): {prompt[:100]}")
+
+        # Load schema information
+        from schema_based_chat import PUBLIC_SCHEMA
+
+        # Build system prompt with tools and schema
+        system_prompt = f"""You are EcoLafaek AI Assistant, helping users understand waste management data in Timor-Leste.
+
+You have access to database tools to answer questions about waste reports, statistics, hotspots, and trends.
+
+{PUBLIC_SCHEMA}
+
+## HOW TO ANSWER QUESTIONS:
+1. Analyze the user's question
+2. Generate appropriate SQL SELECT queries to fetch data
+3. Present results in clear, formatted markdown
+
+## EXAMPLES:
+User: "How many reports are there?"
+SQL: SELECT COUNT(*) as total FROM reports
+
+User: "What are the top waste types?"
+SQL: SELECT wt.name, COUNT(*) as count FROM analysis_results ar JOIN waste_types wt ON ar.waste_type_id = wt.waste_type_id GROUP BY wt.name ORDER BY count DESC LIMIT 5
+
+User: "Which areas have most garbage?"
+SQL: SELECT name, total_reports, average_severity FROM hotspots ORDER BY total_reports DESC LIMIT 10
+
+User: "Show waste trends this month"
+SQL: SELECT DATE(created_at) as date, COUNT(*) as reports FROM reports WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) GROUP BY DATE(created_at) ORDER BY date DESC
+
+IMPORTANT RULES:
+- NEVER query: users, user_verifications, api_keys (private data)
+- Only SELECT queries (no INSERT/UPDATE/DELETE)
+- Always use LIMIT (max 100)
+- Format results with markdown tables/lists
+- Be conversational and helpful
+
+User question: {prompt}"""
+
+        # Simple direct response using Bedrock Runtime
+        response = bedrock_runtime.invoke_model(
+            modelId=BEDROCK_MODEL_ID,
+            contentType="application/json",
+            accept="application/json",
+            body=json.dumps({
+                "inferenceConfig": {
+                    "max_new_tokens": 2000,
+                    "temperature": 0.7,
+                    "top_p": 0.9
+                },
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": [{"text": system_prompt}]
+                    }
+                ]
+            })
+        )
+
+        # Parse response
+        result = json.loads(response['body'].read())
+
+        # Extract text from Nova Pro response
+        if 'output' in result and 'message' in result['output']:
+            message = result['output']['message']
+            if 'content' in message and len(message['content']) > 0:
+                chat_response = message['content'][0].get('text', 'No response generated')
+            else:
+                chat_response = "No response generated"
+        else:
+            chat_response = "Failed to generate response"
+
+        return {
+            "success": True,
+            "response": chat_response,
+            "session_id": session_id,
+            "model_used": BEDROCK_MODEL_ID,
+            "processed_at": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"AgentCore chat failed: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "response": "I encountered an error processing your request. Please try again."
+        }
+
 async def process_report_with_agent_async(report_id, image_url, latitude, longitude, description):
     """Process report using AgentCore for analysis - truly async"""
     try:
