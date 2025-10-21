@@ -1,0 +1,357 @@
+.splashContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  overflow: hidden;
+  transition: background-color 0.8s ease-in-out;
+}
+
+.greenBg {
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+}
+
+.fadeOut {
+  animation: fadeOut 0.8s ease-out forwards;
+}
+
+.slideOpen {
+  animation: slideOpenAnimation 5s ease-out forwards;
+}
+
+/* Emoji Animation Container */
+.emojiContainer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.emoji {
+  position: absolute;
+  font-size: 4rem;
+  opacity: 0;
+  animation: emojiFloat 4s ease-in-out forwards;
+}
+
+.emoji1 {
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.emoji2 {
+  top: 15%;
+  left: 80%;
+  animation-delay: 0.2s;
+}
+
+.emoji3 {
+  top: 40%;
+  left: 5%;
+  animation-delay: 0.4s;
+}
+
+.emoji4 {
+  top: 45%;
+  left: 90%;
+  animation-delay: 0.3s;
+}
+
+.emoji5 {
+  top: 60%;
+  left: 15%;
+  animation-delay: 0.5s;
+}
+
+.emoji6 {
+  top: 70%;
+  left: 75%;
+  animation-delay: 0.6s;
+}
+
+.emoji7 {
+  top: 30%;
+  left: 50%;
+  animation-delay: 0.1s;
+}
+
+.emoji8 {
+  top: 10%;
+  left: 45%;
+  animation-delay: 0.4s;
+}
+
+.emoji9 {
+  top: 75%;
+  left: 50%;
+  animation-delay: 0.7s;
+}
+
+.emoji10 {
+  top: 55%;
+  left: 65%;
+  animation-delay: 0.25s;
+}
+
+/* Slide Content */
+.slideContent {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  opacity: 0;
+}
+
+.fadeIn {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.slideOutUp {
+  animation: slideOutUp 0.6s ease-in forwards;
+}
+
+.slideInFromBottom {
+  animation: slideInFromBottom 0.8s ease-out forwards;
+}
+
+/* Slide 2: Logo Centered */
+.logoCentered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.logoImage {
+  display: block;
+}
+
+.brandTitle {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.2em;
+  margin: 0;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Slide 3: Mission Statement */
+.missionContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 800px;
+  padding: 0 2rem;
+}
+
+.logoSmall {
+  margin-bottom: 1rem;
+}
+
+.brandTitleSmall {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.15em;
+  margin: 0 0 2rem 0;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.missionText {
+  text-align: center;
+}
+
+.missionLine {
+  font-size: 1.6rem;
+  color: #ffffff;
+  font-weight: 400;
+  margin: 0.4rem 0;
+  line-height: 1.5;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.heroText {
+  font-size: 4rem;
+  font-weight: 800;
+  color: #fbbf24;
+  margin: 1rem 0 0 0;
+  font-family: 'Brush Script MT', cursive, 'Comic Sans MS', cursive;
+  font-style: italic;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+  line-height: 1.2;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideOutUp {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-100px) scale(0.8);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(100px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideOpenAnimation {
+  0% {
+    opacity: 1;
+    background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+  }
+  10% {
+    opacity: 1;
+    background: rgba(16, 185, 129, 0.7);
+  }
+  30% {
+    opacity: 1;
+    background: rgba(16, 185, 129, 0.3);
+  }
+  60% {
+    opacity: 1;
+    background: transparent;
+  }
+  100% {
+    opacity: 0;
+    background: transparent;
+  }
+}
+
+@keyframes emojiFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.2) rotate(0deg);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-15px) scale(0.8) rotate(90deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-35px) scale(1.2) rotate(180deg);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-55px) scale(1.5) rotate(270deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80px) scale(2) rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .brandTitle {
+    font-size: 2rem;
+    letter-spacing: 0.15em;
+  }
+
+  .brandTitleSmall {
+    font-size: 1.2rem;
+  }
+
+  .missionLine {
+    font-size: 1.2rem;
+  }
+
+  .heroText {
+    font-size: 2.8rem;
+  }
+
+  .logoImage {
+    width: 150px !important;
+    height: 150px !important;
+  }
+
+  .logoSmall .logoImage {
+    width: 100px !important;
+    height: 100px !important;
+  }
+
+  .emoji {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .brandTitle {
+    font-size: 1.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .brandTitleSmall {
+    font-size: 1rem;
+  }
+
+  .missionLine {
+    font-size: 1rem;
+  }
+
+  .heroText {
+    font-size: 2rem;
+  }
+
+  .logoImage {
+    width: 120px !important;
+    height: 120px !important;
+  }
+
+  .logoSmall .logoImage {
+    width: 80px !important;
+    height: 80px !important;
+  }
+
+  .missionContent {
+    padding: 0 1rem;
+  }
+
+  .emoji {
+    font-size: 2.5rem;
+  }
+}
