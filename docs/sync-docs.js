@@ -48,9 +48,24 @@ function transformContent(content, sourceFile) {
     transformed = transformed.replace(/src="image\//g, 'src="/backend-images/');
     transformed = transformed.replace(/]\(\/image\//g, '](/backend-images/');
     transformed = transformed.replace(/src="\/image\//g, 'src="/backend-images/');
+    // Fix absolute paths from mobile_backend to backend-images
+    transformed = transformed.replace(/]\(\/mobile_backend\/image\//g, '](/backend-images/');
+    transformed = transformed.replace(/src="\/mobile_backend\/image\//g, 'src="/backend-images/');
   } else if (sourceFile.includes('ecolafaek/')) {
     transformed = transformed.replace(/]\(assets\//g, '](/mobile-images/');
     transformed = transformed.replace(/src="assets\//g, 'src="/mobile-images/');
+  } else if (sourceFile.includes('ecolafaek_admin_panel')) {
+    // Fix admin panel screenshot paths
+    transformed = transformed.replace(/]\(\/ecolafaek_admin_panel\/public\/ssc\//g, '](/ssc/');
+    transformed = transformed.replace(/src="\/ecolafaek_admin_panel\/public\/ssc\//g, 'src="/ssc/');
+    transformed = transformed.replace(/]\(public\/ssc\//g, '](/ssc/');
+    transformed = transformed.replace(/src="public\/ssc\//g, 'src="/ssc/');
+  } else if (sourceFile.includes('ecolafaek_public_dahboard')) {
+    // Fix dashboard screenshot paths
+    transformed = transformed.replace(/]\(\/ecolafaek_public_dahboard\/public\/scs\//g, '](/scs/');
+    transformed = transformed.replace(/src="\/ecolafaek_public_dahboard\/public\/scs\//g, 'src="/scs/');
+    transformed = transformed.replace(/]\(public\/scs\//g, '](/scs/');
+    transformed = transformed.replace(/src="public\/scs\//g, 'src="/scs/');
   } else if (sourceFile.includes('Diagram')) {
     transformed = transformed.replace(/]\(Image\//g, '](/diagram-images/');
     transformed = transformed.replace(/src="Image\//g, 'src="/diagram-images/');

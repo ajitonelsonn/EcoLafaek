@@ -31,7 +31,7 @@ Local-only administrative interface for managing the EcoLafaek waste monitoring 
 - **Authentication**: Local admin authentication
 - **Deployment**: Local machine only (`localhost:3000`)
 
-![dashboard](/public/ssc/dashboard.png)
+![dashboard](/ecolafaek_admin_panel/public/ssc/dashboard.png)
 
 ## 🚀 Getting Started
 

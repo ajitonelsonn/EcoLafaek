@@ -147,7 +147,7 @@ Our agent integrates multiple external tools:
 | `get_ecolafaek_info`       | Fetch project info | AgentCore Browser Tool     | "Tell me about this platform"   |
 
 **Example Chat**
-![Example Output](/image/output_chat.png)
+![Example Output](/mobile_backend/image/output_chat.png)
 
 ### Autonomous Reasoning Example
 
@@ -169,7 +169,7 @@ Round 3: "Chart is ready. I'll format the response with insights"
 ```
 
 **Example chat Log**
-![Example Output](/image/chat_log.png)
+![Example Output](/mobile_backend/image/chat_log.png)
 
 ---
 
@@ -223,7 +223,7 @@ agents:
 ### Deployment Process
 
 To execute agentcore launch make sure you're iam like bellow:
-![Iam](/image/iam.png)
+![Iam](/mobile_backend/image/iam.png)
 
 ```bash
 # 1. Deploy AgentCore runtime (ARM64 via CodeBuild)
@@ -238,7 +238,7 @@ agentcore launch
 ```
 
 My Aws Agentcore:
-![Aws AgentCore that already Deployed](/image/aws_bed_agentcore.png)
+![Aws AgentCore that already Deployed](/mobile_backend/image/aws_bed_agentcore.png)
 
 ### AgentCore Tools Implementation
 
@@ -346,10 +346,10 @@ def analyze_image_with_bedrock(image_url: str):
 ### Example Output
 
 **No have Image**
-![No have Image](/image/nohave.png)
+![No have Image](/mobile_backend/image/nohave.png)
 
 **Have Image**
-![have Image](/image/have.png)
+![have Image](/mobile_backend/image/have.png)
 
 ---
 
