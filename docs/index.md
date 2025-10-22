@@ -130,14 +130,6 @@ EcoLafaek showcases the power of **Amazon Bedrock AgentCore** to solve real-worl
 
 ---
 
-## 🌍 Environmental Impact
-
-EcoLafaek addresses critical waste management challenges in Timor-Leste by empowering citizens with AI-powered tools to report, track, and resolve environmental issues.
-
-**UN Sustainable Development Goals**:
-
-- 🏙️ SDG 11: Sustainable Cities and Communities
-- 🌊 SDG 14: Life Below Water
-- 🌿 SDG 15: Life on Land
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ZWKOsdWfSsA?si=Ib1oBpcr3sbQkHR2" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ---
