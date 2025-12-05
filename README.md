@@ -1,5 +1,25 @@
 # EcoLafaek - Autonomous AI Agent for Environmental Monitoring
 
+🏆 **1st Place Winner - AWS AI Agent Global Hackathon 2025**  
+🌿 AI-Powered Waste Management for Timor-Leste
+
+[![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+
+---
+
+## ⚖️ Copyright & License
+
+**© 2025 Ajito Nelson Lucio da Costa. All Rights Reserved.**
+
+This repository is made publicly available for transparency and AWS hackathon 
+compliance. The code is **proprietary** - no license is granted for use, 
+modification, or distribution without explicit written permission.
+
+**For licensing inquiries:** ajitonelsonldc@gmail.com
+
+**Special consideration for:** Timor-Leste government entities and NGOs
+
+
 <p align="center">
   <img src="app_logo.webp" alt="EcoLafaek Logo" width="120" />
 </p>
